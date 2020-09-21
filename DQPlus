@@ -1,0 +1,82 @@
+local u2 = nil
+local u1 = require(game.ReplicatedStorage:WaitForChild("inventoryHelperFunctions"));
+local l__LocalPlayer__1 = game.Players.LocalPlayer
+game.ReplicatedStorage.remotes.updateLocalInventoryTable.OnClientEvent:Connect(function(p2)
+	if p2 then
+--		print("update invy LOCAL");
+		u2 = p2;
+	end;
+end);
+local function u4(p3)
+	return game.ReplicatedStorage.remotes.reloadInvy:InvokeServer();
+end;
+local function u5()
+	u2 = u4(l__LocalPlayer__1);
+end;
+local ohTable1 = {
+	["ability"] = {},
+	["helmet"] = {},
+	["chest"] = {},
+	["weapon"] = {}
+}
+
+game:GetService("ReplicatedStorage").remotes.sellItemEvent:FireServer(ohTable1)
+wait(0.5)
+local function dasortweapon(yep)
+    for i,v in pairs(u2.weapons) do
+        if tonumber(string.sub(i,8)) == yep then
+--            warn(v.levelReq)
+            return v
+        end
+    end
+end
+local function dasortchest(yep)
+    for i,v in pairs(u2.chests) do
+        if tonumber(string.sub(i,7)) == yep then
+--            warn(v.levelReq)
+            return v
+        end
+    end
+end
+local function dasortability(yep)
+    for i,v in pairs(u2.abilities) do
+        if tonumber(string.sub(i,9)) == yep then
+--            warn(v.levelReq)
+            return v
+        end
+    end
+end
+local function dasorthelmet(yep)
+    for i,v in pairs(u2.helmets) do
+        if tonumber(string.sub(i,8)) == yep then
+--            warn(v.levelReq)
+            return v
+        end
+    end
+end
+local function epicsortsystem()
+    for _,g in pairs(l__LocalPlayer__1.PlayerGui.inventory.mainBackground.innerBackground.rightSideFrame.ScrollingFrame:GetChildren()) do
+        if g:IsA("ImageLabel") then
+           local returnvalue
+            if g.itemType.Value == "weapon" then
+                returnvalue = dasortweapon(g.itemType.uniqueItemNum.Value)
+            elseif g.itemType.Value == "helmet" then
+                returnvalue = dasorthelmet(g.itemType.uniqueItemNum.Value)
+            elseif g.itemType.Value == "ability" then
+                returnvalue = dasortability(g.itemType.uniqueItemNum.Value)
+            elseif g.itemType.Value == "chest" then
+                returnvalue = dasortchest(g.itemType.uniqueItemNum.Value)
+            end
+            g.LayoutOrder = tonumber(returnvalue.levelReq)
+        end
+    end
+end
+l__LocalPlayer__1.PlayerGui.inventory.mainBackground.innerBackground.rightSideFrame.ScrollingFrame.ChildAdded:Connect(function()
+    wait(1.5)
+    epicsortsystem()
+end)
+l__LocalPlayer__1.PlayerGui.inventory.mainBackground.innerBackground.rightSideFrame.ScrollingFrame.ChildRemoved:Connect(function()
+    wait(1.5)
+    epicsortsystem()
+end)
+epicsortsystem()
