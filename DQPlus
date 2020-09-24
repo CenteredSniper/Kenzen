@@ -9,7 +9,7 @@ if not game:IsLoaded() then
 	game.Loaded:Wait()
 	notLoaded:Destroy()
 end
-
+repeat wait(0.1) until game.Players.LocalPlayer.PlayerGui:FindFirstChild("inventory")
 --	locals
 local nosave = false
 local itemtable
@@ -22,6 +22,8 @@ local defaultsettings = {
 local defaults = game:GetService("HttpService"):JSONEncode(defaultsettings)
 --local u1 = require(game.ReplicatedStorage:WaitForChild("inventoryHelperFunctions"));
 local LocalPlayer = game.Players.LocalPlayer
+local PlayerGui = LocalPlayer.PlayerGui
+local freakoutmode = false
 
 --	Saves
 local function DQwritefileExploit()
@@ -93,22 +95,6 @@ function updatesavesDQPlus()
 end
 
 --	Sorting
-
-game.ReplicatedStorage.remotes.updateLocalInventoryTable.OnClientEvent:Connect(function(updatedtable)
-	if updatedtable then
-		itemtable = updatedtable;
-		
-	end;
-end);
-local EMPTYTABLELOL = {
-	["ability"] = {},
-	["helmet"] = {},
-	["chest"] = {},
-	["weapon"] = {}
-}
-
-game:GetService("ReplicatedStorage").remotes.sellItemEvent:FireServer(EMPTYTABLELOL)
-repeat wait(0.1) until itemtable ~= nil
 local function dasortweapon(yep)
 	for i,v in pairs(itemtable.weapons) do
 		if tonumber(string.sub(i,8)) == yep then
@@ -142,48 +128,68 @@ local function dasorthelmet(yep)
 	end
 end
 local function epicsortsystem()
-	local function epicfunnyhahahtakeachillpillbroxd(locationepic)
-		for _,g in pairs(locationepic:GetChildren()) do
-			if g:IsA("ImageLabel") then
-				local returnvalue
-				if g.itemType.Value == "weapon" then
-					returnvalue = dasortweapon(g.itemType.uniqueItemNum.Value)
-				elseif g.itemType.Value == "helmet" then
-					returnvalue = dasorthelmet(g.itemType.uniqueItemNum.Value)
-				elseif g.itemType.Value == "ability" then
-					returnvalue = dasortability(g.itemType.uniqueItemNum.Value)
-				elseif g.itemType.Value == "chest" then
-					returnvalue = dasortchest(g.itemType.uniqueItemNum.Value)
+	if game:GetService("ReplicatedStorage").remotes:FindFirstChild("sellItemEvent") then
+		local function epicfunnyhahahtakeachillpillbroxd(locationepic)
+			for _,g in pairs(locationepic:GetChildren()) do
+				if g:IsA("ImageLabel") then
+					local returnvalue
+					if g.itemType.Value == "weapon" then
+						returnvalue = dasortweapon(g.itemType.uniqueItemNum.Value)
+					elseif g.itemType.Value == "helmet" then
+						returnvalue = dasorthelmet(g.itemType.uniqueItemNum.Value)
+					elseif g.itemType.Value == "ability" then
+						returnvalue = dasortability(g.itemType.uniqueItemNum.Value)
+					elseif g.itemType.Value == "chest" then
+						returnvalue = dasortchest(g.itemType.uniqueItemNum.Value)
+					end
+					g.LayoutOrder = tonumber(returnvalue.levelReq)
 				end
-				g.LayoutOrder = tonumber(returnvalue.levelReq)
 			end
 		end
+		epicfunnyhahahtakeachillpillbroxd(PlayerGui.inventory.mainBackground.innerBackground.rightSideFrame.ScrollingFrame)
+		if PlayerGui:FindFirstChild("tradingGui") then epicfunnyhahahtakeachillpillbroxd(PlayerGui.tradingGui.mainBackground.innerBackground.rightSideFrame.ScrollingFrame) end
+		if PlayerGui:FindFirstChild("blacksmith") then epicfunnyhahahtakeachillpillbroxd(PlayerGui.blacksmith.Frame.innerFrame.rightSideFrame.ScrollingFrame) end
+		if PlayerGui:FindFirstChild("sellShop") then epicfunnyhahahtakeachillpillbroxd(PlayerGui.sellShop.Frame.innerFrame.rightSideFrame.ScrollingFrame) end
 	end
-	epicfunnyhahahtakeachillpillbroxd(LocalPlayer.PlayerGui.inventory.mainBackground.innerBackground.rightSideFrame.ScrollingFrame)
-	if LocalPlayer.PlayerGui:FindFirstChild("tradingGui") then epicfunnyhahahtakeachillpillbroxd(LocalPlayer.PlayerGui.tradingGui.mainBackground.innerBackground.rightSideFrame.ScrollingFrame) end
-	if LocalPlayer.PlayerGui:FindFirstChild("blacksmith") then epicfunnyhahahtakeachillpillbroxd(LocalPlayer.PlayerGui.blacksmith.Frame.innerFrame.rightSideFrame.ScrollingFrame) end
-	if LocalPlayer.PlayerGui:FindFirstChild("sellShop") then epicfunnyhahahtakeachillpillbroxd(LocalPlayer.PlayerGui.sellShop.Frame.innerFrame.rightSideFrame.ScrollingFrame) end
 end
-
-LocalPlayer.PlayerGui.inventory.mainBackground.innerBackground.rightSideFrame.ScrollingFrame.ChildAdded:Connect(function()
-	wait(1.5)
+if game:GetService("ReplicatedStorage").remotes:FindFirstChild("sellItemEvent") then
+	game.ReplicatedStorage.remotes.updateLocalInventoryTable.OnClientEvent:Connect(function(updatedtable)
+		if updatedtable then
+			itemtable = updatedtable;
+			
+		end;
+	end);
+	local EMPTYTABLELOL = {
+		["ability"] = {},
+		["helmet"] = {},
+		["chest"] = {},
+		["weapon"] = {}
+	}
+	
+	game:GetService("ReplicatedStorage").remotes.sellItemEvent:FireServer(EMPTYTABLELOL)
+	repeat wait(0.1) until itemtable ~= nil
+	--sortsystemhere
+	
+	PlayerGui.inventory.mainBackground.innerBackground.rightSideFrame.ScrollingFrame.ChildAdded:Connect(function()
+		wait(1.5)
+		if DQsortinventory == true then
+			epicsortsystem()
+		end
+	end)
+	PlayerGui.inventory.mainBackground.innerBackground.rightSideFrame.ScrollingFrame.ChildRemoved:Connect(function()
+		wait(1.5)
+		if DQsortinventory == true then
+			epicsortsystem()
+		end
+	end)
 	if DQsortinventory == true then
 		epicsortsystem()
 	end
-end)
-LocalPlayer.PlayerGui.inventory.mainBackground.innerBackground.rightSideFrame.ScrollingFrame.ChildRemoved:Connect(function()
-	wait(1.5)
-	if DQsortinventory == true then
-		epicsortsystem()
-	end
-end)
-if DQsortinventory == true then
-	epicsortsystem()
 end
 -- view port frame
 local char = game.Players.LocalPlayer.Character
 local cam = Instance.new("Camera",script.Parent)
-local viewportgui = Instance.new("ScreenGui",game.Players.LocalPlayer.PlayerGui)
+local viewportgui = Instance.new("ScreenGui",PlayerGui)
 local viewportframe = Instance.new("ViewportFrame",viewportgui)
 viewportframe.Position = UDim2.new(0.6,0,0.99,0)
 viewportframe.Size = UDim2.new(0,150,0,150)
@@ -218,6 +224,40 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		viewportframe.Visible = false
 	end
 end)
+-- player info shower
+local PlayerStatus = PlayerGui.playerStatus.Frame
+PlayerStatus.healthFrame.health.Changed:Connect(function()
+	if freakoutmode == false then
+		wait(0.1)
+		PlayerStatus.healthFrame.health.Text = (tostring(LocalPlayer.Character.Humanoid.Health) .. "/" .. tostring(LocalPlayer.Character.Humanoid.MaxHealth))
+	end	
+	end)
+LocalPlayer.XP.Changed:Connect(function()
+	wait(0.1)
+	PlayerStatus.xpFrame.xp.Text = (tostring(LocalPlayer.XP.Value) .. "/" .. tostring(LocalPlayer.XPNeeded.Value))
+end)
+LocalPlayer.leaderstats.Gold.Changed:Connect(function()
+	wait(0.1)
+	PlayerStatus.moneyMain.TextLabel.Text = (tostring(LocalPlayer.leaderstats.Gold.Value))
+end)
+
+for i,player in pairs(PlayerStatus.teammateHolder:GetChildren()) do
+	if player:IsA("Frame") then
+		local pplayer = game.Players[player.playerName.Text]
+		local XPLabel = player.playerName:Clone()
+		XPLabel.Parent = player
+		XPLabel.Name = "XP"
+		XPLabel.TextColor3 = Color3.new(170/255,0,255/255)
+		XPLabel.Position = UDim2.new(0.1,0,0.7,0)
+		XPLabel.TextStrokeTransparency = 0.6
+		XPLabel.TextScaled = false
+		XPLabel.TextWrapped = false
+		XPLabel.TextSize = 18
+		pplayer.XP.Changed:Connect(function()
+			XPLabel.Text = (tostring(pplayer.XP.Value) .. "/" .. tostring(pplayer.XPNeeded.Value))
+		end)	
+	end
+end
 -- settings menu
 
 
@@ -278,23 +318,25 @@ local function applyredesignsetting(location)
 			updatesavesDQPlus()
 		end	
 	end)
-	local inventorysortsetting = addbuttontosettings(UDim2.new(0.31,0,0,0),"inventorysort","Sort Inventory")
-	inventorysortsetting.Parent = optionslol
-	inventorysortsetting.TextButton.main.background.BackgroundColor3 = settingcolor(DQsortinventory)
-	inventorysortsetting.TextButton.MouseButton1Click:Connect(function()
-		DQsortinventory = not DQsortinventory
+	if game:GetService("ReplicatedStorage").remotes:FindFirstChild("sellItemEvent") then
+		local inventorysortsetting = addbuttontosettings(UDim2.new(0.31,0,0,0),"inventorysort","Sort Inventory")
+		inventorysortsetting.Parent = optionslol
 		inventorysortsetting.TextButton.main.background.BackgroundColor3 = settingcolor(DQsortinventory)
-		epicsortsystem()	
-		if nosave == false then
-			updatesavesDQPlus()
-		end
-	end)
+		inventorysortsetting.TextButton.MouseButton1Click:Connect(function()
+			DQsortinventory = not DQsortinventory
+			inventorysortsetting.TextButton.main.background.BackgroundColor3 = settingcolor(DQsortinventory)
+			epicsortsystem()	
+			if nosave == false then
+				updatesavesDQPlus()
+			end
+		end)
+	end
 end
-applyredesignsetting(LocalPlayer.PlayerGui.mainInterface.options)
+applyredesignsetting(PlayerGui.mainInterface.options)
 -- other functions
 
 local function inventoryredesign()
-	local inventory = LocalPlayer.PlayerGui.inventory.mainBackground
+	local inventory = PlayerGui.inventory.mainBackground
 	inventory.Size = UDim2.new(0.6,0,0.5,0)
 	inventory.gearTab.Visible = false
 	inventory.statsTab.Visible = false
@@ -311,11 +353,15 @@ end
 inventoryredesign()
 
 LocalPlayer.Character.Humanoid.Died:Connect(function()
+	freakoutmode = true
 	wait(8)
-	applyredesignsetting(LocalPlayer.PlayerGui.mainInterface.options)
-	inventoryredesign()
+	if LocalPlayer.Character.Humanoid.Health >= 0 then
+		applyredesignsetting(PlayerGui.mainInterface.options)
+		inventoryredesign()
+		freakoutmode = false
+	end
 end)
-LocalPlayer.PlayerGui.ChildAdded:Connect(function()
+PlayerGui.ChildAdded:Connect(function()
 	wait(3)
 	epicsortsystem()
 end)
