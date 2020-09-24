@@ -190,6 +190,7 @@ end
 local char = game.Players.LocalPlayer.Character
 local cam = Instance.new("Camera",script.Parent)
 local viewportgui = Instance.new("ScreenGui",PlayerGui)
+viewportgui.ResetOnSpawn = false
 local viewportframe = Instance.new("ViewportFrame",viewportgui)
 viewportframe.Position = UDim2.new(0.6,0,0.99,0)
 viewportframe.Size = UDim2.new(0,150,0,150)
@@ -352,12 +353,36 @@ local function inventoryredesign()
 end
 inventoryredesign()
 
+local function readdondeath()
+	PlayerStatus.healthFrame.health.Text = (tostring(LocalPlayer.Character.Humanoid.Health) .. "/" .. tostring(LocalPlayer.Character.Humanoid.MaxHealth))
+	PlayerStatus.xpFrame.xp.Text = (tostring(LocalPlayer.XP.Value) .. "/" .. tostring(LocalPlayer.XPNeeded.Value))
+	PlayerStatus.moneyMain.TextLabel.Text = (tostring(LocalPlayer.leaderstats.Gold.Value))
+	for i,player in pairs(PlayerStatus.teammateHolder:GetChildren()) do
+		if player:IsA("Frame") then
+			local pplayer = game.Players[player.playerName.Text]
+			local XPLabel = player.playerName:Clone()
+			XPLabel.Parent = player
+			XPLabel.Name = "XP"
+			XPLabel.TextColor3 = Color3.new(170/255,0,255/255)
+			XPLabel.Position = UDim2.new(0.1,0,0.7,0)
+			XPLabel.TextStrokeTransparency = 0.6
+			XPLabel.TextScaled = false
+			XPLabel.TextWrapped = false
+			XPLabel.TextSize = 18
+			pplayer.XP.Changed:Connect(function()
+				XPLabel.Text = (tostring(pplayer.XP.Value) .. "/" .. tostring(pplayer.XPNeeded.Value))
+			end)	
+		end
+	end
+end
+
 LocalPlayer.Character.Humanoid.Died:Connect(function()
 	freakoutmode = true
 	wait(8)
 	if LocalPlayer.Character.Humanoid.Health >= 0 then
 		applyredesignsetting(PlayerGui.mainInterface.options)
 		inventoryredesign()
+		readdondeath()
 		freakoutmode = false
 	end
 end)
