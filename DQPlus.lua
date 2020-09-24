@@ -227,16 +227,19 @@ game:GetService("RunService").RenderStepped:Connect(function()
 end)
 -- player info shower
 local PlayerStatus = PlayerGui.playerStatus.Frame
+PlayerStatus.healthFrame.health.Text = (tostring(LocalPlayer.Character.Humanoid.Health) .. "/" .. tostring(LocalPlayer.Character.Humanoid.MaxHealth))
 PlayerStatus.healthFrame.health.Changed:Connect(function()
 	if freakoutmode == false then
 		wait(0.1)
 		PlayerStatus.healthFrame.health.Text = (tostring(LocalPlayer.Character.Humanoid.Health) .. "/" .. tostring(LocalPlayer.Character.Humanoid.MaxHealth))
 	end	
 end)
+PlayerStatus.xpFrame.xp.Text = (tostring(LocalPlayer.XP.Value) .. "/" .. tostring(LocalPlayer.XPNeeded.Value))
 LocalPlayer.XP.Changed:Connect(function()
 	wait(0.1)
 	PlayerStatus.xpFrame.xp.Text = (tostring(LocalPlayer.XP.Value) .. "/" .. tostring(LocalPlayer.XPNeeded.Value))
 end)
+PlayerStatus.moneyMain.TextLabel.Text = (tostring(LocalPlayer.leaderstats.Gold.Value))
 LocalPlayer.leaderstats.Gold.Changed:Connect(function()
 	wait(0.1)
 	PlayerStatus.moneyMain.TextLabel.Text = (tostring(LocalPlayer.leaderstats.Gold.Value))
