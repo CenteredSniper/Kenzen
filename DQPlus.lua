@@ -232,7 +232,7 @@ PlayerStatus.healthFrame.health.Changed:Connect(function()
 		wait(0.1)
 		PlayerStatus.healthFrame.health.Text = (tostring(LocalPlayer.Character.Humanoid.Health) .. "/" .. tostring(LocalPlayer.Character.Humanoid.MaxHealth))
 	end	
-	end)
+end)
 LocalPlayer.XP.Changed:Connect(function()
 	wait(0.1)
 	PlayerStatus.xpFrame.xp.Text = (tostring(LocalPlayer.XP.Value) .. "/" .. tostring(LocalPlayer.XPNeeded.Value))
@@ -263,8 +263,8 @@ for i,player in pairs(PlayerStatus.teammateHolder:GetChildren()) do
 end
 PlayerStatus.teammateHolder.ChildAdded:Connect(function(player)
 	wait(0.6)
-			if player:IsA("Frame") then
-			print("any feedback 2")
+	if player:IsA("Frame") then
+		print("any feedback 2")
 		local pplayer = game.Players[player.playerName.Text]
 		local XPLabel = player.playerName:Clone()
 		XPLabel.Parent = player
@@ -275,12 +275,13 @@ PlayerStatus.teammateHolder.ChildAdded:Connect(function(player)
 		XPLabel.TextScaled = false
 		XPLabel.TextWrapped = false
 		XPLabel.TextSize = 18
-			XPLabel.Text = (tostring(pplayer.XP.Value) .. "/" .. tostring(pplayer.XPNeeded.Value))
+		XPLabel.Text = (tostring(pplayer.XP.Value) .. "/" .. tostring(pplayer.XPNeeded.Value))
 		pplayer.XP.Changed:Connect(function()
 			XPLabel.Text = (tostring(pplayer.XP.Value) .. "/" .. tostring(pplayer.XPNeeded.Value))
 		end)	
 	end
 end)
+
 -- settings menu
 
 
@@ -413,3 +414,33 @@ PlayerGui.ChildAdded:Connect(function()
 	wait(3)
 	epicsortsystem()
 end)
+
+wait(2)
+for i,v in pairs(game.Players:GetPlayers()) do
+	local test = false
+	for d,p in pairs(PlayerStatus.teammateHolder:GetChildren()) do
+		if p:IsA("Frame") then
+			if v.Name == p.playerName.Text then
+				test = true
+			end
+		end
+	end
+	if test then
+		local newgui = game.ReplicatedStorage.teammateGui:Clone()
+		newgui.Parent = PlayerStatus.teammateHolder
+		newgui.playerName.Text = v.Name
+		local XPLabel = newgui.playerName:Clone()
+		XPLabel.Parent = newgui
+		XPLabel.Name = "XP"
+		XPLabel.TextColor3 = Color3.new(170/255,0,255/255)
+		XPLabel.Position = UDim2.new(0.1,0,0.7,0)
+		XPLabel.TextStrokeTransparency = 0.6
+		XPLabel.TextScaled = false
+		XPLabel.TextWrapped = false
+		XPLabel.TextSize = 18
+		XPLabel.Text = (tostring(v.XP.Value) .. "/" .. tostring(v.XPNeeded.Value))
+		v.XP.Changed:Connect(function()
+			XPLabel.Text = (tostring(v.XP.Value) .. "/" .. tostring(v.XPNeeded.Value))
+		end)
+	end
+end
