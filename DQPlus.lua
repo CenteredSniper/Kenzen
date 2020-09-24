@@ -444,6 +444,7 @@ for i,v in pairs(game.Players:GetPlayers()) do
 		newgui.healthFrame.health.Text = (tostring(LocalPlayer.Character.Humanoid.Health) .. "/" .. tostring(LocalPlayer.Character.Humanoid.MaxHealth))
 		newgui.levelBorder.level.Text = v.leaderstats.Level.Value
 		XPLabel.Text = (tostring(v.XP.Value) .. "/" .. tostring(v.XPNeeded.Value))
+		newGui.levelBorder.level.TextColor3 = Color3.new(255/255, 179/255, 0)
 		v.XP.Changed:Connect(function()
 			XPLabel.Text = (tostring(v.XP.Value) .. "/" .. tostring(v.XPNeeded.Value))
 		end)
