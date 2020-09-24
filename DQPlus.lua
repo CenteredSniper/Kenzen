@@ -434,22 +434,9 @@ for i,v in pairs(game.Players:GetPlayers()) do
 		local newgui = game.ReplicatedStorage.teammateGui:Clone()
 		newgui.Parent = PlayerStatus.teammateHolder
 		newgui.playerName.Text = v.Name
-		local XPLabel = newgui.playerName:Clone()
-		XPLabel.Parent = newgui
-		XPLabel.Name = "XP"
-		XPLabel.TextColor3 = Color3.new(170/255,0,255/255)
-		XPLabel.Position = UDim2.new(0.1,0,0.7,0)
-		XPLabel.TextStrokeTransparency = 0.6
-		XPLabel.TextScaled = false
-		XPLabel.TextWrapped = false
-		XPLabel.TextSize = 18
 		newgui.healthFrame.health.Text = (tostring(LocalPlayer.Character.Humanoid.Health) .. "/" .. tostring(LocalPlayer.Character.Humanoid.MaxHealth))
 		newgui.levelBorder.level.Text = v.leaderstats.Level.Value
-		XPLabel.Text = (tostring(v.XP.Value) .. "/" .. tostring(v.XPNeeded.Value))
 		newgui.levelBorder.level.TextColor3 = Color3.new(255/255, 179/255, 0)
-		v.XP.Changed:Connect(function()
-			XPLabel.Text = (tostring(v.XP.Value) .. "/" .. tostring(v.XPNeeded.Value))
-		end)
 		v.leaderstats.Level.Changed:Connect(function()
 			newgui.levelBorder.level.Text = v.leaderstats.Level.Value
 		end)
