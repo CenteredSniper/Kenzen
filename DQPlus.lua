@@ -442,6 +442,7 @@ for i,v in pairs(game.Players:GetPlayers()) do
 		XPLabel.TextWrapped = false
 		XPLabel.TextSize = 18
 		newgui.healthFrame.health.Text = (tostring(LocalPlayer.Character.Humanoid.Health) .. "/" .. tostring(LocalPlayer.Character.Humanoid.MaxHealth))
+		newgui.levelBorder.level.Text = v.leaderstats.Level.Value
 		XPLabel.Text = (tostring(v.XP.Value) .. "/" .. tostring(v.XPNeeded.Value))
 		v.XP.Changed:Connect(function()
 			XPLabel.Text = (tostring(v.XP.Value) .. "/" .. tostring(v.XPNeeded.Value))
@@ -449,7 +450,7 @@ for i,v in pairs(game.Players:GetPlayers()) do
 		v.leaderstats.Level.Changed:Connect(function()
 			newgui.levelBorder.level.Text = v.leaderstats.Level.Value
 		end)
-		newgui.healthFrame.health.Changed:Connect(function()
+		v.Character.Humanoid.Changed:Connect(function()
 	if freakoutmode == false then
 		wait(0.1)
 		newgui.healthFrame.health.Text = (tostring(v.Character.Humanoid.Health) .. "/" .. tostring(v.Character.Humanoid.MaxHealth))
