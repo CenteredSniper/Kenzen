@@ -259,6 +259,24 @@ for i,player in pairs(PlayerStatus.teammateHolder:GetChildren()) do
 		end)	
 	end
 end
+PlayerStatus.teammateHolder.ChildAdded:Connect(function(player)
+	wait(0.6)
+			if player:IsA("Frame") then
+		local pplayer = game.Players[player.playerName.Text]
+		local XPLabel = player.playerName:Clone()
+		XPLabel.Parent = player
+		XPLabel.Name = "XP"
+		XPLabel.TextColor3 = Color3.new(170/255,0,255/255)
+		XPLabel.Position = UDim2.new(0.1,0,0.7,0)
+		XPLabel.TextStrokeTransparency = 0.6
+		XPLabel.TextScaled = false
+		XPLabel.TextWrapped = false
+		XPLabel.TextSize = 18
+		pplayer.XP.Changed:Connect(function()
+			XPLabel.Text = (tostring(pplayer.XP.Value) .. "/" .. tostring(pplayer.XPNeeded.Value))
+		end)	
+	end
+end)
 -- settings menu
 
 
