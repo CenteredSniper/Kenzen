@@ -449,5 +449,11 @@ for i,v in pairs(game.Players:GetPlayers()) do
 		v.leaderstats.Level.Changed:Connect(function()
 			newgui.levelBorder.level.Text = v.leaderstats.Level.Value
 		end)
+		newgui.healthFrame.health.Changed:Connect(function()
+	if freakoutmode == false then
+		wait(0.1)
+		PlayerStatus.healthFrame.health.Text = (tostring(LocalPlayer.Character.Humanoid.Health) .. "/" .. tostring(LocalPlayer.Character.Humanoid.MaxHealth))
+	end	
+end)
 	end
 end
