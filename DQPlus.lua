@@ -260,6 +260,7 @@ for i,player in pairs(PlayerStatus.teammateHolder:GetChildren()) do
 		XPLabel.TextSize = 18
 		XPLabel.Text = (tostring(pplayer.XP.Value) .. "/" .. tostring(pplayer.XPNeeded.Value))
 		pplayer.XP.Changed:Connect(function()
+				wait(0.1)
 			XPLabel.Text = (tostring(pplayer.XP.Value) .. "/" .. tostring(pplayer.XPNeeded.Value))
 		end)	
 	end
@@ -280,6 +281,7 @@ PlayerStatus.teammateHolder.ChildAdded:Connect(function(player)
 		XPLabel.TextSize = 18
 		XPLabel.Text = (tostring(pplayer.XP.Value) .. "/" .. tostring(pplayer.XPNeeded.Value))
 		pplayer.XP.Changed:Connect(function()
+					wait(0.1)
 			XPLabel.Text = (tostring(pplayer.XP.Value) .. "/" .. tostring(pplayer.XPNeeded.Value))
 		end)	
 	end
@@ -397,6 +399,7 @@ local function readdondeath()
 			XPLabel.TextSize = 18
 			XPLabel.Text = (tostring(pplayer.XP.Value) .. "/" .. tostring(pplayer.XPNeeded.Value))
 			pplayer.XP.Changed:Connect(function()
+					wait(0.1)
 				XPLabel.Text = (tostring(pplayer.XP.Value) .. "/" .. tostring(pplayer.XPNeeded.Value))
 			end)	
 		end
