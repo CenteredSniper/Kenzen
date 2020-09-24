@@ -302,10 +302,10 @@ local function applyredesignsetting(location)
 	Splitter.AnchorPoint = Vector2.new(0,0.5)
 	Splitter.BorderSizePixel = 0
 	local function addbuttontosettings(position,name,text)
-		local tempbutton = optionslol.DnD:Clone()
+		local tempbutton = optionslol.music:Clone()
 		tempbutton.Name = name
 		tempbutton.Text = text
-		tempbutton.TextButton.DNDLocalScript:Destroy()
+		tempbutton.TextButton.musicLocalScript:Destroy()
 		tempbutton.Position = position
 		return tempbutton
 	end
