@@ -428,7 +428,7 @@ for i,v in pairs(game.Players:GetPlayers()) do
 			end
 		end
 	end
-	if test then
+	if test == false then
 		local newgui = game.ReplicatedStorage.teammateGui:Clone()
 		newgui.Parent = PlayerStatus.teammateHolder
 		newgui.playerName.Text = v.Name
