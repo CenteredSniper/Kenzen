@@ -244,6 +244,7 @@ end)
 
 for i,player in pairs(PlayerStatus.teammateHolder:GetChildren()) do
 	if player:IsA("Frame") then
+		print("any feedback")
 		local pplayer = game.Players[player.playerName.Text]
 		local XPLabel = player.playerName:Clone()
 		XPLabel.Parent = player
