@@ -263,6 +263,7 @@ end
 PlayerStatus.teammateHolder.ChildAdded:Connect(function(player)
 	wait(0.6)
 			if player:IsA("Frame") then
+			print("any feedback 2")
 		local pplayer = game.Players[player.playerName.Text]
 		local XPLabel = player.playerName:Clone()
 		XPLabel.Parent = player
