@@ -428,7 +428,7 @@ for i,v in pairs(game.Players:GetPlayers()) do
 			end
 		end
 	end
-	if test == false then
+	if test == false and game.ReplicatedStorage.remotes:FindFirstChild("sellItemEvent") == nil then
 		local newgui = game.ReplicatedStorage.teammateGui:Clone()
 		newgui.Parent = PlayerStatus.teammateHolder
 		newgui.playerName.Text = v.Name
@@ -441,9 +441,13 @@ for i,v in pairs(game.Players:GetPlayers()) do
 		XPLabel.TextScaled = false
 		XPLabel.TextWrapped = false
 		XPLabel.TextSize = 18
+		newgui.healthFrame.health.Text = (tostring(LocalPlayer.Character.Humanoid.Health) .. "/" .. tostring(LocalPlayer.Character.Humanoid.MaxHealth))
 		XPLabel.Text = (tostring(v.XP.Value) .. "/" .. tostring(v.XPNeeded.Value))
 		v.XP.Changed:Connect(function()
 			XPLabel.Text = (tostring(v.XP.Value) .. "/" .. tostring(v.XPNeeded.Value))
+		end)
+		v.leaderstats.Level.Changed:Connect(function()
+			newgui.levelBorder.level.Text = v.leaderstats.Level.Value
 		end)
 	end
 end
