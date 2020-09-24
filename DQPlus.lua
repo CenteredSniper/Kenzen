@@ -425,7 +425,7 @@ for i,v in pairs(game.Players:GetPlayers()) do
 		if p:IsA("Frame") then
 			if v.Name == p.playerName.Text then
 				test = true
-			elseif v = LocalPlayer then
+			elseif v == LocalPlayer then
 				test = true
 			end
 		end
