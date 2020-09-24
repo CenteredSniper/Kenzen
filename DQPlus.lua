@@ -395,8 +395,8 @@ local function readdondeath()
 		end
 	end
 end
-
-LocalPlayer.Character.Humanoid.Died:Connect(function()
+wait(1)
+LocalPlayer.Character:WaitForChild("Humanoid").Died:Connect(function()
 	freakoutmode = true
 	wait(8)
 	if LocalPlayer.Character.Humanoid.Health >= 0 then
