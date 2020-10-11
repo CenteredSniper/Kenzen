@@ -439,7 +439,7 @@ local function QOZY_fake_script() -- meme.Script
 		
 		examplebutton.Name = Name
 		examplebutton.Parent = ScrollFrame
-		examplebutton.Size = UDim2.new(0.8, 0, 0.01, 20)
+		examplebutton.Size = UDim2.new(0.8, 0, 0, 20)
 		examplebutton.BackgroundColor = BrickColor.new("Earth green")
 		examplebutton.BackgroundColor3 = Color3.new(0.211765, 0.223529, 0.247059)
 		examplebutton.BorderSizePixel = 0
@@ -476,7 +476,7 @@ local function QOZY_fake_script() -- meme.Script
 		return returntable
 	end
 	local Bind = function(Id,Name,songlel)
-		ScrollFrame.CanvasSize = ScrollFrame.CanvasSize + UDim2.new(0,0,0,15)
+		ScrollFrame.CanvasSize = ScrollFrame.CanvasSize + UDim2.new(0,0,0,20)
 		local Animation = PreloadAnimation(Id)
 		table.insert(Anims,Animation)
 		local returnedtable = createtauntbutton(Name)
