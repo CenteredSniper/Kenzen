@@ -476,7 +476,7 @@ local function QOZY_fake_script() -- meme.Script
 		return returntable
 	end
 	local Bind = function(Id,Name,songlel)
-		ScrollFrame.CanvasSize = ScrollFrame.CanvasSize + UDim2.new(0,0,0,20)
+		ScrollFrame.CanvasSize = ScrollFrame.CanvasSize + UDim2.new(0,0,0,25)
 		local Animation = PreloadAnimation(Id)
 		table.insert(Anims,Animation)
 		local returnedtable = createtauntbutton(Name)
