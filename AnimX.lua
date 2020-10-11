@@ -663,8 +663,11 @@ CustomID.MouseButton1Click:Connect(function()
 	wait(1)
 	if togglecustomid == false then AnimationID.Visible = false end
 end)
-characterlol.Humanoid.Died:Connect(function()
-    wait(game.Players.RespawnTime + 2)
-    coroutine.wrap(QOZY_fake_script)()
-    characterlol = game.Players.LocalPlayer.Character
-end)
+local function respawnresetscript()
+	game.Players.LocalPlayer.Humanoid.Died:Connect(function()
+ 		wait(game.Players.RespawnTime + 2)
+		coroutine.wrap(QOZY_fake_script)()
+		respawnresetscript()
+	end)
+end
+respawnresetscript()
