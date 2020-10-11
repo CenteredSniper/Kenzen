@@ -515,10 +515,14 @@ local function QOZY_fake_script() -- meme.Script
 				end
 			end
 		end)
-		characterlol.Humanoid.Died:Connect(function()
-    wait(game.Players.RespawnTime + 3)
+		local function removeguiondeath()
+	game.Players.LocalPlayer.Character.Humanoid.Died:Connect(function()
+ 		    wait(game.Players.RespawnTime + 3)
     examplebutton:Destroy()
-    end)
+		removeguiondeath()
+	end)
+end
+removeguiondeath()
 	end
 	--[[
 	Bind(4686555525,'Renegade') wait(0.1)
