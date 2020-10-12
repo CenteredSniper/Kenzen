@@ -212,6 +212,7 @@ local function QOZY_fake_script() -- meme.Script
 		['Right Arm'] = Torso['Right Shoulder'];
 		['Left Leg'] = Torso['Left Hip'];
 		['Right Leg'] = Torso['Right Hip'];
+		['Head'] = Torso['Neck'];
 	}
 	
 	for K,V in next, Char:GetChildren() do 
