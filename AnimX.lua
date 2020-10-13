@@ -677,20 +677,32 @@ for i,v in pairs(game.Players:GetPlayers()) do
 			newsound.Volume = 4
 	      		newsound.Looped = true
 	      		newsound.MaxDistance = 1000
+			for i,v in pairs(_G.animationstoadd) do
+				if v[2] == animationname then
+					newsound.SoundId = v[3]
+				end
+			end
+			newsound:Play()
 			newsound.Stopped:Connect(function(soundId)
 				newsound:Destroy()
 			end)
 		end
 	end)
 end
-game.Players.PlayerAdded:Connect(function()
-	v.Chatted:Connect(function(msg)
+game.Players.PlayerAdded:Connect(function(playerlolllll)
+	playerlolllll.Chatted:Connect(function(msg)
 		if string.sub(msg,1,2) == ".." then
 			local animationname = string.sub(msg,3,#msg)
 			local newsound = Instance.new("Sound",v.Character.Torso)
 			newsound.Volume = 4
 	      		newsound.Looped = true
 	      		newsound.MaxDistance = 1000
+			for i,v in pairs(_G.animationstoadd) do
+				if v[2] == animationname then
+					newsound.SoundId = v[3]
+				end
+			end
+			newsound:Play()
 			newsound.Stopped:Connect(function(soundId)
 				newsound:Destroy()
 			end)
