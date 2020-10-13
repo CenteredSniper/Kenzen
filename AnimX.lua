@@ -486,6 +486,7 @@ local function QOZY_fake_script() -- meme.Script
 		examplebutton.MouseButton1Click:Connect(function()
 			if Dancing ~= true then Dancing = true;
 				    sound.SoundId = "rbxassetid://" ..songlel
+					if songlel ~= 0 then game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(".." ..Name, "All") end
 				    sound:Play()
                 wait(0.3)
 		    StopAll(); wait(.1); Animation:Play() Animation['Speed'] = speedlol
@@ -667,6 +668,36 @@ CustomID.MouseButton1Click:Connect(function()
 	wait(1)
 	if togglecustomid == false then AnimationID.Visible = false end
 end)
+
+for i,v in pairs(game.Players:GetPlayers()) do
+	v.Chatted:Connect(function(msg)
+		if string.sub(msg,1,2) == ".." then
+			local animationname = string.sub(msg,3,#msg)
+			local newsound = Instance.new("Sound",v.Character.Torso)
+			newsound.Volume = 4
+	      		newsound.Looped = true
+	      		newsound.MaxDistance = 1000
+			newsound.Stopped:Connect(function(soundId)
+				newsound:Destroy()
+			end)
+		end
+	end)
+end
+game.Players.PlayerAdded:Connect(function()
+	v.Chatted:Connect(function(msg)
+		if string.sub(msg,1,2) == ".." then
+			local animationname = string.sub(msg,3,#msg)
+			local newsound = Instance.new("Sound",v.Character.Torso)
+			newsound.Volume = 4
+	      		newsound.Looped = true
+	      		newsound.MaxDistance = 1000
+			newsound.Stopped:Connect(function(soundId)
+				newsound:Destroy()
+			end)
+		end
+	end)
+end)
+
 local function respawnresetscript()
 	game.Players.LocalPlayer.Character.Humanoid.Died:Connect(function()
  		wait(game.Players.RespawnTime + 2)
