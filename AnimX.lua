@@ -486,7 +486,7 @@ local function QOZY_fake_script() -- meme.Script
 		examplebutton.MouseButton1Click:Connect(function()
 			if Dancing ~= true then Dancing = true;
 				    sound.SoundId = "rbxassetid://" ..songlel
-					if songlel ~= 0 then game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(".." ..Name, "All") end
+--					if songlel ~= 0 then game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(".." ..Name, "All") end
 				    sound:Play()
                 wait(0.3)
 		    StopAll(); wait(.1); Animation:Play() Animation['Speed'] = speedlol
