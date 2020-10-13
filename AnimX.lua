@@ -671,8 +671,11 @@ end)
 
 for i,v in pairs(game.Players:GetPlayers()) do
 	v.Chatted:Connect(function(msg)
+			warn(msg)
 		if string.sub(msg,1,2) == ".." then
+				print("epic " ..msg)
 			local animationname = string.sub(msg,3,#msg)
+				print("awesome " ..animationname)
 			local newsound = Instance.new("Sound",v.Character.Torso)
 			newsound.Volume = 4
 	      		newsound.Looped = true
