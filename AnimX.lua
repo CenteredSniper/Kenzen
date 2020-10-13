@@ -546,7 +546,7 @@ removeguiondeath()
 	Bind(4787449997, 'KAZOTSKY') wait(0.1) ]]
 	for i,v in pairs(_G.animationstoadd) do
 		Bind(v[1],v[2],v[3])
-		wait(0.1)
+		wait(0.03)
 	end
 	AnimationID.FocusLost:Connect(function(enterPressed)
 		if enterPressed then
