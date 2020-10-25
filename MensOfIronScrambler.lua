@@ -49,10 +49,12 @@ local function checkforpaint()
 end
 
 local function partialmap()
-	checkforpaint()
+--	checkforpaint()
 	if checkforpaint() then
 		for i,v in pairs(workspace.MapParts:GetChildren()) do
 			colorobj(v)
 		end
 	end
 end
+
+partialmap()
