@@ -196,47 +196,7 @@ local function QOZY_fake_script() -- meme.Script
 			end
 		end
 	end
-	Anims['Idle']:Play(); Dancing = false; Anims['Walk'].Stopped = true; Anims['Run'].Stopped = true
-
-	Connections['Run'] = Humanoid['Running']:Connect(function(Speed)
-		if Speed > 6 and Dancing ~= true and Anims['Walk'].Stopped ~= false and runnning ~= true then
-			Anims['Idle']:Stop()
-			Anims['Jump']:Stop()
-			Anims['Fall']:Stop()
-			Anims['Run']:Stop()
-			Anims['Walk']:Play()
-		elseif Speed < 5 and Dancing ~= true and Anims['Walk'].Stopped ~= true and runnning ~= true then
-			Anims['Walk']:Stop()
-			Anims['Jump']:Stop()
-			Anims['Fall']:Stop()
-			Anims['Run']:Stop()
-			Anims['Idle']:Play()
-		elseif Speed < 5 and Dancing ~= true and Anims['Jump'].Stopped ~= true or Anims['Fall'].Stopped ~= true then
-			Anims['Walk']:Stop()
-			Anims['Jump']:Stop()
-			Anims['Fall']:Stop()
-			Anims['Run']:Stop()
-			Anims['Idle']:Play()
-		end
-	end)
-	Connections['Jumping'] = Humanoid['Jumping']:Connect(function(active)
-		if active and Dancing ~= true and Anims['Jump'].Stopped ~= false then
-			Anims['Idle']:Stop()
-			Anims['Walk']:Stop()
-			Anims['Fall']:Stop()
-			Anims['Run']:Stop()
-			Anims['Jump']:Play()
-		end
-	end)
-	Connections['FreeFalling'] = Humanoid['FreeFalling']:Connect(function(active)
-		if active and Dancing ~= true and Anims['Jump'].Stopped ~= false then
-			Anims['Idle']:Stop()
-			Anims['Walk']:Stop()
-			Anims['Jump']:Stop()
-			Anims['Run']:Stop()
-			Anims['Fall']:Play()
-		end
-	end)
+	Dancing = true; Anims['Walk'].Stopped = true; Anims['Run'].Stopped = true
 
 	wait(1)
 		local Animation = PreloadAnimation(_G.AnimationID)
