@@ -2871,12 +2871,21 @@ local WHISPERCOLOR = Frame168.BackgroundColor3 --Color3.fromRGB(102, 126, 255)
 local layoutorder = 1
 local msgs = {}
 --
-local function createmessage(txt,plr,dacolor)
+local function createmessage(txt,plr,dacolor,whatever)
 	local newtitle = script.Title:Clone()
 	newtitle.LayoutOrder = layoutorder
 	layoutorder = layoutorder + 1
 	newtitle.TextColor3 = dacolor
 	newtitle.Text = txt
+										if whatever == 4 then
+											newtitle.Visible = Frame156.Visible
+										elseif whatever == 2 then
+											newtitle.Visible = Frame170.Visible
+										elseif whatever == 3 then
+											newtitle.Visible = Frame149.Visible
+										else
+											newtitle.Visible = Frame163.Visible
+										end
 	newtitle.Visible = true
 	newtitle.Parent = script.Parent.ScrollingFrame
 	newtitle.Parent.CanvasSize = newtitle.Parent.CanvasSize + UDim2.new(0,0,0,newtitle.Size.Y.Offset)
@@ -2894,7 +2903,7 @@ local function createmessage(txt,plr,dacolor)
 	table.insert(msgs,{
 		newtitle,
 		plr.Name
-	})
+	})								
 end
 local function CreateSignal()
 	local this = {}
@@ -2987,15 +2996,19 @@ local function onChatted(p,msg)
 	msg = msg:gsub("[\n\r]",''):gsub("\t",' '):gsub("[ ]+",' ')
 	local dacolor
 	local togglebutton = false
+										local whatever
 	if string.sub(msg,1,2) == "/e" or string.sub(msg,1,2) == "/w" or string.sub(msg,1,2) == "/t" then
 		dacolor = WHISPERCOLOR
+											whatever = 2
 	elseif string.sub(msg,1,1) == ":" or  string.sub(msg,1,1) == ";" or string.sub(msg,1,1) == "!" then
 		dacolor = CMDMSGCOLOR
+											whatever = 3
 	else
 			dacolor = NMSGCOLOR
+											whatever = 1
 	end
 --										print(p.Name)
-	createmessage(" " .. ("[" .. p.Name .. "]: " .. msg),p,dacolor)
+	createmessage(" " .. ("[" .. p.Name .. "]: " .. msg),p,dacolor,whatever)
 --		privateProperties.Text = "{SPY} [".. p.Name .."]: "..msg
 --		StarterGui:SetCore("ChatMakeSystemMessage",privateProperties)
 end
@@ -3006,7 +3019,7 @@ end
 Players.PlayerAdded:Connect(function(p)
 	p.Chatted:Connect(function(msg) onChatted(p,msg) end)
 	if script.Parent.Frame["Player Log"].Button.Check.Visible == true then
-		createmessage(" " .. p.Name .. " has joined",p.Name,PLRLOGCOLOR)
+		createmessage(" " .. p.Name .. " has joined",p.Name,PLRLOGCOLOR,4)
 	end
 end)
 
