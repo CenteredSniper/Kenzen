@@ -2590,7 +2590,7 @@ ScrollingFrame141.BackgroundTransparency = 1
 ScrollingFrame141.CanvasSize = UDim2.new(0, 0, 0, 0)
 UIListLayout142.Parent = ScrollingFrame141
 UIListLayout142.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout142.VerticalAlignment = Enum.VerticalAlignment.Top --Enum.VerticalAlignment.Bottom
+UIListLayout142.VerticalAlignment = Enum.VerticalAlignment.Bottom --Enum.VerticalAlignment.Bottom
 Frame143.Parent = Frame140
 Frame143.Position = UDim2.new(1.29999995, 0, 0, 5)
 Frame143.Size = UDim2.new(0, 100, 0, 24)
@@ -2877,19 +2877,18 @@ local function createmessage(txt,plr,dacolor,whatever)
 	layoutorder = layoutorder + 1
 	newtitle.TextColor3 = dacolor
 	newtitle.Text = txt
-										print(whatever)
 										if whatever == 4 then
 											newtitle.Visible = Frame156.Visible
-											if newtitle.Visible == Frame156.Visible then print(newtitle.Visible) end
+--											if newtitle.Visible == Frame156.Visible then print(newtitle.Visible) end
 										elseif whatever == 2 then
 											newtitle.Visible = Frame170.Visible
-											if newtitle.Visible == Frame170.Visible then print(newtitle.Visible) end
+--											if newtitle.Visible == Frame170.Visible then print(newtitle.Visible) end
 										elseif whatever == 3 then
 											newtitle.Visible = Frame149.Visible
-											if newtitle.Visible == Frame149.Visible then print(newtitle.Visible) end
+--											if newtitle.Visible == Frame149.Visible then print(newtitle.Visible) end
 										else
 											newtitle.Visible = Frame163.Visible
-											if newtitle.Visible == Frame163.Visible then print(newtitle.Visible) end
+--											if newtitle.Visible == Frame163.Visible then print(newtitle.Visible) end
 										end
 	newtitle.Parent = script.Parent.ScrollingFrame
 	newtitle.Parent.CanvasSize = newtitle.Parent.CanvasSize + UDim2.new(0,0,0,newtitle.Size.Y.Offset)
