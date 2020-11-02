@@ -2877,14 +2877,19 @@ local function createmessage(txt,plr,dacolor,whatever)
 	layoutorder = layoutorder + 1
 	newtitle.TextColor3 = dacolor
 	newtitle.Text = txt
+										print(whatever)
 										if whatever == 4 then
 											newtitle.Visible = Frame156.Visible
+											print(newtitle.Visible) print(Frame156.Visible)
 										elseif whatever == 2 then
 											newtitle.Visible = Frame170.Visible
+											print(newtitle.Visible) print(Frame170.Visible)
 										elseif whatever == 3 then
 											newtitle.Visible = Frame149.Visible
+											print(newtitle.Visible) print(Frame149.Visible)
 										else
 											newtitle.Visible = Frame163.Visible
+											print(newtitle.Visible) print(Frame163.Visible)
 										end
 	newtitle.Visible = true
 	newtitle.Parent = script.Parent.ScrollingFrame
