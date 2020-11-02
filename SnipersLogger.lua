@@ -2880,16 +2880,16 @@ local function createmessage(txt,plr,dacolor,whatever)
 										print(whatever)
 										if whatever == 4 then
 											newtitle.Visible = Frame156.Visible
-											print(newtitle.Visible) print(Frame156.Visible)
+											if newtitle.Visible == Frame156.Visible then print(newtitle.Visible) end
 										elseif whatever == 2 then
 											newtitle.Visible = Frame170.Visible
-											print(newtitle.Visible) print(Frame170.Visible)
+											if newtitle.Visible == Frame170.Visible then print(newtitle.Visible) end
 										elseif whatever == 3 then
 											newtitle.Visible = Frame149.Visible
-											print(newtitle.Visible) print(Frame149.Visible)
+											if newtitle.Visible == Frame149.Visible then print(newtitle.Visible) end
 										else
 											newtitle.Visible = Frame163.Visible
-											print(newtitle.Visible) print(Frame163.Visible)
+											if newtitle.Visible == Frame163.Visible then print(newtitle.Visible) end
 										end
 	newtitle.Parent = script.Parent.ScrollingFrame
 	newtitle.Parent.CanvasSize = newtitle.Parent.CanvasSize + UDim2.new(0,0,0,newtitle.Size.Y.Offset)
