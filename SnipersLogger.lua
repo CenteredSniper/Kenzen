@@ -2871,7 +2871,7 @@ local WHISPERCOLOR = Frame168.BackgroundColor3 --Color3.fromRGB(102, 126, 255)
 local layoutorder = 1
 local msgs = {}
 --
-local function createmessage(txt,player,dacolor)
+local function createmessage(txt,plr,dacolor)
 	local newtitle = script.Title:Clone()
 	newtitle.LayoutOrder = layoutorder
 	layoutorder = layoutorder + 1
@@ -2893,7 +2893,7 @@ local function createmessage(txt,player,dacolor)
 	tween:Play()	
 	table.insert(msgs,{
 		newtitle,
-		player.Name
+		plr.Name
 	})
 end
 local function CreateSignal()
@@ -2994,6 +2994,7 @@ local function onChatted(p,msg)
 	else
 			dacolor = NMSGCOLOR
 	end
+--										print(p.Name)
 	createmessage(" " .. ("[" .. p.Name .. "]: " .. msg),p,dacolor)
 --		privateProperties.Text = "{SPY} [".. p.Name .."]: "..msg
 --		StarterGui:SetCore("ChatMakeSystemMessage",privateProperties)
