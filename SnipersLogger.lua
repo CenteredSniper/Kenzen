@@ -2994,7 +2994,7 @@ local function onChatted(p,msg)
 	else
 			dacolor = NMSGCOLOR
 	end
-	createmessage(" " .. ("[" .. player.Name .. "]: " .. msg),p,dacolor)
+	createmessage(" " .. ("[" .. p.Name .. "]: " .. msg),p,dacolor)
 --		privateProperties.Text = "{SPY} [".. p.Name .."]: "..msg
 --		StarterGui:SetCore("ChatMakeSystemMessage",privateProperties)
 end
