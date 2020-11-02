@@ -850,7 +850,7 @@ Mouse.Move:Connect(function()
 	local Y = Mouse.Y
 	for i,v in pairs(list) do
 		v.Visible = true
-		v.Position = UDim2.new(0,X-v.Parent.AbsolutePosition.X,0,Y-v.Parent.AbsolutePosition.Y)
+--		v.Position = UDim2.new(0,X-v.Parent.AbsolutePosition.X,0,Y-v.Parent.AbsolutePosition.Y)
 		if v.Name == "ImageLabel" then
 			v.Size = UDim2.new(0,Size,0,Size)
 		end
@@ -1208,7 +1208,7 @@ Mouse.Move:Connect(function()
 	local Y = Mouse.Y
 	for i,v in pairs(list) do
 		v.Visible = true
-		v.Position = UDim2.new(0,X-v.Parent.AbsolutePosition.X,0,Y-v.Parent.AbsolutePosition.Y)
+--		v.Position = UDim2.new(0,X-v.Parent.AbsolutePosition.X,0,Y-v.Parent.AbsolutePosition.Y)
 		if v.Name == "ImageLabel" then
 			v.Size = UDim2.new(0,Size,0,Size)
 		end
@@ -1617,7 +1617,7 @@ Mouse.Move:Connect(function()
 	local Y = Mouse.Y
 	for i,v in pairs(list) do
 		v.Visible = true
-		v.Position = UDim2.new(0,X-v.Parent.AbsolutePosition.X,0,Y-v.Parent.AbsolutePosition.Y)
+--		v.Position = UDim2.new(0,X-v.Parent.AbsolutePosition.X,0,Y-v.Parent.AbsolutePosition.Y)
 		if v.Name == "ImageLabel" then
 			v.Size = UDim2.new(0,Size,0,Size)
 		end
@@ -2891,7 +2891,6 @@ local function createmessage(txt,plr,dacolor,whatever)
 											newtitle.Visible = Frame163.Visible
 											print(newtitle.Visible) print(Frame163.Visible)
 										end
-	newtitle.Visible = true
 	newtitle.Parent = script.Parent.ScrollingFrame
 	newtitle.Parent.CanvasSize = newtitle.Parent.CanvasSize + UDim2.new(0,0,0,newtitle.Size.Y.Offset)
 	newtitle.Transparency = 1
