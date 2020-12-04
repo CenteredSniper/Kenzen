@@ -326,7 +326,7 @@ local function QOZY_fake_script() -- meme.Script
 	Humanoid.WalkSpeed = 11
 	
 	local Anims = {
-		['Idle'] = PreloadAnimation(5183986020);
+		['Idle'] = PreloadAnimation(6038415858); --5183986020
 		['Walk'] = PreloadAnimation(5053650512);
 		['Run'] = PreloadAnimation(5053715968);
 		['Jump'] = PreloadAnimation(4073859368);
