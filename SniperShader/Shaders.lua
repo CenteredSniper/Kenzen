@@ -6,7 +6,6 @@ sethiddenproperty(lighting, "Technology", Enum.Technology.ShadowMap)
 lighting.GlobalShadows = true
 lighting.ShadowSoftness = 0.2
 lighting.ExposureCompensation = 0.4
-local UserInputService = game:GetService("UserInputService")
 
 for i,v in pairs(lighting:GetChildren()) do
     if v:IsA("SunRaysEffect") or v:IsA("BloomEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BlurEffect") then 
