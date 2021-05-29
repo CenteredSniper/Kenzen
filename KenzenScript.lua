@@ -337,7 +337,7 @@ TextBox9.FocusLost:connect(function(enterPressed)
 						if pcall(function() readfile("password.KX") end) then
 							-- nothing, wtf?
 						else
-							writefile("password.KX",Textbox9.Text)
+							writefile("password.KX",TextBox9.Text)
 						end
 					end
 				passed = true
