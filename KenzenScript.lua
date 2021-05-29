@@ -326,9 +326,9 @@ local function command(cmd)
 			end
 			if copyplr then
 				_G.FunyEpic = game:GetService("RunService").Heartbeat:Connect(function()
-    					local pos = plr.Character.HumanoidRootPart.CFrame
+    					local pos = copyplr.Character.HumanoidRootPart.CFrame
 					wait(tonumber(cmd2[3]) or 0)
-    					lplr.Character.HumanoidRootPart.CFrame = pos
+    					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 				end)
 			end
 		end
