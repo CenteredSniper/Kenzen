@@ -415,6 +415,8 @@ game:GetService("UserInputService").InputBegan:connect(function(inputObject, gam
 			local tween = TweenService:Create(TextBox9,intweeninfo, {Position = UDim2.new(-1,0,0.95,0)})
 			tween:Play()
 		end
+	if inputObject.KeyCode == Enum.KeyCode.BackSlash then
+		TextBox9:CaptureFocus()
 	end 
 end)
 
