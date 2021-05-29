@@ -91,6 +91,11 @@ Frame15.BackgroundColor3 = Color3.new(0.498039, 0, 0.85098)
 Frame15.BorderSizePixel = 0
 
 --= Functions =--
+local function writefileExploit()
+	if writefile then
+		return true
+	end
+end
 local function dragify(Frame)
 	local frametomove = Frame
 	local dragToggle,dragInput,dragStart,startPos
@@ -328,6 +333,13 @@ TextBox9.FocusLost:connect(function(enterPressed)
 	if enterPressed then
 		if passed == false then
 			if TextBox9.Text == password then
+					if writefileExploit() then
+						if pcall(function() readfile("password.KX") end) then
+							-- nothing, wtf?
+						else
+							writefile("password.KX",Textbox9.Text)
+						end
+					end
 				passed = true
 				TextBox9.PlaceholderText = "Command"; TextBox9.Text = ""
 			end
@@ -422,3 +434,14 @@ game.ReplicatedStorage.ChildAdded:Connect(function(v)
 		end
 	end
 end)
+
+if writefileExploit() then
+	if pcall(function() readfile("password.KX") end) then
+		if readfile("password.KX") ~= nil then
+			if readfile("password.KX") == password then
+				passed = true
+				TextBox9.PlaceholderText = "Command"; TextBox9.Text = ""
+			end
+		end
+	end
+end
