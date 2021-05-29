@@ -249,13 +249,13 @@ local function loadexecutor()
 	local Mode = "Serverside"
 	local CodeHidden = false
 	local clientexecute = require(game.ReplicatedStorage["⚡"]["💾"])
-	TextButton6.Hide.MouseButton1Click:Connect(function()
+	TextButton6.MouseButton1Click:Connect(function()
 		if CodeHidden == false then
-			TextButton6.Hide.Text = "ShowText"
+			TextButton6.Text = "ShowText"
 			Tween(TextBox8, 1, {TextTransparency = 1})
 			CodeHidden = true
 		elseif CodeHidden == true then
-			TextButton6.Hide.Text = "HideText"
+			TextButton6.Text = "HideText"
 			Tween(TextBox8, 1, {TextTransparency = 0})
 			CodeHidden = false
 		end
