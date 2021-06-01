@@ -291,6 +291,13 @@ local function tweencommands(bool)
 	end
 end
 
+local function toClipboard(String)
+	local clipBoard = setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set)
+	if clipBoard then
+		clipBoard(String)
+	end
+end
+
 local function command(cmd)
 	local cmd2 = cmd:split(" ")
 	if string.lower(cmd2[1]) == "fps" then
