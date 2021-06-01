@@ -1,3 +1,7 @@
+if game.GameId ~= 848145103 then
+    error("wrong game")
+    return
+end
 repeat wait() until game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("introGui") == nil
 wait(1)
 local buttons = game:GetService("Players").LocalPlayer.PlayerGui.inventory.mainBackground.innerBackground.rightSideFrame.ScrollingFrame
