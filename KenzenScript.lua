@@ -350,7 +350,7 @@ local function command(cmd)
 				game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid').Sit = true
 				_G.FunyEpic = game:GetService("RunService").Heartbeat:Connect(function()
 					if game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid').Sit == true then
-						game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = copyplr.Character.HumanoidRootPart.CFrame *CFrame.new(0,1.6,1)
+						game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = copyplr.Character.HumanoidRootPart.CFrame *CFrame.new(0,1.6,1.15)
 					else
 						if _G.FunyEpic then _G.FunyEpic:Disconnect() end
 					end
@@ -412,7 +412,7 @@ local function command(cmd)
 					bangDied:Disconnect()
 				end)
 				_G.FunyEpic = game:GetService("RunService").Heartbeat:Connect(function()
-						game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = copyplr.Character.HumanoidRootPart.CFrame *CFrame.new(0,0,0.9)
+						game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = copyplr.Character.HumanoidRootPart.CFrame *CFrame.new(0,0,1)
 				end)
 			end
 		end
