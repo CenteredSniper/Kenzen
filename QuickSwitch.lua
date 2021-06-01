@@ -47,19 +47,9 @@ game:GetService("UserInputService").InputBegan:connect(function(inputObject, gam
         if setvalue ~= 0 then
             if game:GetService("Players").LocalPlayer.PlayerGui.abilities.Frame:FindFirstChild("slot2",true).cooldownNumber.Visible == false and cooldown then
                 cooldown = false
-                local a
-            for i,v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
-                if v.abilitySlot.Value == "e" then
-                    a = v.imageId.Value
-                end
-            end
-            for i,v in pairs(buttons:GetChildren()) do
-                if v:IsA("ImageLabel") then
-                    if v.itemType.imageId.Value == a then
-                        a = {v.itemType.uniqueItemNum.Value,v.itemType.imageId.Value}
-                    end
-                end
-            end
+                
+            local whaterver = game:GetService("Players").LocalPlayer.PlayerGui.inventory.mainBackground.innerBackground.leftSideFrame.eAbility.itemType
+            local a = {whaterver.uniqueItemNum.Value,whaterver.imageId.Value}
             game:GetService("ReplicatedStorage").remotes.equipItem:InvokeServer("ability", setvalue, "e")
             if a and a[1] and a[2] then
 				setvalue = a[1]
@@ -68,7 +58,7 @@ game:GetService("UserInputService").InputBegan:connect(function(inputObject, gam
 				setvalue = 0
 				quickbutton.QuickSlot.ImageButton.Image = ""
 			end
-            wait(2)
+            wait(1)
             cooldown = true
             end
         end
