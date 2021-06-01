@@ -10,7 +10,7 @@ local Player = game.Players.LocalPlayer
 local password = "k" ..                                                                                                                  "e" ..                                              "k"
 local passed = false
 local intweeninfo,outtweeninfo = TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.In),TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
-local commands = {"dqqs","fps","antilog","boombox","hydroxide","iy","dex","serverhop","serverhop2","rejoin","nullware","owlhub","removekorblox","saveinstance","copycat"}
+local commands = {"dqqs","fps","antilog","boombox","hydroxide","iy","dex","serverhop","serverhop2","rejoin","nullware","owlhub","removekorblox","saveinstance","copycat","animgrabber","bang","reach","headsit","copypos"}
 local executor
 
 --= GUI =--
@@ -301,6 +301,9 @@ local function command(cmd)
 		end
 		webImport("init")
 		webImport("ui/main")
+	elseif string.lower(cmd2[1]) == "copypos" then
+		local roundedPos = math.round(game.Players.LocalPlayer.Character.HumanoidRootPart.Position.X) .. ", " .. math.round(game.Players.LocalPlayer.Character.HumanoidRootPart.Position.Y) .. ", " .. math.round(game.Players.LocalPlayer.Character.HumanoidRootPart.Position.Z)
+		toClipboard(roundedPos)
 	elseif string.lower(cmd2[1]) == "dqqs" then
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/QuickSwitch.lua"))()
 	elseif string.lower(cmd2[1]) == "antilog" then
@@ -334,8 +337,89 @@ local function command(cmd)
 				end)
 			end
 		end
+	elseif string.lower(cmd2[1]) == "headsit" then
+		if _G.FunyEpic then _G.FunyEpic:Disconnect() end
+		if cmd2[2] then
+			local copyplr
+			for _, v in pairs(game.Players:GetPlayers()) do
+				if cmd2[2]:lower() == (v.Name:lower()):sub(1, #cmd2[2]) then
+					copyplr = v
+				end
+			end
+			if copyplr then
+				game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid').Sit = true
+				_G.FunyEpic = game:GetService("RunService").Heartbeat:Connect(function()
+					if game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid').Sit == true then
+						game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = copyplr.Character.HumanoidRootPart.CFrame *CFrame.new(0,1.6,1)
+					else
+						if _G.FunyEpic then _G.FunyEpic:Disconnect() end
+					end
+				end)
+			end
+		end
+	elseif string.lower(cmd2[1]) == "reach" then
+		for i,v in pairs(game:GetService("Players").LocalPlayer.Character:GetDescendants()) do
+		if v:IsA("Tool") then
+			if cmd2[2] then
+				local tonum = tonumber(cmd[2])
+				currentToolSize = v.Handle.Size
+				currentGripPos = v.GripPos
+				local a = Instance.new("SelectionBox")
+				a.Name = "SelectionBoxCreated"
+				a.Parent = v.Handle
+				a.Adornee = v.Handle
+				v.Handle.Massless = true
+				v.Handle.Size = Vector3.new(tonum,tonum,tonum)
+				v.GripPos = Vector3.new(0,0,0)
+				game:GetService("Players").LocalPlayer.Character.Humanoid:UnequipTools()
+			else
+				currentToolSize = v.Handle.Size
+				currentGripPos = v.GripPos
+				local a = Instance.new("SelectionBox")
+				a.Name = "SelectionBoxCreated"
+				a.Parent = v.Handle
+				a.Adornee = v.Handle
+				v.Handle.Massless = true
+				v.Handle.Size = Vector3.new(50,50,50)
+				v.GripPos = Vector3.new(0,0,0)
+				game:GetService("Players").LocalPlayer.Character.Humanoid:UnequipTools()
+			end
+		end
+		end
+	elseif string.lower(cmd2[1]) == "bang" then
+		if _G.FunyEpic then _G.FunyEpic:Disconnect() end
+		if cmd2[2] then
+			local copyplr
+			for _, v in pairs(game.Players:GetPlayers()) do
+				if cmd2[2]:lower() == (v.Name:lower()):sub(1, #cmd2[2]) then
+					copyplr = v
+				end
+			end
+			if copyplr then
+				local bangAnim = Instance.new("Animation")
+				if game:GetService("Players").LocalPlayer.Character.Humanoid.RigType == Enum.HumanoidRigType.R15 then
+					bangAnim.AnimationId = "rbxassetid://5918726674"
+				else
+					bangAnim.AnimationId = "rbxassetid://148840371"
+				end
+				bang = game:GetService("Players").LocalPlayer.Character.Humanoid:LoadAnimation(bangAnim)
+				bang:Play(.1, 1, 1)
+				bang:AdjustSpeed(5)
+				bangDied = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass'Humanoid'.Died:Connect(function()
+					_G.FunyEpic:Disconnect()
+					bang:Stop()
+					bangAnim:Destroy()
+					bangDied:Disconnect()
+				end)
+				_G.FunyEpic = game:GetService("RunService").Heartbeat:Connect(function()
+						game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = copyplr.Character.HumanoidRootPart.CFrame *CFrame.new(0,0,0.9)
+				end)
+			end
+		end
 	elseif string.lower(cmd2[1]) == "owlhub" then
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/ZinityDrops/OwlHubLink/master/OwlHubBack.lua"))();
+	elseif string.lower(cmd2[1]) == "animgrabber" then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/BlastingStone/MyLuaStuff/master/animgrabberloader.lua"))()
 	elseif string.lower(cmd2[1]) == "boombox" then
 		loadstring(game:HttpGetAsync('https://riptxde.dev/u/BoomboxHubV3.lua'))()
 	elseif string.lower(cmd2[1]) == "iy" then
@@ -420,6 +504,7 @@ game:GetService("UserInputService").InputBegan:connect(function(inputObject, gam
 	elseif inputObject.KeyCode == Enum.KeyCode.BackSlash then
 		if TextBox9.Position == UDim2.new(0,0,0.95,0) then
 			TextBox9:CaptureFocus()
+			TextBox9.Text = ""
 		end
 	end 
 end)
