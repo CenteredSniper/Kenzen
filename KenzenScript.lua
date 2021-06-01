@@ -299,7 +299,7 @@ local function toClipboard(String)
 end
 
 local function command(cmd)
-	spawn(function()
+	TextBox9.Text = ""
 	local cmd2 = cmd:split(" ")
 	if string.lower(cmd2[1]) == "fps" then
 		loadstring(game:HttpGet('https://gist.githubusercontent.com/CenteredSniper/b84117b57dd254912c4ae6f93cff5fba/raw/cfa3a426366d767c1729c1a92411eeb22d1eca5e/gistfile1.txt'))();
@@ -454,7 +454,6 @@ local function command(cmd)
 		end
 	else return "gone"
 	end
-	end)
 end
 
 --= UserInput =--
