@@ -45,7 +45,6 @@ end)
 game:GetService("UserInputService").InputBegan:connect(function(inputObject, gameProcessedEvent)
     if inputObject.KeyCode == Enum.KeyCode.R then
         if setvalue ~= 0 then
-            pcall(function()
             if game:GetService("Players").LocalPlayer.PlayerGui.abilities.Frame:FindFirstChild("slot2",true).cooldownNumber.Visible == false and cooldown then
                 cooldown = false
                 local a
@@ -62,11 +61,16 @@ game:GetService("UserInputService").InputBegan:connect(function(inputObject, gam
                 end
             end
             game:GetService("ReplicatedStorage").remotes.equipItem:InvokeServer("ability", setvalue, "e")
-            if a then setvalue = a[1] quickbutton.QuickSlot.ImageButton.Image = a[2] end
-            wait(1)
+            if a and a[1] and a[2] then
+				setvalue = a[1]
+				quickbutton.QuickSlot.ImageButton.Image = a[2]
+			else
+				setvalue = 0
+				quickbutton.QuickSlot.ImageButton.Image = ""
+			end
+            wait(2)
             cooldown = true
             end
-            end)
         end
     end 
 end)
