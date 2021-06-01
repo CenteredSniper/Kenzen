@@ -45,6 +45,7 @@ end)
 game:GetService("UserInputService").InputBegan:connect(function(inputObject, gameProcessedEvent)
     if inputObject.KeyCode == Enum.KeyCode.R then
         if setvalue ~= 0 then
+            pcall(function()
             if game:GetService("Players").LocalPlayer.PlayerGui.abilities.Frame:FindFirstChild("slot2",true).cooldownNumber.Visible == false and cooldown then
                 cooldown = false
                 local a
@@ -65,6 +66,7 @@ game:GetService("UserInputService").InputBegan:connect(function(inputObject, gam
             wait(1)
             cooldown = true
             end
+            end)
         end
     end 
 end)
