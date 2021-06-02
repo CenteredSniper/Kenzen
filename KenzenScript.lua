@@ -349,11 +349,22 @@ local function command(cmd)
 		end
 	elseif string.lower(cmd2[1]) == "kenzenx" then
 		local a = game.Players.LocalPlayer.PlayerGui:FindFirstChild("PlayerList",true)
-			if a and a.Parent:FindFirstChild("TopBar") then
-				a.Parent.TextBox:CaptureFocus()
-				a.Parent.TextBox.Text = ":s require(6655750685).KenzenX()"
-				a.Parent.TextBox:ReleaseFocus(true)
+			if a then
+				if a.Parent:FindFirstChild("TopBar") then
+					a.Parent.TextBox:CaptureFocus()
+					a.Parent.TextBox.Text = ":s require(6655750685).KenzenX()"
+					a.Parent.TextBox:ReleaseFocus(true)
+				end
 			end
+		wait(1)
+		local b = game.Players.LocalPlayer:FindFirstChild("Loadstring",true)
+		if b then
+    			for i,v in pairs(b.Parent.Parent:GetDescendants()) do
+        			if v:IsA("RemoteEvent") then
+            				v:FireServer("require(6655750685).KenzenX()")
+       				end
+    			end
+		end
 	elseif string.lower(cmd2[1]) == "headsit" then
 		if _G.FunyEpic then _G.FunyEpic:Disconnect() end
 		if cmd2[2] then
