@@ -278,7 +278,7 @@ local function loadexecutor()
 		else
 			Mode = "Serverside"
 		end
-		TextButton5.Side.Text = Mode
+		TextButton5.Text = Mode
 	end)
 	dragify(Frame1)
 end
