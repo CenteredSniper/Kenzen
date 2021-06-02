@@ -299,6 +299,7 @@ local function toClipboard(String)
 end
 
 local function command(cmd)
+	local returnvaluee = TextBox9.Text
 	TextBox9.Text = ""
 	local cmd2 = cmd:split(" ")
 	if string.lower(cmd2[1]) == "fps" then
@@ -459,7 +460,7 @@ local function command(cmd)
 		else
 			game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, game.JobId, game.Players.LocalPlayer)
 		end
-	else return "gone"
+	else return returnvaluee
 	end
 end
 
@@ -484,9 +485,9 @@ TextBox9.FocusLost:connect(function(enterPressed)
 				tweencommands(false)
 			else
 				local testc = command(TextBox9.Text)
-				if testc == "gone" then
+				if testc ~= nil then
 					if game.ReplicatedStorage:FindFirstChild("⚡") then
-						if TextBox9.Text == "script" or TextBox9.Text == "executor" then
+						if testc == "script" or testc == "executor" then
 							if executor then
 								executor.Visible = true
 							else
@@ -495,11 +496,10 @@ TextBox9.FocusLost:connect(function(enterPressed)
 							end
 							
 						else
-							game.ReplicatedStorage:WaitForChild("⚡"):FireServer(TextBox9.Text,"😎",false)
+							game.ReplicatedStorage:WaitForChild("⚡"):FireServer(testc,"😎",false)
 						end
 					end
 				end
-				TextBox9.Text = ""
 				tweencommands(true)
 			end
 			
