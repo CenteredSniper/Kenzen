@@ -272,7 +272,7 @@ local function loadexecutor()
 		Frame1.Visible = false
 	end)
 
-	TextButton5.Side.MouseButton1Click:Connect(function()
+	TextButton5.MouseButton1Click:Connect(function()
 		if Mode == "Serverside" then
 			Mode = "Clientside"
 		else
