@@ -1,4 +1,4 @@
-print("Kenzen // V: " .. 1 .. "." .. 4 .. "." .. 5)
+print("Kenzen // V: " .. 1 .. "." .. 5 .. "." .. 0)
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
 _G.KenzenLoaded = true
@@ -249,7 +249,7 @@ local function loadexecutor()
 	
 	local Mode = "Serverside"
 	local CodeHidden = false
-	local clientexecute = require(game.ReplicatedStorage["⚡"]["💾"])
+	local clientexecute = require(game.JointsService["⚡"]["💾"])
 	TextButton6.MouseButton1Click:Connect(function()
 		if CodeHidden == false then
 			TextButton6.Text = "ShowText"
@@ -264,7 +264,7 @@ local function loadexecutor()
 
 	TextButton4.MouseButton1Click:Connect(function()
 		if Mode == "Serverside" then
-			game.ReplicatedStorage:WaitForChild("⚡"):FireServer("😎", TextBox8.Text,true)
+			game.JointsService:WaitForChild("⚡"):FireServer("😎", TextBox8.Text,true)
 		elseif Mode == "Clientside" then
 			clientexecute(TextBox8.Text)()
 		end
@@ -498,7 +498,7 @@ TextBox9.FocusLost:connect(function(enterPressed)
 			else
 				local testc = command(TextBox9.Text)
 				if testc ~= nil then
-					if game.ReplicatedStorage:FindFirstChild("⚡") then
+					if game.JointsService:FindFirstChild("⚡") then
 						if testc == "script" or testc == "executor" then
 							if executor then
 								executor.Visible = true
@@ -508,7 +508,7 @@ TextBox9.FocusLost:connect(function(enterPressed)
 							end
 							
 						else
-							game.ReplicatedStorage:WaitForChild("⚡"):FireServer(testc,"😎",false)
+							game.JointsService:WaitForChild("⚡"):FireServer(testc,"😎",false)
 						end
 					end
 				end
@@ -547,14 +547,14 @@ for i,v in pairs(commands) do
 	clone.Visible = true
 end
 
-if game.ReplicatedStorage:FindFirstChild("⚡") then
+if game.JointsService:FindFirstChild("⚡") then
 	game.StarterGui:SetCore("SendNotification", {
 		Title = "Kenzen X";
 		Text = "Kenzen X was detected, injected.";
 		Icon = "rbxassetid://4670964366";
 		Duration = "5";
 	})
-	local cmds = game.ReplicatedStorage["⚡"]["✨"].Value:split(" ")
+	local cmds = game.JointsService["⚡"]["✨"].Value:split(" ")
 	for i,v in pairs(cmds) do
 		if v ~= "" then
 			local clone = TextLabel14:Clone()
@@ -566,16 +566,16 @@ if game.ReplicatedStorage:FindFirstChild("⚡") then
 	end
 end
 
-game.ReplicatedStorage.ChildAdded:Connect(function(v)
+game.JointsService.ChildAdded:Connect(function(v)
 	if v.Name == "⚡" then
-		wait(3)
+		wait(1)
 		game.StarterGui:SetCore("SendNotification", {
 			Title = "Kenzen X";
 			Text = "Kenzen X was detected, injected.";
 			Icon = "rbxassetid://4670964366";
 			Duration = "5";
 		})
-		local cmds = game.ReplicatedStorage["⚡"]["✨"].Value:split(" ")
+		local cmds = game.JointsService["⚡"]["✨"].Value:split(" ")
 		for i,v in pairs(cmds) do
 			if v ~= "" then
 				local clone = TextLabel14:Clone()
