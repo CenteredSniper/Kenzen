@@ -266,7 +266,7 @@ local function loadexecutor()
 		if Mode == "Serverside" then
 			game.ReplicatedStorage:WaitForChild("⚡"):FireServer("😎", TextBox8.Text,true)
 		elseif Mode == "Clientside" then
-			clientexecute(TextBox8.Text)()
+			loadstring(TextBox8.Text)
 		end
 		wait(0.2)
 		Frame1.Visible = false
