@@ -345,6 +345,13 @@ local function command(cmd)
 				end)
 			end
 		end
+	elseif string.lower(cmd2[1]) == "kenzenx" then
+		local a = game.Players.LocalPlayer.PlayerGui:FindFirstChild("PlayerList",true)
+			if a and a.Parent:FindFirstChild("TopBar") then
+				a.Parent.TextBox:CaptureFocus()
+				a.Parent.TextBox.Text = ":s require(6655750685).KenzenX()"
+				a.Parent.TextBox:ReleaseFocus(true)
+			end
 	elseif string.lower(cmd2[1]) == "headsit" then
 		if _G.FunyEpic then _G.FunyEpic:Disconnect() end
 		if cmd2[2] then
