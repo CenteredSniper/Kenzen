@@ -67,15 +67,11 @@ end)
 
 local function died()
 	game.Players.LocalPlayer.Character.Humanoid.Died:Connect(function()
-	        print(quickbutton.Parent)
 		cooldown = false
 		quickbutton.Parent = workspace
-		print(quickbutton.Parent)
 		wait(game.Players.RespawnTime)
-		print(quickbutton.Parent)
 		repeat wait() until game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("abilities")
 		quickbutton.Parent = game:GetService("Players").LocalPlayer.PlayerGui.abilities.Frame
-		print(quickbutton.Parent)
 		cooldown = true
 		died()
 	end)
