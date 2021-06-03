@@ -64,3 +64,15 @@ game:GetService("UserInputService").InputBegan:connect(function(inputObject, gam
         end
     end 
 end)
+
+local function died()
+	game.Players.LocalPlayer.Character.Humanoid.Died:Connect(function()
+		cooldown = false
+		quickbutton.Parent = workspace
+		wait(game.Players.RespawnTime + 1.5)
+		repeat wait() until game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("abilities")
+		quickbutton.Parent = game:GetService("Players").LocalPlayer.PlayerGui.abilities.Frame
+		cooldown = true
+		died()
+	end)
+end
