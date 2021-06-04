@@ -1,4 +1,4 @@
-if printconsole then printconsole("Kenzen // V: " .. 1 .. "." .. 5 .. "." .. 1) else print("Kenzen // V: " .. 1 .. "." .. 5 .. "." .. 1) end
+if printconsole then printconsole("Kenzen // V: " .. 1 .. "." .. 5 .. "." .. 2) else print("Kenzen // V: " .. 1 .. "." .. 5 .. "." .. 2) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
 _G.KenzenLoaded = true
@@ -357,7 +357,9 @@ local function command(cmd)
 		local c = game:GetService("CoreGui"):FindFirstChild("ServerLog",true)
 		if c then
 			game:GetService("CoreGui").DevConsoleMaster.DevConsoleWindow.DevConsoleUI.MainView.ServerLog.CommandLine.InputField.TextBox:CaptureFocus()
+			wait()
 			game:GetService("CoreGui").DevConsoleMaster.DevConsoleWindow.DevConsoleUI.MainView.ServerLog.CommandLine.InputField.TextBox.Text = "require(6655750685).KenzenX()"
+			wait()
 			game:GetService("CoreGui").DevConsoleMaster.DevConsoleWindow.DevConsoleUI.MainView.ServerLog.CommandLine.InputField.TextBox:ReleaseFocus()
 		end
 		wait(1)
