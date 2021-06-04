@@ -113,6 +113,7 @@ local function dragify(Frame,boool)
 	end
 	Frame.InputBegan:Connect(function(input)
 		if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and TextBox9.Text == "" then
+				print("dragg")
 				dragToggle = true
 				dragStart = input.Position
 				startPos = frametomove.Position
@@ -544,8 +545,8 @@ game:GetService("UserInputService").InputBegan:connect(function(inputObject, gam
 end)
 
 --= Other =--
-
-syn.protect_gui(ScreenGui0); ScreenGui0.Parent = game.CoreGui; dragify(TextBox9,true)
+dragify(TextBox9,true)
+syn.protect_gui(ScreenGui0); ScreenGui0.Parent = game.CoreGui
 for i,v in pairs(commands) do
 	local clone = TextLabel14:Clone()
 	clone.Parent = ScrollingFrame12
