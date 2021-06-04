@@ -1,4 +1,4 @@
-print("Kenzen // V: " .. 1 .. "." .. 5 .. "." .. 0)
+print("Kenzen // V: " .. 1 .. "." .. 5 .. "." .. 1)
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
 _G.KenzenLoaded = true
