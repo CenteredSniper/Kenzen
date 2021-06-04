@@ -112,7 +112,7 @@ local function dragify(Frame,boool)
 		frametomove.Position = Position
 	end
 	Frame.InputBegan:Connect(function(input)
-		if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+		if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and TextBox9.Text == "" then
 				dragToggle = true
 				dragStart = input.Position
 				startPos = frametomove.Position
@@ -521,6 +521,8 @@ TextBox9.FocusLost:connect(function(enterPressed)
 			end
 			
 		end
+	else
+		TextBox9.Text = ""
 	end
 end)
 
