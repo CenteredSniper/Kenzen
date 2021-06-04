@@ -358,6 +358,7 @@ local function command(cmd)
 		if game:GetService("CoreGui"):FindFirstChild("DevConsoleMaster") then
 			if keypress then
 				keypress(VK_F9)
+				wait(2)
 			end
 		end
 		local c = game:GetService("CoreGui"):FindFirstChild("ServerLog",true)
