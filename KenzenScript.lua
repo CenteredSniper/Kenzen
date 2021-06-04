@@ -97,13 +97,18 @@ local function writefileExploit()
 		return true
 	end
 end
-local function dragify(Frame)
+local function dragify(Frame,boool)
 	local frametomove = Frame
 	local dragToggle,dragInput,dragStart,startPos
 	local dragSpeed = 0
 	local function updateInput(input)
 		local Delta = input.Position - dragStart
-		local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
+		local Position
+		if boool then
+			Position = UDim2.new(Frame.Position.X.Scale, Frame.Position.X.Offset + Delta.X, Frame.Position.Y.Scale, startPos.Y.Offset + Delta.Y)
+		else
+			Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
+		end
 		frametomove.Position = Position
 	end
 	Frame.InputBegan:Connect(function(input)
@@ -280,7 +285,7 @@ local function loadexecutor()
 		end
 		TextButton5.Text = Mode
 	end)
-	dragify(Frame1)
+	dragify(Frame1,false)
 end
 local function tweencommands(bool)
 	if bool then
@@ -538,8 +543,7 @@ end)
 
 --= Other =--
 
-syn.protect_gui(ScreenGui0); ScreenGui0.Parent = game.CoreGui
-
+syn.protect_gui(ScreenGui0); ScreenGui0.Parent = game.CoreGui; dragify(TextBox9,true)
 for i,v in pairs(commands) do
 	local clone = TextLabel14:Clone()
 	clone.Parent = ScrollingFrame12
