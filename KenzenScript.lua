@@ -1,4 +1,5 @@
-if printconsole then printconsole("Kenzen // V: " .. 1 .. "." .. 5 .. "." .. 2) else print("Kenzen // V: " .. 1 .. "." .. 5 .. "." .. 2) end
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 5 .. "." .. 3
+if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
 _G.KenzenLoaded = true
@@ -354,13 +355,16 @@ local function command(cmd)
 			end
 		end
 	elseif string.lower(cmd2[1]) == "kenzenx" then
+		if game:GetService("CoreGui"):FindFirstChild("DevConsoleMaster") then
+			if keypress then
+				keypress(VK_F9)
+			end
+		end
 		local c = game:GetService("CoreGui"):FindFirstChild("ServerLog",true)
 		if c then
 			game:GetService("CoreGui").DevConsoleMaster.DevConsoleWindow.DevConsoleUI.MainView.ServerLog.CommandLine.InputField.TextBox:CaptureFocus()
-			wait()
 			game:GetService("CoreGui").DevConsoleMaster.DevConsoleWindow.DevConsoleUI.MainView.ServerLog.CommandLine.InputField.TextBox.Text = "require(6655750685).KenzenX()"
-			wait()
-			game:GetService("CoreGui").DevConsoleMaster.DevConsoleWindow.DevConsoleUI.MainView.ServerLog.CommandLine.InputField.TextBox:ReleaseFocus()
+			game:GetService("CoreGui").DevConsoleMaster.DevConsoleWindow.DevConsoleUI.MainView.ServerLog.CommandLine.InputField.TextBox:ReleaseFocus(true)
 		end
 		wait(1)
 		local a = game.Players.LocalPlayer.PlayerGui:FindFirstChild("PlayerList",true)
