@@ -106,7 +106,7 @@ local function dragify(Frame,boool)
 		local Delta = input.Position - dragStart
 		local Position
 		if boool then
-			Position = UDim2.new(Frame.Position.X.Scale, Frame.Position.X.Offset + Delta.X, Frame.Position.Y.Scale, startPos.Y.Offset + Delta.Y)
+			Position = UDim2.new(Frame.Position.X.Scale, Frame.Position.X.Offset, Frame.Position.Y.Scale, startPos.Y.Offset + Delta.Y)
 		else
 			Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
 		end
