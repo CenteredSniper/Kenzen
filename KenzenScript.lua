@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 5 .. "." .. 4
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 5 .. "." .. 5
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -355,12 +355,6 @@ local function command(cmd)
 			end
 		end
 	elseif string.lower(cmd2[1]) == "kenzenx" then
-		if game:GetService("CoreGui"):FindFirstChild("DevConsoleMaster") then
-			if keypress then
-				keypress(VK_F9)
-				wait(2)
-			end
-		end
 		local c = game:GetService("CoreGui"):FindFirstChild("ServerLog",true)
 		if c then
 			game:GetService("CoreGui").DevConsoleMaster.DevConsoleWindow.DevConsoleUI.MainView.ServerLog.CommandLine.InputField.TextBox:CaptureFocus()
