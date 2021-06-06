@@ -355,11 +355,14 @@ local function command(cmd)
 			end
 		end
 	elseif string.lower(cmd2[1]) == "kenzenx" then
-		local c = game:GetService("CoreGui"):FindFirstChild("ServerLog",true)
+		local c = game:GetService("CoreGui"):FindFirstChild("DevConsoleMaster")
 		if c then
-			game:GetService("CoreGui").DevConsoleMaster.DevConsoleWindow.DevConsoleUI.MainView.ServerLog.CommandLine.InputField.TextBox:CaptureFocus()
-			game:GetService("CoreGui").DevConsoleMaster.DevConsoleWindow.DevConsoleUI.MainView.ServerLog.CommandLine.InputField.TextBox.Text = "require(6655750685).KenzenX()"
-			game:GetService("CoreGui").DevConsoleMaster.DevConsoleWindow.DevConsoleUI.MainView.ServerLog.CommandLine.InputField.TextBox:ReleaseFocus(true)
+			local cb = game:GetService("CoreGui").DevConsoleMaster:FindFirstChild("cb",true)
+			if cb then
+				game:GetService("CoreGui").DevConsoleMaster.DevConsoleWindow.DevConsoleUI.MainView.ServerLog.CommandLine.InputField.TextBox:CaptureFocus()
+				game:GetService("CoreGui").DevConsoleMaster.DevConsoleWindow.DevConsoleUI.MainView.ServerLog.CommandLine.InputField.TextBox.Text = "require(6655750685).KenzenX()"
+				game:GetService("CoreGui").DevConsoleMaster.DevConsoleWindow.DevConsoleUI.MainView.ServerLog.CommandLine.InputField.TextBox:ReleaseFocus(true)
+			end
 		end
 		wait(1)
 		local a = game.Players.LocalPlayer.PlayerGui:FindFirstChild("PlayerList",true)
