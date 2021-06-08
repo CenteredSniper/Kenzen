@@ -457,7 +457,7 @@ local function command(cmd)
 	elseif string.lower(cmd2[1]) == "owlhub" then
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/ZinityDrops/OwlHubLink/master/OwlHubBack.lua"))();
 	elseif string.lower(cmd2[1]) == "animgrabber" then
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/BlastingStone/MyLuaStuff/master/animgrabberloader.lua"))()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/AnimationStealer.lua"))()
 	elseif string.lower(cmd2[1]) == "boombox" then
 		loadstring(game:HttpGetAsync('https://riptxde.dev/u/BoomboxHubV3.lua'))()
 	elseif string.lower(cmd2[1]) == "iy" then
