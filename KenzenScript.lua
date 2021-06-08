@@ -104,17 +104,10 @@ local function dragify(Frame,boool)
 	local dragSpeed = 0
 	local function updateInput(input)
 		local Delta = input.Position - dragStart
-		local Position
-		if boool then
-			Position = UDim2.new(Frame.Position.X.Scale, Frame.Position.X.Offset, Frame.Position.Y.Scale, startPos.Y.Offset + Delta.Y)
-		else
-			Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
-		end
-		frametomove.Position = Position
+		frametomove.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
 	end
 	Frame.InputBegan:Connect(function(input)
-		if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and TextBox9.Text == "" then
-				print("dragg")
+		if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UserInput:GetFocusedTextBox() == nil then
 				dragToggle = true
 				dragStart = input.Position
 				startPos = frametomove.Position
@@ -556,7 +549,6 @@ game:GetService("UserInputService").InputBegan:connect(function(inputObject, gam
 end)
 
 --= Other =--
-dragify(TextBox9,true)
 syn.protect_gui(ScreenGui0); ScreenGui0.Parent = game.CoreGui
 for i,v in pairs(commands) do
 	local clone = TextLabel14:Clone()
