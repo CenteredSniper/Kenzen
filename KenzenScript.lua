@@ -319,13 +319,11 @@ local function saveins(bool)
 	if h ~= true then
 		makefolder("KenzenDecompile")
 	end
-	local danameXD
-	if bool then
-		danameXD = "KenzenDecompile/" .. info .. "-" .. game.PlaceId .. ".rbxl"
-	else
-		danameXD = "KenzenDecompile/" .. info .. "-" .. game.PlaceId .. "+" .. "scripts" .. ".rbxl"
+	local danameXD = "KenzenDecompile/" .. info .. "-" .. game.PlaceId .. " " .. tostring(os.time())
+	if bool ~= true then
+		danameXD = daname .. "+" .. "scripts"
 	end
-	writefile(danameXD,b)
+	writefile(danameXD .. ".rbxl",b)
 	delfile(info .. ".rbxl")
 end
 
