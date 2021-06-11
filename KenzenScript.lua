@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 6 .. "." .. 0
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 6 .. "." .. 1
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -300,26 +300,26 @@ local function toClipboard(String)
 end
 
 local function saveins(bool)
-	saveinstance({noscripts=true})
+	saveinstance({noscripts=bool})
 	local market = game:GetService("MarketplaceService")
 	local info = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
 	local e,f = string.gsub(info, "'", "_")
-	e,f = string.gsub(info, "%$", "_")
-	e,f = string.gsub(info, "!", "_")
-	e,f = string.gsub(info, "@", "_")
-	e,f = string.gsub(info, "#", "_")
-	e,f = string.gsub(info, "%^", "_")
-	e,f = string.gsub(info, "&", "_")
-	e,f = string.gsub(info, "%%", "_")
-	e,f = string.gsub(info, "%*", "_")
-	e,f = string.gsub(info, "%(", "_")
-	e,f = string.gsub(info, "%)", "_")
-	e,f = string.gsub(info, "%.", "_")
-	e,f = string.gsub(info, "%[", "_")
-	e,f = string.gsub(info, "%]", "_")
-	e,f = string.gsub(info, "%+", "_")
-	e,f = string.gsub(info, "%-", "_")
-	e,f = string.gsub(info, "%?", "_")
+	e,f = string.gsub(e, "%$", "_")
+	e,f = string.gsub(e, "!", "_")
+	e,f = string.gsub(e, "@", "_")
+	e,f = string.gsub(e, "#", "_")
+	e,f = string.gsub(e, "%^", "_")
+	e,f = string.gsub(e, "&", "_")
+	e,f = string.gsub(e, "%%", "_")
+	e,f = string.gsub(e, "%*", "_")
+	e,f = string.gsub(e, "%(", "_")
+	e,f = string.gsub(e, "%)", "_")
+	e,f = string.gsub(e, "%.", "_")
+	e,f = string.gsub(e, "%[", "_")
+	e,f = string.gsub(e, "%]", "_")
+	e,f = string.gsub(e, "%+", "_")
+	e,f = string.gsub(e, "%-", "_")
+	e,f = string.gsub(e, "%?", "_")
 	info = e
 	local b
 	repeat 
@@ -335,9 +335,9 @@ local function saveins(bool)
 	if h ~= true then
 		makefolder("KenzenDecompile")
 	end
-	local danameXD = "KenzenDecompile/" .. info .. "-" .. game.PlaceId .. " " .. tostring(os.time())
+	local danameXD = "KenzenDecompile/" .. info .. "-" .. game.PlaceId
 	if bool ~= true then
-		danameXD = daname .. "+" .. "scripts"
+		danameXD = danameXD .. "+" .. "scripts"
 	end
 	writefile(danameXD .. ".rbxl",b)
 	delfile(info .. ".rbxl")
