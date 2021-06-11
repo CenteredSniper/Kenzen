@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 6 .. "." .. 1
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 6 .. "." .. 2
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -310,8 +310,6 @@ local function saveins(bool)
 	e,f = string.gsub(info, "#", "_")
 	e,f = string.gsub(info, "^", "_")
 	e,f = string.gsub(info, "&", "_")
-	e,f = string.gsub(info, "(", "_")
-	e,f = string.gsub(info, ")", "_")
 	info = e
 	local b
 	repeat 
