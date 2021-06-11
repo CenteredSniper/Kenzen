@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 5 .. "." .. 7
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 6 .. "." .. 0
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -304,6 +304,15 @@ local function saveins(bool)
 	local market = game:GetService("MarketplaceService")
 	local info = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
 	local e,f = string.gsub(info, "'", "_")
+	e,f = string.gsub(info, "$", "_")
+	e,f = string.gsub(info, "!", "_")
+	e,f = string.gsub(info, "@", "_")
+	e,f = string.gsub(info, "#", "_")
+	e,f = string.gsub(info, "%", "_")
+	e,f = string.gsub(info, "^", "_")
+	e,f = string.gsub(info, "&", "_")
+	e,f = string.gsub(info, "(", "_")
+	e,f = string.gsub(info, ")", "_")
 	info = e
 	local b
 	repeat 
