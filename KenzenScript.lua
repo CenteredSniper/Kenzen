@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 5 .. "." .. 6
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 5 .. "." .. 7
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -299,6 +299,36 @@ local function toClipboard(String)
 	end
 end
 
+local function saveins(bool)
+	saveinstance({noscripts=true})
+	local market = game:GetService("MarketplaceService")
+	local info = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+	local e,f = string.gsub(info, "'", "_")
+	info = e
+	local b
+	repeat 
+	    pcall(function()
+	        b = readfile(info .. ".rbxl")
+	    end)
+	    wait()
+	until b
+	local h
+	pcall(function()
+		h = isfolder("KenzenDecompile")	
+	end)
+	if h ~= true then
+		makefolder("KenzenDecompile")
+	end
+	local danameXD
+	if bool then
+		danameXD = "KenzenDecompile/" .. info .. "-" .. game.PlaceId .. ".rbxl"
+	else
+		danameXD = "KenzenDecompile/" .. info .. "-" .. game.PlaceId .. "+" .. "scripts" .. ".rbxl"
+	end
+	writefile(danameXD,b)
+	delfile(info .. ".rbxl")
+end
+
 local function command(cmd)
 	local returnvaluee = TextBox9.Text
 	TextBox9.Text = ""
@@ -321,7 +351,7 @@ local function command(cmd)
 	elseif string.lower(cmd2[1]) == "saveinstance" then
 		local bool = false
 		if string.lower(cmd2[2]) == "yes" or string.lower(cmd2[2]) == "true" then bool = true end
-		saveinstance{noscripts = bool, mode = "optimized"}
+		saveins(bool)
 	elseif string.lower(cmd2[1]) == "removekorblox" then
 		local LP = game.Players.LocalPlayer
 		local a = LP.Character:FindFirstChild("Korblox Deathspeaker Right Leg")
