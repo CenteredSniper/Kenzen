@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 6 .. "." .. 1
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 6 .. "." .. 2
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -364,7 +364,7 @@ local function command(cmd)
 		loadstring(game:HttpGet('https://pastebin.com/raw/444k40vk'))();
 	elseif string.lower(cmd2[1]) == "saveinstance" then
 		local bool = false
-		if string.lower(cmd2[2]) == "yes" or string.lower(cmd2[2]) == "true" then bool = true end
+		if cmd2[2] then if string.lower(cmd2[2]) == "yes" or string.lower(cmd2[2]) == "true" then bool = true end end
 		saveins(bool)
 	elseif string.lower(cmd2[1]) == "removekorblox" then
 		local LP = game.Players.LocalPlayer
