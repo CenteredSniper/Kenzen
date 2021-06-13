@@ -300,7 +300,7 @@ local function toClipboard(String)
 end
 
 local function saveins(bool)
-	saveinstance({noscripts=bool})
+	saveinstance({noscripts=bool,mode="optimized"})
 	local market = game:GetService("MarketplaceService")
 	local info = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
 	local e,f = string.gsub(info, "'", "_")
