@@ -403,7 +403,7 @@ local function command(cmd)
 		repeat 
 			local wtfff = epicfunnydd.Frame:Clone()
 			wtfff.Parent = epicfunnydd
-			thef = thef + 4
+			thef = thef + 5
 			wtfff.Rotation = thef
 			game["Run Service"].Stepped:Wait()
 		until thef >= 175
