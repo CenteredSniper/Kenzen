@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 6 .. "." .. 2
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 6 .. "." .. 3
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -12,7 +12,7 @@ local Player = game.Players.LocalPlayer
 local password = "k" ..                                                                                                                  "e" ..                                              "k"
 local passed = false
 local intweeninfo,outtweeninfo = TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.In),TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
-local commands = {"dqqs","fps","antilog","boombox","hydroxide","iy","dex","serverhop","serverhop2","rejoin","nullware","owlhub","removekorblox","saveinstance","copycat","animgrabber","bang","reach","headsit","copypos"}
+local commands = {"dqqs","fps","antilog","boombox","hydroxide","iy","dex","serverhop","serverhop2","rejoin","nullware","owlhub","removekorblox","saveinstance","copycat","animgrabber","bang","reach","headsit","copypos","pitch","volume","soundid","visualizer"}
 local executor
 
 --= GUI =--
@@ -343,6 +343,8 @@ local function saveins(bool)
 	delfile(info .. ".rbxl")
 end
 
+local visaulizer
+
 local function command(cmd)
 	local returnvaluee = TextBox9.Text
 	TextBox9.Text = ""
@@ -390,6 +392,25 @@ local function command(cmd)
     					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 				end)
 			end
+		end
+	elseif string.lower(cmd2[1]) == "visualizer" then
+		local visaulizer = game:GetObjects("rbxassetid://6955035613")[1]
+		visaulizer.Parent = game.CoreGui
+		visaulizer.ResetOnSpawn = false
+		visaulizer.LocalScript.Disabled = false
+	elseif string.lower(cmd2[1]) == "soundid" then
+		if cmd2[2] and visaulizer then
+			visaulizer.LocalScript.Sound:Stop()
+			visaulizer.LocalScript.Sound.SoundId = "rbxassetid://" .. cmd2[2]
+			visaulizer.LocalScript.Sound:Play()
+		end
+	elseif string.lower(cmd2[1]) == "volume" then
+		if cmd2[2] and visaulizer then
+			visaulizer.LocalScript.Sound.Volume = tonumber(cmd2[2])
+		end
+	elseif string.lower(cmd2[1]) == "pitch" then
+		if cmd2[2] and visaulizer then
+			visaulizer.LocalScript.Sound.PlaybackSpeed = tonumber(cmd2[2])
 		end
 	elseif string.lower(cmd2[1]) == "kenzenx" then
 		local c = game:GetService("CoreGui"):FindFirstChild("DevConsoleMaster")
