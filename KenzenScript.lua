@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 6 .. "." .. 4
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 6 .. "." .. 5
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -410,13 +410,15 @@ local function command(cmd)
 		sound = Instance.new("Sound",workspace)
 		_G.RunXD = game["Run Service"].Heartbeat:Connect(function()
 			epicfunnydd.Rotation = epicfunnydd.Rotation + 1
-			local d = sound.PlaybackLoudness/666
-			for i,childd in pairs(epicfunnydd:GetChildren()) do
-				local hue = tick() % 5 / 5
-				local color = Color3.fromHSV(hue, 1, 1)
-				childd.BackgroundColor3 = color
-				local e = math.random(1,6); e=e-1; e=e*0.1
-				childd.Size = UDim2.new(1+d+e,0,0,5)
+			if sound.IsPlaying then
+				local d = sound.PlaybackLoudness/666
+				for i,childd in pairs(epicfunnydd:GetChildren()) do
+					local hue = tick() % 5 / 5
+					local color = Color3.fromHSV(hue, 1, 1)
+					childd.BackgroundColor3 = color
+					local e = math.random(1,6); e=e-1; e=e*0.1
+					childd.Size = UDim2.new(1+d+e,0,0,5)
+				end	
 			end
 		end)
 	elseif string.lower(cmd2[1]) == "soundid" then
