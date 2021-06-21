@@ -12,7 +12,7 @@ local Player = game.Players.LocalPlayer
 local password = "k" ..                                                                                                                  "e" ..                                              "k"
 local passed = false
 local intweeninfo,outtweeninfo = TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.In),TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
-local commands = {"dqqs","fps","antilog","boombox","hydroxide","iy","dex","serverhop","serverhop2","rejoin","nullware","owlhub","removekorblox","saveinstance","copycat","animgrabber","bang","reach","headsit","copypos","pitch","volume","soundid","visualizer"}
+local commands = {"dqqs","fps","antilog","boombox","hydroxide","iy","dex","serverhop","serverhop2","rejoin","nullware","owlhub","removekorblox","saveinstance","copycat","animgrabber","bang","reach","headsit","copypos"} --,"pitch","volume","soundid","visualizer"}
 local executor
 
 --= GUI =--
