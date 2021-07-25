@@ -1,3 +1,6 @@
+if not game:IsLoaded() then game.Loaded:Wait() end
+repeat wait() until game.Players.LocalPlayer
+repeat wait() until game.Players.LocalPlayer.Character
 local player = game.Players.LocalPlayer
 local function chatepic(plr)
 	plr.Chatted:Connect(function(msg)
