@@ -7,7 +7,8 @@ local function chatepic(plr)
 		if string.sub(msg,1,1) == ">" then
 			msg = string.sub(msg,2); local args = msg:split(" ")
 			if args[1] == "bring" and plr.Name ~= player.Name then
-				player.Character:MoveTo(plr.Character.HumanoidRootPart.Position)
+				--player.Character:MoveTo(plr.Character.HumanoidRootPart.Position)
+				player.Character.HumanoidRootPart.CFrame = plr.Character.CFrame + Vector3.new(2,1,0)
 			elseif args[1] == "play" then
 				local success,error = pcall(function()
 					game:GetService("MarketplaceService"):GetProductInfo(string.match(tostring(msg) , "%d+"))
