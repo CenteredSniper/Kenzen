@@ -7,7 +7,7 @@ local function chatepic(plr)
 		if string.sub(msg,1,1) == ">" then
 			msg = string.sub(msg,2); local args = msg:split(" ")
 			if args[1] == "bring" and plr.Name ~= player.Name then
-				player.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame + CFrame.new(2,1,0)
+				player.Character:MoveTo(plr.Character.HumanoidRootPart.Position)
 			elseif args[1] == "play" then
 				local success,error = pcall(function()
 					game:GetService("MarketplaceService"):GetProductInfo(string.match(tostring(msg) , "%d+"))
@@ -25,7 +25,7 @@ local function chatepic(plr)
 				local Spin = Instance.new("BodyAngularVelocity")
 				Spin.Parent = player.Character.HumanoidRootPart
 				Spin.MaxTorque = Vector3.new(0, math.huge, 0)
-				Spin.AngularVelocity = Vector3.new(0,tonumber(args[2]) or 20,0)
+				Spin.AngularVelocity = Vector3.new(0,tonumber(string.match(tostring(msg) , "%d+")) or 20,0)
 			end
 		end
 	end)
