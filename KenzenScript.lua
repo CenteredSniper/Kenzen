@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 6 .. "." .. 5
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 7 .. "." .. 0
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -385,7 +385,7 @@ local function noclip()
 			end
 		end
 	end
-	Noclipping = game:GetService('RunService').Stepped:connect(NoclipLoop)
+	Noclipping = RunService.Stepped:connect(NoclipLoop)
 end
 
 local function sFLY(vfly)
@@ -494,6 +494,15 @@ local function sFLY(vfly)
 	FLY()
 end
 
+local function waitForChild(parent, childName)
+	local child = parent:findFirstChild(childName)
+	if child then return child end
+	while true do
+		child = parent.ChildAdded:wait()
+		if child.Name==childName then return child end
+	end
+end
+
 local function command(cmd)
 	local returnvaluee = TextBox9.Text
 	TextBox9.Text = ""
@@ -538,7 +547,7 @@ local function command(cmd)
 		end
 	elseif string.lower(cmd2[1]) == "fling" then
 		noclip()
-		--sFLY()
+		sFLY()
 		workspace.CurrentCamera.CameraSubject = Player.Character.HumanoidRootPart
 		local BT = Instance.new("BodyThrust")
 		BT.Parent = Player.Character.HumanoidRootPart
@@ -591,10 +600,10 @@ local function command(cmd)
 		root.Transparency = 0
 		root.Material = "ForceField"
 		root.Color = Color3.new(1, 1, 1)
-		game:GetService('RunService').Stepped:connect(function()
+		RunService.Stepped:connect(function()
 			Player.Character.HumanoidRootPart.CanCollide = false
 		end)
-		game:GetService('RunService').RenderStepped:connect(function()
+		RunService.RenderStepped:connect(function()
 			Player.Character.HumanoidRootPart.CanCollide = false
 		end)
 		sFLY()
@@ -639,14 +648,14 @@ local function command(cmd)
 		end
 		for _,v in pairs(game.Players:GetPlayers()) do
 			if v ~= Player then
-				local antifling = game:GetService('RunService').Stepped:connect(function()
+				local antifling = RunService.Stepped:connect(function()
 					Collisionless(v)
 				end)
 			end
 		end
 		game.Players.PlayerAdded:Connect(function(v)
 			if v ~= Player and antifling then
-				local antifling = game:GetService('RunService').Stepped:connect(function()
+				local antifling = RunService.Stepped:connect(function()
 					Collisionless(v)
 				end)
 			end
@@ -675,14 +684,6 @@ local function command(cmd)
 			Connection:Disconnect()
 		end)
 		wait(.1)
-		local function waitForChild(parent, childName)
-			local child = parent:findFirstChild(childName)
-			if child then return child end
-			while true do
-				child = parent.ChildAdded:wait()
-				if child.Name==childName then return child end
-			end
-		end
 
 		-- ANIMATION
 
@@ -931,9 +932,10 @@ local function command(cmd)
 		game["Players"].LocalPlayer.Character.Humanoid.Health = 0
 		game["Players"].LocalPlayer.CharacterAdded:Connect(function(char)
 
-			char:WaitForChild("Animate").Disabled = true
-			char:WaitForChild('Humanoid'):WaitForChild("Animator"):Destroy()
-			Torso.Neck.DesiredAngle = math.huge
+			Player.Character:WaitForChild("Animate").Disabled = true
+			Player.Character:WaitForChild('Humanoid'):WaitForChild("Animator"):Destroy()
+			waitForChild(Player.Character.Torso, "Neck").DesiredAngle = math.huge
+			
 
 		end)
 	elseif string.lower(cmd2[1]) == "copypos" then
