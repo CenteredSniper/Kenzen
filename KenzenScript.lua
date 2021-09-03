@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 7 .. "." .. 4
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 7 .. "." .. 5
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -1151,7 +1151,7 @@ local function command(cmd)
 	elseif string.lower(cmd2[1]) == "animgrabber" then
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/AnimationStealer.lua"))()
 	elseif string.lower(cmd2[1]) == "boombox" then
-		loadstring(game:HttpGetAsync('https://riptxde.dev/u/BoomboxHubV3.lua'))()
+		loadstring(game:HttpGetAsync('https://riptxde.dev/u/hub/script.lua'))()
 	elseif string.lower(cmd2[1]) == "iy" then
 		loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 	elseif string.lower(cmd2[1]) == "dex" then
