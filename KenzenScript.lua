@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 7 .. "." .. 2
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 7 .. "." .. 3
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -578,6 +578,9 @@ local function command(cmd)
 			end
 		end
 	elseif string.lower(cmd2[1]) == "clientrespawn" then
+		if Noclipping then
+			Noclipping:Disconnect()
+		end
 		local char = Player.Character
 		if char:FindFirstChildOfClass("Humanoid") then char:FindFirstChildOfClass("Humanoid"):ChangeState(15) end
 		char:ClearAllChildren()
