@@ -12,7 +12,36 @@ local Player = game.Players.LocalPlayer
 local password = "k" ..                                                                                                                  "e" ..                                              "k"
 local passed = false
 local intweeninfo,outtweeninfo = TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.In),TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
-local commands = {"oldanim","dqqs","fps","antilog","boombox","hydroxide","iy","dex","serverhop","serverhop2","rejoin","nullware","owlhub","removekorblox","saveinstance","copycat","animgrabber","bang","reach","headsit","copypos"} --,"pitch","volume","soundid","visualizer"}
+local commands = {"oldanim",
+	"tracer",
+	"untracer",
+	"headspin",
+	"dqqs",
+	"fps",
+	"f3x",
+	"antilog",
+	"boombox",
+	"hydroxide",
+	"iy",
+	"dex",
+	"fling",
+	"invisfling",
+	"cleanfling",
+	"antifling",
+	"serverhop",
+	"serverhop2",
+	"rejoin",
+	"nullware",
+	"owlhub",
+	"removekorblox",
+	"saveinstance",
+	"copycat",
+	"animgrabber",
+	"bang",
+	"reach",
+	"headsit",
+	"sdex",
+	"copypos"} --,"pitch","volume","soundid","visualizer"}
 local executor
 
 --= GUI =--
@@ -343,7 +372,127 @@ local function saveins(bool)
 	delfile(info .. ".rbxl")
 end
 
-local visaulizer,sound
+local visaulizer,sound,Lines,antifling,Clip,Noclipping,FLYING
+
+local function noclip()
+	Clip = false
+	local function NoclipLoop()
+		if Clip == false and Player.Character ~= nil then
+			for _, child in pairs(Player.Character:GetDescendants()) do
+				if child:IsA("BasePart") and child.CanCollide == true then
+					child.CanCollide = false
+				end
+			end
+		end
+	end
+	Noclipping = game:GetService('RunService').Stepped:connect(NoclipLoop)
+end
+
+local function sFLY(vfly)
+	FLYING = false
+	local speedofthefly = 1
+	local speedofthevfly = 1
+	while not Player or not Player.Character or not Player.Character:FindFirstChild('HumanoidRootPart') or not Player.Character:FindFirstChild('Humanoid') do
+		wait()
+	end 
+	local T = Player.Character.HumanoidRootPart
+	local CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+	local lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+	local SPEED = 0
+	local function FLY()
+		FLYING = true
+		local BG = Instance.new('BodyGyro', T)
+		local BV = Instance.new('BodyVelocity', T)
+		BG.P = 9e4
+		BG.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+		BG.cframe = T.CFrame
+		BV.velocity = Vector3.new(0, 0, 0)
+		BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
+		spawn(function()
+			while FLYING do
+				if not vfly then
+					Player.Character:FindFirstChild("Humanoid").PlatformStand = true
+				end
+				if CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0 then
+					SPEED = 50
+				elseif not (CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0) and SPEED ~= 0 then
+					SPEED = 0
+				end
+				if (CONTROL.L + CONTROL.R) ~= 0 or (CONTROL.F + CONTROL.B) ~= 0 or (CONTROL.Q + CONTROL.E) ~= 0 then
+					BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (CONTROL.F + CONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(CONTROL.L + CONTROL.R, (CONTROL.F + CONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+					lCONTROL = {F = CONTROL.F, B = CONTROL.B, L = CONTROL.L, R = CONTROL.R}
+				elseif (CONTROL.L + CONTROL.R) == 0 and (CONTROL.F + CONTROL.B) == 0 and (CONTROL.Q + CONTROL.E) == 0 and SPEED ~= 0 then
+					BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (lCONTROL.F + lCONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(lCONTROL.L + lCONTROL.R, (lCONTROL.F + lCONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+				else
+					BV.velocity = Vector3.new(0, 0, 0)
+				end
+				BG.cframe = workspace.CurrentCamera.CoordinateFrame
+				wait()
+			end
+			CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+			lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+			SPEED = 0
+			BG:destroy()
+			BV:destroy()
+			Player.Character.Humanoid.PlatformStand = false
+		end)
+	end
+	Player:GetMouse().KeyDown:connect(function(KEY)
+		if KEY:lower() == 'w' then
+			if vfly then
+				CONTROL.F = speedofthevfly
+			else
+				CONTROL.F = speedofthefly
+			end
+		elseif KEY:lower() == 's' then
+			if vfly then
+				CONTROL.B = - speedofthevfly
+			else
+				CONTROL.B = - speedofthefly
+			end
+		elseif KEY:lower() == 'a' then
+			if vfly then
+				CONTROL.L = - speedofthevfly
+			else
+				CONTROL.L = - speedofthefly
+			end
+		elseif KEY:lower() == 'd' then
+			if vfly then
+				CONTROL.R = speedofthevfly
+			else
+				CONTROL.R = speedofthefly
+			end
+		elseif KEY:lower() == 'y' then
+			if vfly then
+				CONTROL.Q = speedofthevfly*2
+			else
+				CONTROL.Q = speedofthefly*2
+			end
+		elseif KEY:lower() == 't' then
+			if vfly then
+				CONTROL.E = -speedofthevfly*2
+			else
+				CONTROL.E = -speedofthefly*2
+			end
+		end
+	end)
+	Player:GetMouse().KeyUp:connect(function(KEY)
+		if KEY:lower() == 'w' then
+			CONTROL.F = 0
+		elseif KEY:lower() == 's' then
+			CONTROL.B = 0
+		elseif KEY:lower() == 'a' then
+			CONTROL.L = 0
+		elseif KEY:lower() == 'd' then
+			CONTROL.R = 0
+		elseif KEY:lower() == 'y' then
+			CONTROL.Q = 0
+		elseif KEY:lower() == 't' then
+			CONTROL.E = 0
+		end
+	end)
+	FLY()
+end
 
 local function command(cmd)
 	local returnvaluee = TextBox9.Text
@@ -357,22 +506,176 @@ local function command(cmd)
 		end
 		webImport("init")
 		webImport("ui/main")
+	elseif string.lower(cmd2[1]) == "tracer" then
+		if Lines == nil then Lines = {} end
+		_G.UpdateTracer = function()
+			RunService.RenderStepped:Connect(function()
+				for i,v in pairs(Lines) do
+					v:Remove()
+				end
+				Lines = {}
+				for i,v in pairs(game.Players:GetPlayers()) do 
+					if v ~= Player then
+						if v and v.Character ~= nil then
+							local Head = v.Character:FindFirstChild("Head")
+							if Head ~= nil then
+								local PosChar, withinScreenBounds = workspace.Camera:WorldToViewportPoint(Head.Position)
+								if withinScreenBounds then
+									local Line = Drawing.new("Line")
+									Line.Visible = true
+									Line.From = Vector2.new(workspace.Camera.ViewportSize.X / 2, workspace.Camera.ViewportSize.Y)
+									Line.To = Vector2.new(PosChar.X, PosChar.Y)
+									Line.Color = Color3.new(255,255,255)
+									Line.Thickness = 2
+									Line.Transparency = 1
+									Lines[#Lines+1] = Line
+								end
+							end
+						end
+					end
+				end
+			end)
+		end
+	elseif string.lower(cmd2[1]) == "fling" then
+		noclip()
+		--sFLY()
+		workspace.CurrentCamera.CameraSubject = Player.Character.HumanoidRootPart
+		local BT = Instance.new("BodyThrust")
+		BT.Parent = Player.Character.HumanoidRootPart
+		BT.Force = Vector3.new(999999, 999999, 999999)
+		BT.Location = Player.Character.HumanoidRootPart.Position
+		for i,player in pairs(Player.Character:GetChildren()) do
+			if player.ClassName == "Part" then
+				player.CustomPhysicalProperties = PhysicalProperties.new(0, 0.3, 0.5)
+			end
+		end
+	elseif string.lower(cmd2[1]) == "clientrespawn" then
+		local char = Player.Character
+		if char:FindFirstChildOfClass("Humanoid") then char:FindFirstChildOfClass("Humanoid"):ChangeState(15) end
+		char:ClearAllChildren()
+		local newChar = Instance.new("Model")
+		newChar.Parent = workspace
+		Player.Character = newChar
+		wait()
+		Player.Character = char
+		newChar:Destroy()
+	elseif string.lower(cmd2[1]) == "invisfling" then
+		local ch = Player.Character
+		local prt=Instance.new("Model", Player.Character)
+		local z1 = Instance.new("Part")
+		z1.Name="Torso"
+		z1.CanCollide = false
+		z1.Anchored = true
+		local z2 = Instance.new("Part", prt)
+		z2.Name="Head"
+		z2.Anchored = true
+		z2.CanCollide = false
+		local z3 =Instance.new("Humanoid", prt)
+		z3.Name="Humanoid"
+		z1.Position = Vector3.new(0,9999,0)
+		Player.Character=prt
+		wait(3)
+		Player.Character=ch
+		wait(3)
+		local plr = Player
+		local cmdm = plr:GetMouse()
+		local Hum = Instance.new("Humanoid")
+		z2:Clone()
+		Hum.Parent = Player.Character
+		local root =  Player.Character.HumanoidRootPart
+		for i,v in pairs(plr.Character:GetChildren()) do
+			if v ~= root and  v.Name ~= "Humanoid" then
+				v:Destroy()
+			end
+		end
+		root.Transparency = 0
+		root.Material = "ForceField"
+		root.Color = Color3.new(1, 1, 1)
+		game:GetService('RunService').Stepped:connect(function()
+			Player.Character.HumanoidRootPart.CanCollide = false
+		end)
+		game:GetService('RunService').RenderStepped:connect(function()
+			Player.Character.HumanoidRootPart.CanCollide = false
+		end)
+		sFLY()
+		workspace.CurrentCamera.CameraSubject = root
+		local bambam = Instance.new("BodyThrust")
+		bambam.Parent = Player.Character.HumanoidRootPart
+		bambam.Force = Vector3.new(999990,0,999990)
+		bambam.Location = Player.Character.HumanoidRootPart.Position
+	elseif string.lower(cmd2[1]) == "cleanfling" then
+		local tool = Player.Character:FindFirstChildOfClass("Tool")
+		if tool then
+			tool.Parent = Player.Backpack
+			tool.Handle.Massless = true
+			local RestoreCFling = {
+				Anim = Player.Character.Animate.toolnone.ToolNoneAnim.AnimationId;
+				Grip = tool.GripPos;
+			}
+			tool.GripPos = Vector3.new(5000, 5000, 5000)
+			Player.Character.HumanoidRootPart.CustomPhysicalProperties = PhysicalProperties.new(math.huge,math.huge,math.huge,math.huge,math.huge)
+			tool.Parent = Player.Character
+			pcall(function() Player.Character.Animate.toolnone.ToolNoneAnim.AnimationId = "nil" end)
+			wait(.1)
+			tool.Parent = Player.Backpack
+			wait(.1)
+			tool.Parent = Player.Character
+			noclip()
+		end
+	elseif string.lower(cmd2[1]) == "antifling" then
+		if antifling == nil then 
+			antifling = true
+		else
+			antifling = not antifling
+		end
+		local function Collisionless(person)
+			if antifling and person.Character then
+				for _,child in pairs(person.Character:GetDescendants()) do
+					if child:IsA("BasePart") and child.CanCollide then
+						child.CanCollide = false
+					end
+				end
+			end
+		end
+		for _,v in pairs(game.Players:GetPlayers()) do
+			if v ~= Player then
+				local antifling = game:GetService('RunService').Stepped:connect(function()
+					Collisionless(v)
+				end)
+			end
+		end
+		game.Players.PlayerAdded:Connect(function(v)
+			if v ~= Player and antifling then
+				local antifling = game:GetService('RunService').Stepped:connect(function()
+					Collisionless(v)
+				end)
+			end
+		end)
+	elseif string.lower(cmd2[1]) == "f3x" then
+		loadstring(game:GetObjects("rbxassetid://4698064966")[1].Source)()
+	elseif string.lower(cmd2[1]) == "sdex" then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/others/sdex", true))()
+	elseif string.lower(cmd2[1]) == "untracer" then
+		if _G.UpdateTracer then _G.UpdateTracer:Disconnect() end
+		for i,v in pairs(Lines) do
+			v:Remove()
+		end
+		Lines = {}
 	elseif string.lower(cmd2[1]) == "oldanim" then
-		game.Players.LocalPlayer.Character:BreakJoints()
-		game.Players.LocalPlayer.Character=nil
-		Connection = game.Workspace.DescendantAdded:Connect(function(c)
+		Player.Character:BreakJoints()
+		Player.Character=nil
+		local Connection = game.Workspace.DescendantAdded:Connect(function(c)
 			if c.Name == "Animate" then
 				c.Disabled=true        
 			end
 		end)
-		repeat wait() until game.Players.LocalPlayer.Character
-		Char = game.Players.LocalPlayer.Character
-		Died = game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Died:Connect(function()
+		repeat wait() until Player.Character
+		local Char = Player.Character
+		local Died = Player.Character:WaitForChild("Humanoid").Died:Connect(function()
 			Connection:Disconnect()
-			Died:Disconnect()
 		end)
 		wait(.1)
-		function waitForChild(parent, childName)
+		local function waitForChild(parent, childName)
 			local child = parent:findFirstChild(childName)
 			if child then return child end
 			while true do
@@ -385,7 +688,7 @@ local function command(cmd)
 
 		-- declarations
 
-		local Figure = game.Players.LocalPlayer.Character
+		local Figure = Player.Character
 		local Torso = waitForChild(Figure, "Torso")
 		local RightShoulder = waitForChild(Torso, "Right Shoulder")
 		local LeftShoulder = waitForChild(Torso, "Left Shoulder")
@@ -402,7 +705,7 @@ local function command(cmd)
 
 		-- functions
 
-		function onRunning(speed)
+		local function onRunning(speed)
 			if speed>0 then
 				pose = "Running"
 			else
@@ -410,39 +713,39 @@ local function command(cmd)
 			end
 		end
 
-		function onDied()
+		local function onDied()
 			pose = "Dead"
 		end
 
-		function onJumping()
+		local function onJumping()
 			pose = "Jumping"
 		end
 
-		function onClimbing()
+		local function onClimbing()
 			pose = "Climbing"
 		end
 
-		function onGettingUp()
+		local function onGettingUp()
 			pose = "GettingUp"
 		end
 
-		function onFreeFall()
+		local function onFreeFall()
 			pose = "FreeFall"
 		end
 
-		function onFallingDown()
+		local function onFallingDown()
 			pose = "FallingDown"
 		end
 
-		function onSeated()
+		local function onSeated()
 			pose = "Seated"
 		end
 
-		function onPlatformStanding()
+		local function onPlatformStanding()
 			pose = "PlatformStanding"
 		end
 
-		function onSwimming(speed)
+		local function onSwimming(speed)
 			if speed>0 then
 				pose = "Running"
 			else
@@ -450,7 +753,7 @@ local function command(cmd)
 			end
 		end
 
-		function moveJump()
+		local function moveJump()
 			RightShoulder.MaxVelocity = jumpMaxLimbVelocity
 			LeftShoulder.MaxVelocity = jumpMaxLimbVelocity
 			RightShoulder:SetDesiredAngle(3.14)
@@ -462,7 +765,7 @@ local function command(cmd)
 
 		-- same as jump for now
 
-		function moveFreeFall()
+		local function moveFreeFall()
 			RightShoulder.MaxVelocity = jumpMaxLimbVelocity
 			LeftShoulder.MaxVelocity = jumpMaxLimbVelocity
 			RightShoulder:SetDesiredAngle(3.14)
@@ -471,7 +774,7 @@ local function command(cmd)
 			LeftHip:SetDesiredAngle(0)
 		end
 
-		function moveSit()
+		local function moveSit()
 			RightShoulder.MaxVelocity = 0.15
 			LeftShoulder.MaxVelocity = 0.15
 			RightShoulder:SetDesiredAngle(3.14 /2)
@@ -480,14 +783,14 @@ local function command(cmd)
 			LeftHip:SetDesiredAngle(-3.14 /2)
 		end
 
-		function getTool()
+		local function getTool()
 			for _, kid in ipairs(Figure:GetChildren()) do
 				if kid.className == "Tool" then return kid end
 			end
 			return nil
 		end
 
-		function getToolAnim(tool)
+		local function getToolAnim(tool)
 			for _, c in ipairs(tool:GetChildren()) do
 				if c.Name == "toolanim" and c.className == "StringValue" then
 					return c
@@ -496,7 +799,7 @@ local function command(cmd)
 			return nil
 		end
 
-		function animateTool()
+		local function animateTool()
 
 			if (toolAnim == "None") then
 				RightShoulder:SetDesiredAngle(1.57)
@@ -522,7 +825,7 @@ local function command(cmd)
 			end
 		end
 
-		function move(time)
+		local function move(time)
 			local amplitude
 			local frequency
 
@@ -567,7 +870,7 @@ local function command(cmd)
 				frequency = 1
 			end
 
-			desiredAngle = amplitude * math.sin(time*frequency)
+			local desiredAngle = amplitude * math.sin(time*frequency)
 
 			RightShoulder:SetDesiredAngle(desiredAngle + climbFudge)
 			LeftShoulder:SetDesiredAngle(desiredAngle - climbFudge)
@@ -579,7 +882,7 @@ local function command(cmd)
 
 			if tool then
 
-				animStringValueObject = getToolAnim(tool)
+				local animStringValueObject = getToolAnim(tool)
 
 				if animStringValueObject then
 					toolAnim = animStringValueObject.Value
@@ -623,8 +926,18 @@ local function command(cmd)
 			local _, time = wait(0.1)
 			move(time)
 		end
+
+	elseif string.lower(cmd2[1]) == "headspin" then
+		game["Players"].LocalPlayer.Character.Humanoid.Health = 0
+		game["Players"].LocalPlayer.CharacterAdded:Connect(function(char)
+
+			char:WaitForChild("Animate").Disabled = true
+			char:WaitForChild('Humanoid'):WaitForChild("Animator"):Destroy()
+			Torso.Neck.DesiredAngle = math.huge
+
+		end)
 	elseif string.lower(cmd2[1]) == "copypos" then
-		local roundedPos = math.round(game.Players.LocalPlayer.Character.HumanoidRootPart.Position.X) .. ", " .. math.round(game.Players.LocalPlayer.Character.HumanoidRootPart.Position.Y) .. ", " .. math.round(game.Players.LocalPlayer.Character.HumanoidRootPart.Position.Z)
+		local roundedPos = math.round(Player.Character.HumanoidRootPart.Position.X) .. ", " .. math.round(Player.Character.HumanoidRootPart.Position.Y) .. ", " .. math.round(Player.Character.HumanoidRootPart.Position.Z)
 		toClipboard(roundedPos)
 	elseif string.lower(cmd2[1]) == "dqqs" then
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/QuickSwitch.lua"))()
@@ -635,7 +948,7 @@ local function command(cmd)
 		if cmd2[2] then if string.lower(cmd2[2]) == "yes" or string.lower(cmd2[2]) == "true" then bool = true end end
 		saveins(bool)
 	elseif string.lower(cmd2[1]) == "removekorblox" then
-		local LP = game.Players.LocalPlayer
+		local LP = Player
 		local a = LP.Character:FindFirstChild("Korblox Deathspeaker Right Leg")
 		if a then a:Destroy() end
 		LP.CharacterAdded:Connect(function(v)
@@ -655,7 +968,7 @@ local function command(cmd)
 				_G.FunyEpic = game:GetService("RunService").Heartbeat:Connect(function()
 					local pos = copyplr.Character.HumanoidRootPart.CFrame
 					wait(tonumber(cmd2[3]) or 0)
-					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
+					Player.Character.HumanoidRootPart.CFrame = pos
 				end)
 			end
 		end
@@ -712,7 +1025,7 @@ local function command(cmd)
 			end
 		end
 		wait(1)
-		local a = game.Players.LocalPlayer.PlayerGui:FindFirstChild("PlayerList",true)
+		local a = Player.PlayerGui:FindFirstChild("PlayerList",true)
 		if a then
 			if a.Parent:FindFirstChild("TopBar") then
 				a.Parent.TextBox:CaptureFocus()
@@ -721,7 +1034,7 @@ local function command(cmd)
 			end
 		end
 		wait(1)
-		local b = game.Players.LocalPlayer:FindFirstChild("Loadstring",true)
+		local b = Player:FindFirstChild("Loadstring",true)
 		if b then
 			for i,v in pairs(b.Parent.Parent:GetDescendants()) do
 				if v:IsA("RemoteEvent") then
@@ -739,10 +1052,10 @@ local function command(cmd)
 				end
 			end
 			if copyplr then
-				game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid').Sit = true
+				Player.Character:FindFirstChildOfClass('Humanoid').Sit = true
 				_G.FunyEpic = game:GetService("RunService").Heartbeat:Connect(function()
-					if game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid').Sit == true then
-						game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = copyplr.Character.HumanoidRootPart.CFrame *CFrame.new(0,1.6,1.15)
+					if Player.Character:FindFirstChildOfClass('Humanoid').Sit == true then
+						Player.Character.HumanoidRootPart.CFrame = copyplr.Character.HumanoidRootPart.CFrame *CFrame.new(0,1.6,1.15)
 					else
 						if _G.FunyEpic then _G.FunyEpic:Disconnect() end
 					end
@@ -804,7 +1117,7 @@ local function command(cmd)
 					bangDied:Disconnect()
 				end)
 				_G.FunyEpic = game:GetService("RunService").Heartbeat:Connect(function()
-					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = copyplr.Character.HumanoidRootPart.CFrame *CFrame.new(0,0,1)
+					Player.Character.HumanoidRootPart.CFrame = copyplr.Character.HumanoidRootPart.CFrame *CFrame.new(0,0,1)
 				end)
 			end
 		end
@@ -828,13 +1141,13 @@ local function command(cmd)
 			end
 		end
 	elseif string.lower(cmd2[1]) == "serverhop2" then
-		game:GetService('TeleportService'):Teleport(game.PlaceId, game.Players.LocalPlayer)
+		game:GetService('TeleportService'):Teleport(game.PlaceId, Player)
 	elseif string.lower(cmd2[1]) == "rejoin" then
 		if #game.Players:GetPlayers() <= 1 then
 			wait()
-			game:GetService('TeleportService'):Teleport(game.PlaceId, game.Players.LocalPlayer)
+			game:GetService('TeleportService'):Teleport(game.PlaceId, Player)
 		else
-			game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, game.JobId, game.Players.LocalPlayer)
+			game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, game.JobId, Player)
 		end
 	else return returnvaluee
 	end
