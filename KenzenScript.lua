@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 7 .. "." .. 1
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 7 .. "." .. 2
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -555,12 +555,15 @@ local function command(cmd)
 			Noclipping:Disconnect()
 		end
 		Clip = true
-		FLYING = false
 		Player.Character.HumanoidRootPart.BodyThrust:Destroy()
 		Player.Character.Humanoid.PlatformStand = true
 		Player.Character.Humanoid.Sit = true
-		wait(0.1)
+		local temp = Player.Character:FindFirstChildOfClass("Part")
+		temp.Anchored = true
+		wait(0.2)
 		Player.Character.Humanoid.Jump = true
+		FLYING = false
+		temp.Anchored = false
 	elseif string.lower(cmd2[1]) == "fling" then
 		noclip()
 		sFLY()
