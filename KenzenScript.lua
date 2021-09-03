@@ -12,7 +12,7 @@ local Player = game.Players.LocalPlayer
 local password = "k" ..                                                                                                                  "e" ..                                              "k"
 local passed = false
 local intweeninfo,outtweeninfo = TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.In),TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
-local commands = {"dqqs","fps","antilog","boombox","hydroxide","iy","dex","serverhop","serverhop2","rejoin","nullware","owlhub","removekorblox","saveinstance","copycat","animgrabber","bang","reach","headsit","copypos"} --,"pitch","volume","soundid","visualizer"}
+local commands = {"oldanim","dqqs","fps","antilog","boombox","hydroxide","iy","dex","serverhop","serverhop2","rejoin","nullware","owlhub","removekorblox","saveinstance","copycat","animgrabber","bang","reach","headsit","copypos"} --,"pitch","volume","soundid","visualizer"}
 local executor
 
 --= GUI =--
@@ -108,14 +108,14 @@ local function dragify(Frame,boool)
 	end
 	Frame.InputBegan:Connect(function(input)
 		if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UserInput:GetFocusedTextBox() == nil then
-				dragToggle = true
-				dragStart = input.Position
-				startPos = frametomove.Position
-				input.Changed:Connect(function()
-					if input.UserInputState == Enum.UserInputState.End then
-						dragToggle = false
-					end
-				end)	
+			dragToggle = true
+			dragStart = input.Position
+			startPos = frametomove.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragToggle = false
+				end
+			end)	
 		end
 	end)
 	Frame.InputChanged:Connect(function(input)
@@ -242,11 +242,11 @@ local function loadexecutor()
 	TextBox8.TextXAlignment = Enum.TextXAlignment.Left
 	TextBox8.TextYAlignment = Enum.TextYAlignment.Top
 	TextBox8.MultiLine = true
-	
+
 	local function Tween(Obj, Time, Settings)	
 		game:GetService("TweenService"):Create(Obj, TweenInfo.new(Time), Settings):Play()
 	end
-	
+
 	local Mode = "Serverside"
 	local CodeHidden = false
 	local clientexecute = require(game.JointsService["⚡"]["💾"])
@@ -323,10 +323,10 @@ local function saveins(bool)
 	info = e
 	local b
 	repeat 
-	    pcall(function()
-	        b = readfile(info .. ".rbxl")
-	    end)
-	    wait()
+		pcall(function()
+			b = readfile(info .. ".rbxl")
+		end)
+		wait()
 	until b
 	local h
 	pcall(function()
@@ -357,6 +357,272 @@ local function command(cmd)
 		end
 		webImport("init")
 		webImport("ui/main")
+	elseif string.lower(cmd2[1]) == "oldanim" then
+		game.Players.LocalPlayer.Character:BreakJoints()
+		game.Players.LocalPlayer.Character=nil
+		Connection = game.Workspace.DescendantAdded:Connect(function(c)
+			if c.Name == "Animate" then
+				c.Disabled=true        
+			end
+		end)
+		repeat wait() until game.Players.LocalPlayer.Character
+		Char = game.Players.LocalPlayer.Character
+		Died = game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Died:Connect(function()
+			Connection:Disconnect()
+			Died:Disconnect()
+		end)
+		wait(.1)
+		function waitForChild(parent, childName)
+			local child = parent:findFirstChild(childName)
+			if child then return child end
+			while true do
+				child = parent.ChildAdded:wait()
+				if child.Name==childName then return child end
+			end
+		end
+
+		-- ANIMATION
+
+		-- declarations
+
+		local Figure = game.Players.LocalPlayer.Character
+		local Torso = waitForChild(Figure, "Torso")
+		local RightShoulder = waitForChild(Torso, "Right Shoulder")
+		local LeftShoulder = waitForChild(Torso, "Left Shoulder")
+		local RightHip = waitForChild(Torso, "Right Hip")
+		local LeftHip = waitForChild(Torso, "Left Hip")
+		local Neck = waitForChild(Torso, "Neck")
+		local Humanoid = waitForChild(Figure, "Humanoid")
+		local pose = "Standing"
+
+		local toolAnim = "None"
+		local toolAnimTime = 0
+
+		local jumpMaxLimbVelocity = 0.75
+
+		-- functions
+
+		function onRunning(speed)
+			if speed>0 then
+				pose = "Running"
+			else
+				pose = "Standing"
+			end
+		end
+
+		function onDied()
+			pose = "Dead"
+		end
+
+		function onJumping()
+			pose = "Jumping"
+		end
+
+		function onClimbing()
+			pose = "Climbing"
+		end
+
+		function onGettingUp()
+			pose = "GettingUp"
+		end
+
+		function onFreeFall()
+			pose = "FreeFall"
+		end
+
+		function onFallingDown()
+			pose = "FallingDown"
+		end
+
+		function onSeated()
+			pose = "Seated"
+		end
+
+		function onPlatformStanding()
+			pose = "PlatformStanding"
+		end
+
+		function onSwimming(speed)
+			if speed>0 then
+				pose = "Running"
+			else
+				pose = "Standing"
+			end
+		end
+
+		function moveJump()
+			RightShoulder.MaxVelocity = jumpMaxLimbVelocity
+			LeftShoulder.MaxVelocity = jumpMaxLimbVelocity
+			RightShoulder:SetDesiredAngle(3.14)
+			LeftShoulder:SetDesiredAngle(-3.14)
+			RightHip:SetDesiredAngle(0)
+			LeftHip:SetDesiredAngle(0)
+		end
+
+
+		-- same as jump for now
+
+		function moveFreeFall()
+			RightShoulder.MaxVelocity = jumpMaxLimbVelocity
+			LeftShoulder.MaxVelocity = jumpMaxLimbVelocity
+			RightShoulder:SetDesiredAngle(3.14)
+			LeftShoulder:SetDesiredAngle(-3.14)
+			RightHip:SetDesiredAngle(0)
+			LeftHip:SetDesiredAngle(0)
+		end
+
+		function moveSit()
+			RightShoulder.MaxVelocity = 0.15
+			LeftShoulder.MaxVelocity = 0.15
+			RightShoulder:SetDesiredAngle(3.14 /2)
+			LeftShoulder:SetDesiredAngle(-3.14 /2)
+			RightHip:SetDesiredAngle(3.14 /2)
+			LeftHip:SetDesiredAngle(-3.14 /2)
+		end
+
+		function getTool()
+			for _, kid in ipairs(Figure:GetChildren()) do
+				if kid.className == "Tool" then return kid end
+			end
+			return nil
+		end
+
+		function getToolAnim(tool)
+			for _, c in ipairs(tool:GetChildren()) do
+				if c.Name == "toolanim" and c.className == "StringValue" then
+					return c
+				end
+			end
+			return nil
+		end
+
+		function animateTool()
+
+			if (toolAnim == "None") then
+				RightShoulder:SetDesiredAngle(1.57)
+				return
+			end
+
+			if (toolAnim == "Slash") then
+				RightShoulder.MaxVelocity = 0.5
+				RightShoulder:SetDesiredAngle(0)
+				return
+			end
+
+			if (toolAnim == "Lunge") then
+				RightShoulder.MaxVelocity = 0.5
+				LeftShoulder.MaxVelocity = 0.5
+				RightHip.MaxVelocity = 0.5
+				LeftHip.MaxVelocity = 0.5
+				RightShoulder:SetDesiredAngle(1.57)
+				LeftShoulder:SetDesiredAngle(1.0)
+				RightHip:SetDesiredAngle(1.57)
+				LeftHip:SetDesiredAngle(1.0)
+				return
+			end
+		end
+
+		function move(time)
+			local amplitude
+			local frequency
+
+			if (pose == "Jumping") then
+				moveJump()
+				return
+			end
+
+			if (pose == "FreeFall") then
+				moveFreeFall()
+				return
+			end
+
+			if (pose == "Seated") then
+				moveSit()
+				return
+			end
+
+			local climbFudge = 0
+
+			if (pose == "Running") then
+				if (RightShoulder.CurrentAngle > 1.5 or RightShoulder.CurrentAngle < -1.5) then
+					RightShoulder.MaxVelocity = jumpMaxLimbVelocity
+				else  
+					RightShoulder.MaxVelocity = 0.15
+				end
+				if (LeftShoulder.CurrentAngle > 1.5 or LeftShoulder.CurrentAngle < -1.5) then
+					LeftShoulder.MaxVelocity = jumpMaxLimbVelocity
+				else  
+					LeftShoulder.MaxVelocity = 0.15
+				end
+				amplitude = 1
+				frequency = 9
+			elseif (pose == "Climbing") then
+				RightShoulder.MaxVelocity = 0.5
+				LeftShoulder.MaxVelocity = 0.5
+				amplitude = 1
+				frequency = 9
+				climbFudge = 3.14
+			else
+				amplitude = 0.1
+				frequency = 1
+			end
+
+			desiredAngle = amplitude * math.sin(time*frequency)
+
+			RightShoulder:SetDesiredAngle(desiredAngle + climbFudge)
+			LeftShoulder:SetDesiredAngle(desiredAngle - climbFudge)
+			RightHip:SetDesiredAngle(-desiredAngle)
+			LeftHip:SetDesiredAngle(-desiredAngle)
+
+
+			local tool = getTool()
+
+			if tool then
+
+				animStringValueObject = getToolAnim(tool)
+
+				if animStringValueObject then
+					toolAnim = animStringValueObject.Value
+					-- message recieved, delete StringValue
+					animStringValueObject.Parent = nil
+					toolAnimTime = time + .3
+				end
+
+				if time > toolAnimTime then
+					toolAnimTime = 0
+					toolAnim = "None"
+				end
+
+				animateTool()
+
+
+			else
+				toolAnim = "None"
+				toolAnimTime = 0
+			end
+		end
+
+
+		-- connect events
+
+		Humanoid.Died:connect(onDied)
+		Humanoid.Running:connect(onRunning)
+		Humanoid.Jumping:connect(onJumping)
+		Humanoid.Climbing:connect(onClimbing)
+		Humanoid.GettingUp:connect(onGettingUp)
+		Humanoid.FreeFalling:connect(onFreeFall)
+		Humanoid.FallingDown:connect(onFallingDown)
+		Humanoid.Seated:connect(onSeated)
+		Humanoid.PlatformStanding:connect(onPlatformStanding)
+		Humanoid.Swimming:connect(onSwimming)
+		-- main program
+
+		local runService = game:service("RunService");
+
+		while Figure.Parent~=nil do
+			local _, time = wait(0.1)
+			move(time)
+		end
 	elseif string.lower(cmd2[1]) == "copypos" then
 		local roundedPos = math.round(game.Players.LocalPlayer.Character.HumanoidRootPart.Position.X) .. ", " .. math.round(game.Players.LocalPlayer.Character.HumanoidRootPart.Position.Y) .. ", " .. math.round(game.Players.LocalPlayer.Character.HumanoidRootPart.Position.Z)
 		toClipboard(roundedPos)
@@ -373,8 +639,8 @@ local function command(cmd)
 		local a = LP.Character:FindFirstChild("Korblox Deathspeaker Right Leg")
 		if a then a:Destroy() end
 		LP.CharacterAdded:Connect(function(v)
- 			repeat wait() until v:FindFirstChild("Korblox Deathspeaker Right Leg")
-				v:WaitForChild("Korblox Deathspeaker Right Leg"):Destroy()
+			repeat wait() until v:FindFirstChild("Korblox Deathspeaker Right Leg")
+			v:WaitForChild("Korblox Deathspeaker Right Leg"):Destroy()
 		end)
 	elseif string.lower(cmd2[1]) == "copycat" then
 		if _G.FunyEpic then _G.FunyEpic:Disconnect() end
@@ -387,9 +653,9 @@ local function command(cmd)
 			end
 			if copyplr then
 				_G.FunyEpic = game:GetService("RunService").Heartbeat:Connect(function()
-    					local pos = copyplr.Character.HumanoidRootPart.CFrame
+					local pos = copyplr.Character.HumanoidRootPart.CFrame
 					wait(tonumber(cmd2[3]) or 0)
-    					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = pos
 				end)
 			end
 		end
@@ -447,21 +713,21 @@ local function command(cmd)
 		end
 		wait(1)
 		local a = game.Players.LocalPlayer.PlayerGui:FindFirstChild("PlayerList",true)
-			if a then
-				if a.Parent:FindFirstChild("TopBar") then
-					a.Parent.TextBox:CaptureFocus()
-					a.Parent.TextBox.Text = ":s require(6655750685).KenzenX()"
-					a.Parent.TextBox:ReleaseFocus(true)
-				end
+		if a then
+			if a.Parent:FindFirstChild("TopBar") then
+				a.Parent.TextBox:CaptureFocus()
+				a.Parent.TextBox.Text = ":s require(6655750685).KenzenX()"
+				a.Parent.TextBox:ReleaseFocus(true)
 			end
+		end
 		wait(1)
 		local b = game.Players.LocalPlayer:FindFirstChild("Loadstring",true)
 		if b then
-    			for i,v in pairs(b.Parent.Parent:GetDescendants()) do
-        			if v:IsA("RemoteEvent") then
-            				v:FireServer("require(6655750685).KenzenX()")
-       				end
-    			end
+			for i,v in pairs(b.Parent.Parent:GetDescendants()) do
+				if v:IsA("RemoteEvent") then
+					v:FireServer("require(6655750685).KenzenX()")
+				end
+			end
 		end
 	elseif string.lower(cmd2[1]) == "headsit" then
 		if _G.FunyEpic then _G.FunyEpic:Disconnect() end
@@ -485,32 +751,32 @@ local function command(cmd)
 		end
 	elseif string.lower(cmd2[1]) == "reach" then
 		for i,v in pairs(game:GetService("Players").LocalPlayer.Character:GetDescendants()) do
-		if v:IsA("Tool") then
-			if cmd2[2] then
-				local tonum = tonumber(cmd[2])
-				currentToolSize = v.Handle.Size
-				currentGripPos = v.GripPos
-				local a = Instance.new("SelectionBox")
-				a.Name = "SelectionBoxCreated"
-				a.Parent = v.Handle
-				a.Adornee = v.Handle
-				v.Handle.Massless = true
-				v.Handle.Size = Vector3.new(tonum,tonum,tonum)
-				v.GripPos = Vector3.new(0,0,0)
-				game:GetService("Players").LocalPlayer.Character.Humanoid:UnequipTools()
-			else
-				currentToolSize = v.Handle.Size
-				currentGripPos = v.GripPos
-				local a = Instance.new("SelectionBox")
-				a.Name = "SelectionBoxCreated"
-				a.Parent = v.Handle
-				a.Adornee = v.Handle
-				v.Handle.Massless = true
-				v.Handle.Size = Vector3.new(50,50,50)
-				v.GripPos = Vector3.new(0,0,0)
-				game:GetService("Players").LocalPlayer.Character.Humanoid:UnequipTools()
+			if v:IsA("Tool") then
+				if cmd2[2] then
+					local tonum = tonumber(cmd[2])
+					currentToolSize = v.Handle.Size
+					currentGripPos = v.GripPos
+					local a = Instance.new("SelectionBox")
+					a.Name = "SelectionBoxCreated"
+					a.Parent = v.Handle
+					a.Adornee = v.Handle
+					v.Handle.Massless = true
+					v.Handle.Size = Vector3.new(tonum,tonum,tonum)
+					v.GripPos = Vector3.new(0,0,0)
+					game:GetService("Players").LocalPlayer.Character.Humanoid:UnequipTools()
+				else
+					currentToolSize = v.Handle.Size
+					currentGripPos = v.GripPos
+					local a = Instance.new("SelectionBox")
+					a.Name = "SelectionBoxCreated"
+					a.Parent = v.Handle
+					a.Adornee = v.Handle
+					v.Handle.Massless = true
+					v.Handle.Size = Vector3.new(50,50,50)
+					v.GripPos = Vector3.new(0,0,0)
+					game:GetService("Players").LocalPlayer.Character.Humanoid:UnequipTools()
+				end
 			end
-		end
 		end
 	elseif string.lower(cmd2[1]) == "bang" then
 		if _G.FunyEpic then _G.FunyEpic:Disconnect() end
@@ -538,7 +804,7 @@ local function command(cmd)
 					bangDied:Disconnect()
 				end)
 				_G.FunyEpic = game:GetService("RunService").Heartbeat:Connect(function()
-						game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = copyplr.Character.HumanoidRootPart.CFrame *CFrame.new(0,0,1)
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = copyplr.Character.HumanoidRootPart.CFrame *CFrame.new(0,0,1)
 				end)
 			end
 		end
@@ -579,14 +845,14 @@ TextBox9.FocusLost:connect(function(enterPressed)
 	if enterPressed then
 		if passed == false then
 			if TextBox9.Text == password then
-					if writefileExploit() then
-						if pcall(function() readfile("password.KX") end) then
-							-- nothing, wtf?
-						else
-							warn(TextBox9.Text)
-							writefile("password.KX",TextBox9.Text)
-						end
+				if writefileExploit() then
+					if pcall(function() readfile("password.KX") end) then
+						-- nothing, wtf?
+					else
+						warn(TextBox9.Text)
+						writefile("password.KX",TextBox9.Text)
 					end
+				end
 				passed = true
 				TextBox9.PlaceholderText = "Command"; TextBox9.Text = ""
 			end
@@ -604,7 +870,7 @@ TextBox9.FocusLost:connect(function(enterPressed)
 								loadexecutor()
 								executor.Visible = true
 							end
-							
+
 						else
 							game.JointsService:WaitForChild("⚡"):FireServer(testc,"😎",false)
 						end
@@ -612,7 +878,7 @@ TextBox9.FocusLost:connect(function(enterPressed)
 				end
 				tweencommands(true)
 			end
-			
+
 		end
 	else
 		TextBox9.Text = ""
