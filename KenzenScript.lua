@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 7 .. "." .. 3
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 7 .. "." .. 4
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -545,6 +545,7 @@ local function command(cmd)
 				end
 			end)
 		end
+		_G.UpdateTracer()
 	elseif string.lower(cmd2[1]) == "unfling" then
 		for i,player in pairs(Player.Character:GetChildren()) do
 			if player.ClassName == "Part" then
