@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 7 .. "." .. 0
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 7 .. "." .. 1
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -545,6 +545,22 @@ local function command(cmd)
 				end
 			end)
 		end
+	elseif string.lower(cmd2[1]) == "unfling" then
+		for i,player in pairs(Player.Character:GetChildren()) do
+			if player.ClassName == "Part" then
+				player.CustomPhysicalProperties = PhysicalProperties.new(0.7, 0.3, 0.5)
+			end
+		end
+		if Noclipping then
+			Noclipping:Disconnect()
+		end
+		Clip = true
+		FLYING = false
+		Player.Character.HumanoidRootPart.BodyThrust:Destroy()
+		Player.Character.Humanoid.PlatformStand = true
+		Player.Character.Humanoid.Sit = true
+		wait(0.1)
+		Player.Character.Humanoid.Jump = true
 	elseif string.lower(cmd2[1]) == "fling" then
 		noclip()
 		sFLY()
