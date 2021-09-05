@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 7 .. "." .. 5
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 7 .. "." .. 6
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -532,7 +532,8 @@ local function command(cmd)
 								if withinScreenBounds then
 									local Line = Drawing.new("Line")
 									Line.Visible = true
-									Line.From = Vector2.new(workspace.Camera.ViewportSize.X / 2, workspace.Camera.ViewportSize.Y)
+									--Line.From = Vector2.new(workspace.Camera.ViewportSize.X / 2, workspace.Camera.ViewportSize.Y)
+									Line.From = Vector2.new(Player:GetMouse().X,Player:GetMouse().Y)
 									Line.To = Vector2.new(PosChar.X, PosChar.Y)
 									Line.Color = Color3.new(255,255,255)
 									Line.Thickness = 2
