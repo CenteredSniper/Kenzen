@@ -518,7 +518,7 @@ local function command(cmd)
 	elseif string.lower(cmd2[1]) == "tracer" then
 		if Lines == nil then Lines = {} end
 		_G.UpdateTracer = function()
-			RunService.RenderStepped:Connect(function()
+			game["Run Service"].RenderStepped:Connect(function()
 				for i,v in pairs(Lines) do
 					v:Remove()
 				end
@@ -526,7 +526,7 @@ local function command(cmd)
 				for i,v in pairs(game.Players:GetPlayers()) do 
 					if v ~= Player then
 						if v and v.Character ~= nil then
-							local Head = v.Character:FindFirstChild("Head")
+							local Head = v.Character:FindFirstChild("HumanoidRootPart")
 							if Head ~= nil then
 								local PosChar, withinScreenBounds = workspace.Camera:WorldToViewportPoint(Head.Position)
 								if withinScreenBounds then
@@ -534,7 +534,8 @@ local function command(cmd)
 									Line.Visible = true
 									--Line.From = Vector2.new(workspace.Camera.ViewportSize.X / 2, workspace.Camera.ViewportSize.Y)
 									--Line.From = Vector2.new(Player:GetMouse().X,Player:GetMouse().Y)
-									Line.From = workspace.Camera:WorldToViewportPoint(Player.Character.Head.Position)
+									local a = workspace.Camera:WorldToViewportPoint(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
+									Line.From = Vector2.new(a.X,a.Y)
 									Line.To = Vector2.new(PosChar.X, PosChar.Y)
 									Line.Color = Color3.new(255,255,255)
 									Line.Thickness = 2
