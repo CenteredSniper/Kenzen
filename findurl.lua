@@ -1,3 +1,4 @@
+printconsole("\\ Downloading Audio")
 local domains = [[.ac.ad.ae.aero.af.ag.ai.al.am.an.ao.aq.ar.arpa.as.asia.at.au
    .aw.ax.az.ba.bb.bd.be.bf.bg.bh.bi.biz.bj.bm.bn.bo.br.bs.bt.bv.bw.by.bz.ca
    .cat.cc.cd.cf.cg.ch.ci.ck.cl.cm.cn.co.com.coop.cr.cs.cu.cv.cx.cy.cz.dd.de
@@ -13,7 +14,9 @@ local domains = [[.ac.ad.ae.aero.af.ag.ai.al.am.an.ao.aq.ar.arpa.as.asia.at.au
    .ws.xxx.ye.yt.yu.za.zm.zr.zw]]
 local a = _G.URL:split("v=")
 local text = game:HttpGet("https://api.tubemp3.biz/audio/" .. a[#a])
-if text then
+printconsole("\\ Grabbing Data")
+repeat wait() until text
+printconsole("\\ Grabbed Data")
 	local tlds = {}
 	for tld in domains:gmatch'%w+' do
 		tlds[tld] = true
@@ -21,7 +24,7 @@ if text then
 	local function max4(a,b,c,d) return math.max(a+0, b+0, c+0, d+0) end
 	local protocols = {[''] = 0, ['http://'] = 0, ['https://'] = 0, ['ftp://'] = 0}
 	local finished = {}
-
+printconsole("\\ Looking Through URLS")
 	for pos_start, url, prot, subd, tld, colon, port, slash, path in
 		text:gmatch'()(([%w_.~!*:@&+$/?%%#-]-)(%w[-.%w]*%.)(%w+)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))'
 	do
@@ -33,8 +36,8 @@ if text then
 			finished[pos_start] = true
 			--print(pos_start, url)
 			if string.match(url, "download") then
+			printconsole("\\ Found Download URL")
 				return url
 			end
 		end
 	end
-end
