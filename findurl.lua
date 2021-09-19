@@ -11,7 +11,7 @@ local domains = [[.ac.ad.ae.aero.af.ag.ai.al.am.an.ao.aq.ar.arpa.as.asia.at.au
    .sl.sm.sn.so.sr.ss.st.store.su.sv.sy.sz.tc.td.tel.tf.tg.th.tj.tk.tl.tm.tn
    .to.tp.tr.travel.tt.tv.tw.tz.ua.ug.uk.um.us.uy.va.vc.ve.vg.vi.vn.vu.web.wf
    .ws.xxx.ye.yt.yu.za.zm.zr.zw]]
-local a = _G.URL:split("/")
+local a = _G.URL:split("v=")
 local text = game:HttpGet("https://api.tubemp3.biz/audio/" .. a[#a])
 if text then
 	local tlds = {}
