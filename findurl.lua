@@ -36,7 +36,7 @@ printconsole("\\ Looking Through URLS")
 			finished[pos_start] = true
 			--print(pos_start, url)
 			if string.match(url, "download") then
-			printconsole("\\ Found Download URL")
+			printconsole("\\ Found Download URL - " .. url)
 				--return url
 				_G.URL = url
 			end
