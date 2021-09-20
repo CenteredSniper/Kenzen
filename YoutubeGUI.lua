@@ -53,6 +53,7 @@ gui.Frame.Link.FocusLost:Connect(function(enterPressed)
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/findurl.lua"))()
 				filesystem.new(filenam .. ".mp3",game:HttpGet(_G.URL))
 			end
+			repeat wait() until isfile(filenam.. ".mp3")
 			sound.SoundId = getsynasset(filenam.. ".mp3")
 			sound:Play()
 		end
