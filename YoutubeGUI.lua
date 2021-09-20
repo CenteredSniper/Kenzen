@@ -1,4 +1,4 @@
-printconsole("YoutubeGUI v1.0")
+printconsole("YoutubeGUI v1.1")
 local gui = game:GetObjects("rbxassetid://7521131615")[1]
 gui.Parent = game.CoreGui
 local filesystem = loadstring(game:HttpGetAsync('https://pastebin.com/raw/yeY05Niq'))()
