@@ -1,4 +1,4 @@
-printconsole("YoutubeGUI v1.1")
+printconsole("YoutubeGUI v1.2")
 local gui = game:GetObjects("rbxassetid://7521131615")[1]
 gui.Parent = game.CoreGui
 local filesystem = loadstring(game:HttpGetAsync('https://pastebin.com/raw/yeY05Niq'))()
@@ -49,7 +49,7 @@ gui.Frame.Link.FocusLost:Connect(function(enterPressed)
 		elseif gui.Frame.Link.Text:match("youtube") then
 			_G.URL = gui.Frame.Link.Text
 			local filenam = _G.URL:split("v="); filenam = filenam[#filenam]
-			if isfile(filenam .. ".mp3") then
+			if isfile(filenam .. ".mp3") == nil then
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/findurl.lua"))()
 				filesystem.new(filenam .. ".mp3",game:HttpGet(_G.URL))
 			end
