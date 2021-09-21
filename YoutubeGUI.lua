@@ -1,4 +1,4 @@
-printconsole("YoutubeGUI v1.3")
+printconsole("YoutubeGUI v1.4")
 local gui = game:GetObjects("rbxassetid://7521131615")[1]
 gui.Parent = game.CoreGui
 local filesystem = loadstring(game:HttpGetAsync('https://pastebin.com/raw/yeY05Niq'))()
@@ -15,6 +15,16 @@ end)
 gui.Frame.Playback.Rewind.Activated:Connect(function()
 	sound.TimePosition -= 10
 end)
+if gui.Frame.Playback:FindFirstChild("Loop") then
+	gui.Frame.Playback.Loop.Activated:Connect(function()
+		sound.Looped = not sound.Looped
+		if sound.Looped then
+			gui.Frame.Playback.Loop.ImageTransparency = 1
+		else
+			gui.Frame.Playback.Loop.ImageTransparency = 0
+		end
+	end)
+end
 gui.Frame.Playback.Pause.Activated:Connect(function()
 	if gui.Frame.Playback.Pause.Mute.ImageTransparency == 1 then
 		gui.Frame.Playback.Pause.Mute.ImageTransparency = 0
