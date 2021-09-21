@@ -1,5 +1,5 @@
-printconsole("YoutubeGUI v1.4")
-local gui = game:GetObjects("rbxassetid://7521131615")[1]
+printconsole("YoutubeGUI v1.4.1")
+local gui = game:GetObjects("rbxassetid://7528642019")[1]
 gui.Parent = game.CoreGui
 local filesystem = loadstring(game:HttpGetAsync('https://pastebin.com/raw/yeY05Niq'))()
 gui.Frame.Frame.TextButton.Activated:Connect(function()
@@ -79,8 +79,7 @@ gui.Frame.Link.FocusLost:Connect(function(enterPressed)
 		gui.Frame.Playback.Bar.Frame.Size = UDim2.new(0,0,1,0)
 	end
 end)
-gui.Frame.Link.Loading.ImageTransparency = 1; gui.Frame.Link.TextEditable = true
-gui.Frame.Playback.Bar.Frame.ImageLabel.Position = UDim2.new(1,-5,0.5,0)
+gui.Frame.Link.TextEditable = true; gui.Frame.Playback.Bar.Frame.ImageLabel.Position = UDim2.new(1,-5,0.5,0)
 game["Run Service"].RenderStepped:Connect(function()
 	if sound.IsPlaying and sound.TimeLength ~= 0 then
 		gui.Frame.Playback.Bar.Frame.Size = UDim2.new((sound.TimePosition/sound.TimeLength)/1,0,1,0)
