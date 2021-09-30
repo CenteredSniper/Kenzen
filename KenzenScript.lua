@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 7 .. "." .. 7
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 7 .. "." .. 8
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
