@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 0
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 1
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -110,14 +110,12 @@ local function dragify(Frame)
 	end)
 end
 local function loadexecutor()
-	executor = game:GetObjects("rbxassetid://7614228507")
-	repeat wait() until executor.Executor
+	executor = game:GetObjects("rbxassetid://7614228507")[1]
 	executor.Parent = ScreenGui0
-	local ExecutorFrame = executor.Executor
-	local HideButton = ExecutorFrame.Hide
-	local ScriptBox = ExecutorFrame.TextFrame.ScriptBox
-	local ModeButton = ExecutorFrame.Side
-	local ExecuteButton = ExecutorFrame.Execute
+	local HideButton = executor:WaitForChild("Hide")
+	local ScriptBox = executor:WaitForChild("TextFrame"):WaitForChild("ScriptBox")
+	local ModeButton = executor:WaitForChild("Side")
+	local ExecuteButton = executor:WaitForChild("Execute")
 	
 	local Mode = "Serverside"
 	local CodeHidden = false
@@ -141,7 +139,7 @@ local function loadexecutor()
 			--loadstring(TextBox8.Text)
 		end
 		wait(0.1)
-		ExecutorFrame.Visible = false
+		executor.Visible = false
 	end)
 
 	ModeButton.MouseButton1Click:Connect(function()
@@ -152,7 +150,7 @@ local function loadexecutor()
 		end
 		ModeButton.Text = Mode
 	end)
-	dragify(ExecutorFrame,false)
+	dragify(executor,false)
 end
 local function tweencommands(bool)
 	if bool then
@@ -886,6 +884,7 @@ TextBox9.FocusLost:connect(function(enterPressed)
 				if testc ~= nil then
 					if game.JointsService:FindFirstChild("⚡") then
 						if testc == "script" or testc == "executor" then
+						    --print(executor)
 							if executor == nil then
 								loadexecutor()
 							end
@@ -915,7 +914,7 @@ game:GetService("UserInputService").InputBegan:connect(function(inputObject, gam
 		end
 	elseif inputObject.KeyCode == Enum.KeyCode.RightBracket then
 		for i,v in pairs(ezbuttons) do
-			print("yaya")
+			--print("yaya")
 			local tween
 			if v.Position.Y.Scale > 1.8 then
 				tween = TweenService:Create(v,TweenInfo.new(
