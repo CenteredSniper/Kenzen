@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 1
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 0
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -544,7 +544,7 @@ local function command(cmd)
 
 		for i,v in pairs(InvisibleCharacter:GetDescendants())do
 			if check4property(v,"Transparency") and check4property(v,"Material") and check4property(v,"Color") then
-				if v.Name == "Head" then
+				if v.Name == "Head" and v:FindFirstChild("Mesh") then
 					v.Mesh.MeshType = Enum.MeshType.FileMesh
 					v.Mesh.MeshId = "rbxassetid://5254294554"
 					v.Mesh.Scale = Vector3.new(1,1,1)
