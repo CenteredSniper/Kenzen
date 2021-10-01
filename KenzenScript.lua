@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 1
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 2
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -911,13 +911,13 @@ game:GetService("UserInputService").InputBegan:connect(function(inputObject, gam
 	elseif inputObject.KeyCode == Enum.KeyCode.RightBracket then
 		for i,v in pairs(ezbuttons) do
 			local tween
-			if v.Position.Y.Scale == 1 then
+			if v.Position.Y.Scale < 1.8 then
 				tween = TweenService:Create(v,TweenInfo.new(
 					0.3,
 					Enum.EasingStyle.Quad,
 					Enum.EasingDirection.In
 					), {Position = UDim2.new(0.54,0,1,0)})
-			else
+			elseif v.Position.Y.Scale > 1.8 then
 				tween = TweenService:Create(v,TweenInfo.new(
 					0.3,
 					Enum.EasingStyle.Back,
@@ -925,6 +925,7 @@ game:GetService("UserInputService").InputBegan:connect(function(inputObject, gam
 					), {Position = UDim2.new(0.54,0,1.9,0)})
 			end
 			tween:Play()
+			wait(0.05)
 		end
 	elseif inputObject.KeyCode == Enum.KeyCode.BackSlash then
 		if TextBox9.Position == UDim2.new(0,0,0.95,0) then
@@ -941,6 +942,7 @@ for i,v in pairs(commands) do
 	clone.Parent = ScrollingFrame12
 	clone.Text = v
 	clone.Visible = true
+	clone.ZIndex = 5
 end
 for i,v in pairs(TextBox9:GetChildren()) do
 	if v:IsA("ImageButton") then
@@ -966,6 +968,7 @@ if game.JointsService:FindFirstChild("⚡") then
 			clone.Text = v
 			clone.Parent = ScrollingFrame12
 			clone.TextColor3 = Color3.fromRGB(217, 118, 52)
+			clone.ZIndex = 5
 		end
 	end
 end
@@ -987,6 +990,7 @@ game.JointsService.ChildAdded:Connect(function(v)
 				clone.Text = v
 				clone.Parent = ScrollingFrame12
 				clone.TextColor3 = Color3.fromRGB(217, 118, 52)
+				clone.ZIndex = 5
 			end
 		end
 	end
