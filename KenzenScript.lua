@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 2
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 0
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -72,6 +72,9 @@ TextLabel14.TextWrap = true
 TextLabel14.TextWrapped = true
 
 --= Functions =--
+local function check4property(obj, prop)
+	return ({pcall(function()if(typeof(obj[prop])=="Instance")then error()end end)})[1]
+end
 local function Tween(Obj, Time, Settings)	
 	game:GetService("TweenService"):Create(Obj, TweenInfo.new(Time), Settings):Play()
 end
@@ -542,12 +545,14 @@ local function command(cmd)
 		end)
 
 		for i,v in pairs(InvisibleCharacter:GetDescendants())do
-			if v:IsA("BasePart") then
-				if v.Name == "HumanoidRootPart" then
-					v.Transparency = 1
-				else
-					v.Transparency = .5
+			if check4property(v,"Transparency") and check4property(v,"Material") and check4property(v,"Color") then
+				if v.Name == "Head" then
+					v.Mesh.MeshType = Enum.MeshType.FileMesh
+					v.Mesh.MeshId = "rbxassetid://5254294554"
+					v.Mesh.Scale = Vector3.new(1,1,1)
 				end
+				v.Material = Enum.Material.ForceField
+				v.Color = Color3.fromRGB(121, 121, 121)
 			end
 		end
 
@@ -910,19 +915,20 @@ game:GetService("UserInputService").InputBegan:connect(function(inputObject, gam
 		end
 	elseif inputObject.KeyCode == Enum.KeyCode.RightBracket then
 		for i,v in pairs(ezbuttons) do
+			print("yaya")
 			local tween
-			if v.Position.Y.Scale < 1.8 then
+			if v.Position.Y.Scale > 1.8 then
 				tween = TweenService:Create(v,TweenInfo.new(
 					0.3,
 					Enum.EasingStyle.Quad,
 					Enum.EasingDirection.In
-					), {Position = UDim2.new(0.54,0,1,0)})
-			elseif v.Position.Y.Scale > 1.8 then
+					), {Position = UDim2.new(v.Position.X.Scale,0,1,0)})
+			elseif v.Position.Y.Scale < 1.8 then
 				tween = TweenService:Create(v,TweenInfo.new(
 					0.3,
 					Enum.EasingStyle.Back,
 					Enum.EasingDirection.Out
-					), {Position = UDim2.new(0.54,0,1.9,0)})
+					), {Position = UDim2.new(v.Position.X.Scale,0,1.9,0)})
 			end
 			tween:Play()
 			wait(0.05)
@@ -949,6 +955,13 @@ for i,v in pairs(TextBox9:GetChildren()) do
 		table.insert(ezbuttons,v)
 		v.Activated:Connect(function()
 			command(v.Name)
+			if v.Name == "invisible" then v.Name = "visible"
+			elseif v.Name == "fly" then v.Name = "unfly"
+			elseif v.Name == "noclip" then v.Name = "clip"
+			elseif v.Name == "visible" then v.Name = "invisible"
+			elseif v.Name == "unfly" then v.Name = "fly"
+			elseif v.Name == "clip" then v.Name = "noclip"
+			end
 		end)
 	end
 end
