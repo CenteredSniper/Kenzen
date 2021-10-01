@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 1 .. "." .. 7 .. "." .. 9
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 0
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -12,7 +12,7 @@ local Player = game.Players.LocalPlayer
 local password = "k" ..                                                                                                                  "e" ..                                              "k"
 local passed = false
 local intweeninfo,outtweeninfo = TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.In),TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
-local commands = {"oldanim",
+local commands,ezbuttons = {"oldanim",
 	"tracer",
 	"untracer",
 	"headspin",
@@ -41,64 +41,22 @@ local commands = {"oldanim",
 	"reach",
 	"headsit",
 	"sdex",
-	"copypos"} --,"pitch","volume","soundid","visualizer"}
+	"copypos",
+	"noclip",
+	"clip",
+	"fly",
+	"unfly",
+	"invisible",
+	"visible",}, {}
 local executor
 
 --= GUI =--
-local ScreenGui0 = Instance.new("ScreenGui")
-ScreenGui0.Name = "🖼️"
-ScreenGui0.ResetOnSpawn = false
-ScreenGui0.DisplayOrder = 999999999
-local TextBox9 = Instance.new("TextBox")
-TextBox9.Name = "Cmdbar"
-TextBox9.Parent = ScreenGui0
-TextBox9.Position = UDim2.new(0, 0, 0.949999988, 0)
-TextBox9.Size = UDim2.new(0.0599999987, 100, 0.0299999993, 0)
-TextBox9.AnchorPoint = Vector2.new(0, 1)
-TextBox9.BackgroundColor = BrickColor.new("Black")
-TextBox9.BackgroundColor3 = Color3.new(0.172549, 0.184314, 0.2)
-TextBox9.Font = Enum.Font.GothamSemibold
-TextBox9.FontSize = Enum.FontSize.Size14
-TextBox9.Text = ""
-TextBox9.TextColor = BrickColor.new("Royal purple")
-TextBox9.TextColor3 = Color3.new(0.498039, 0, 0.85098)
-TextBox9.TextSize = 14
-TextBox9.TextWrap = true
-TextBox9.TextWrapped = true
-TextBox9.PlaceholderColor3 = Color3.new(0.392157, 0, 0.67451)
-TextBox9.PlaceholderText = "password"
-local Frame10 = Instance.new("Frame")
-Frame10.Name = "Commands"
-Frame10.Parent = TextBox9
-Frame10.Position = UDim2.new(-1, 0, -0.100000001, 0)
-Frame10.Size = UDim2.new(1, 0, 6, 0)
-Frame10.AnchorPoint = Vector2.new(0, 1)
-Frame10.BackgroundColor = BrickColor.new("Black")
-Frame10.BackgroundColor3 = Color3.new(0.172549, 0.184314, 0.2)
-Frame10.BorderSizePixel = 0
-local Frame11 = Instance.new("Frame")
-Frame11.Name = "Underline"
-Frame11.Parent = Frame10
-Frame11.Position = UDim2.new(0, 0, 1, 0)
-Frame11.Size = UDim2.new(1, 0, 0, 1)
-Frame11.BackgroundColor = BrickColor.new("Royal purple")
-Frame11.BackgroundColor3 = Color3.new(0.498039, 0, 0.85098)
-Frame11.BorderSizePixel = 0
-local ScrollingFrame12 = Instance.new("ScrollingFrame")
-ScrollingFrame12.Parent = Frame10
-ScrollingFrame12.Size = UDim2.new(1, 0, 1, 0)
-ScrollingFrame12.Active = true
-ScrollingFrame12.BackgroundColor = BrickColor.new("Institutional white")
-ScrollingFrame12.BackgroundColor3 = Color3.new(1, 1, 1)
-ScrollingFrame12.BackgroundTransparency = 1
-ScrollingFrame12.CanvasSize = UDim2.new(0, 0, 0, 0)
-ScrollingFrame12.ScrollBarThickness = 0
-ScrollingFrame12.AutomaticCanvasSize = Enum.AutomaticSize.Y
-local UIListLayout13 = Instance.new("UIListLayout")
-UIListLayout13.Parent = ScrollingFrame12
-UIListLayout13.SortOrder = Enum.SortOrder.LayoutOrder
+local ScreenGui0 = game:GetObjects("rbxassetid://7614129325")[1]
+repeat wait() until ScreenGui0:FindFirstChild("Cmdbar")
+local TextBox9 = ScreenGui0:WaitForChild("Cmdbar")
+local Frame10 = ScreenGui0:WaitForChild("Commands")
+local ScrollingFrame12 = Frame10:WaitForChild("ScrollingFrame")
 local TextLabel14 = Instance.new("TextLabel")
-TextLabel14.Parent = ScrollingFrame12
 TextLabel14.Visible = false
 TextLabel14.Size = UDim2.new(1, 0, 0, 15)
 TextLabel14.BackgroundColor = BrickColor.new("Institutional white")
@@ -112,22 +70,12 @@ TextLabel14.TextScaled = true
 TextLabel14.TextSize = 14
 TextLabel14.TextWrap = true
 TextLabel14.TextWrapped = true
-local Frame15 = Instance.new("Frame")
-Frame15.Name = "Underline"
-Frame15.Parent = TextBox9
-Frame15.Position = UDim2.new(0, 0, 1, 0)
-Frame15.Size = UDim2.new(1, 0, 0, 1)
-Frame15.BackgroundColor = BrickColor.new("Royal purple")
-Frame15.BackgroundColor3 = Color3.new(0.498039, 0, 0.85098)
-Frame15.BorderSizePixel = 0
 
 --= Functions =--
-local function writefileExploit()
-	if writefile then
-		return true
-	end
+local function Tween(Obj, Time, Settings)	
+	game:GetService("TweenService"):Create(Obj, TweenInfo.new(Time), Settings):Play()
 end
-local function dragify(Frame,boool)
+local function dragify(Frame)
 	local frametomove = Frame
 	local dragToggle,dragInput,dragStart,startPos
 	local dragSpeed = 0
@@ -159,157 +107,49 @@ local function dragify(Frame,boool)
 	end)
 end
 local function loadexecutor()
-	local Frame1 = Instance.new("Frame")
-	local Frame2 = Instance.new("Frame")
-	local TextLabel3 = Instance.new("TextLabel")
-	local TextButton4 = Instance.new("TextButton")
-	local TextButton5 = Instance.new("TextButton")
-	local TextButton6 = Instance.new("TextButton")
-	local Frame7 = Instance.new("Frame")
-	local TextBox8 = Instance.new("TextBox")
-	Frame1.Name = "Executor"
-	Frame1.Parent = ScreenGui0
-	Frame1.Position = UDim2.new(0.5, 0, 0.5, 0)
-	Frame1.Visible = false
-	Frame1.Size = UDim2.new(0.100000001, 200, 0.25, 0)
-	Frame1.AnchorPoint = Vector2.new(0.5, 0.5)
-	Frame1.BackgroundColor = BrickColor.new("Black")
-	Frame1.BackgroundColor3 = Color3.new(0.172549, 0.184314, 0.2)
-	Frame1.BorderSizePixel = 0
-	executor = Frame1
-	Frame2.Name = "Title"
-	Frame2.Parent = Frame1
-	Frame2.Size = UDim2.new(1, 0, 0.100000001, 0)
-	Frame2.BackgroundColor = BrickColor.new("Black")
-	Frame2.BackgroundColor3 = Color3.new(0.137255, 0.152941, 0.164706)
-	Frame2.BorderSizePixel = 0
-	TextLabel3.Parent = Frame2
-	TextLabel3.Size = UDim2.new(1, 0, 1, 0)
-	TextLabel3.BackgroundColor = BrickColor.new("Institutional white")
-	TextLabel3.BackgroundColor3 = Color3.new(1, 1, 1)
-	TextLabel3.BackgroundTransparency = 1
-	TextLabel3.Font = Enum.Font.GothamBold
-	TextLabel3.FontSize = Enum.FontSize.Size14
-	TextLabel3.Text = "Script Executor"
-	TextLabel3.TextColor = BrickColor.new("Neon orange")
-	TextLabel3.TextColor3 = Color3.new(0.85098, 0.462745, 0.203922)
-	TextLabel3.TextSize = 14
-	TextLabel3.TextXAlignment = Enum.TextXAlignment.Left
-	TextButton4.Name = "Execute"
-	TextButton4.Parent = Frame1
-	TextButton4.Position = UDim2.new(0.0299999993, 0, 0.949999988, 0)
-	TextButton4.Size = UDim2.new(0.300000012, 0, 0.150000006, 0)
-	TextButton4.AnchorPoint = Vector2.new(0, 1)
-	TextButton4.BackgroundColor = BrickColor.new("Institutional white")
-	TextButton4.BackgroundColor3 = Color3.new(1, 1, 1)
-	TextButton4.BorderSizePixel = 0
-	TextButton4.Font = Enum.Font.GothamBold
-	TextButton4.FontSize = Enum.FontSize.Size14
-	TextButton4.Text = "Execute"
-	TextButton4.TextColor = BrickColor.new("Really black")
-	TextButton4.TextColor3 = Color3.new(0, 0, 0)
-	TextButton4.TextScaled = true
-	TextButton4.TextSize = 14
-	TextButton4.TextWrap = true
-	TextButton4.TextWrapped = true
-	TextButton5.Name = "Side"
-	TextButton5.Parent = Frame1
-	TextButton5.Position = UDim2.new(0.5, 0, 0.949999988, 0)
-	TextButton5.Size = UDim2.new(0.300000012, 0, 0.150000006, 0)
-	TextButton5.AnchorPoint = Vector2.new(0.5, 1)
-	TextButton5.BackgroundColor = BrickColor.new("Institutional white")
-	TextButton5.BackgroundColor3 = Color3.new(1, 1, 1)
-	TextButton5.BorderSizePixel = 0
-	TextButton5.Font = Enum.Font.GothamBold
-	TextButton5.FontSize = Enum.FontSize.Size14
-	TextButton5.Text = "Serverside"
-	TextButton5.TextColor = BrickColor.new("Really black")
-	TextButton5.TextColor3 = Color3.new(0, 0, 0)
-	TextButton5.TextScaled = true
-	TextButton5.TextSize = 14
-	TextButton5.TextWrap = true
-	TextButton5.TextWrapped = true
-	TextButton6.Name = "Hide"
-	TextButton6.Parent = Frame1
-	TextButton6.Position = UDim2.new(0.970000029, 0, 0.949999988, 0)
-	TextButton6.Size = UDim2.new(0.300000012, 0, 0.150000006, 0)
-	TextButton6.AnchorPoint = Vector2.new(1, 1)
-	TextButton6.BackgroundColor = BrickColor.new("Institutional white")
-	TextButton6.BackgroundColor3 = Color3.new(1, 1, 1)
-	TextButton6.BorderSizePixel = 0
-	TextButton6.Font = Enum.Font.GothamBold
-	TextButton6.FontSize = Enum.FontSize.Size14
-	TextButton6.Text = "HideText"
-	TextButton6.TextColor = BrickColor.new("Really black")
-	TextButton6.TextColor3 = Color3.new(0, 0, 0)
-	TextButton6.TextScaled = true
-	TextButton6.TextSize = 14
-	TextButton6.TextWrap = true
-	TextButton6.TextWrapped = true
-	Frame7.Name = "TextFrame"
-	Frame7.Parent = Frame1
-	Frame7.Position = UDim2.new(0.5, 0, 0.119999997, 0)
-	Frame7.Size = UDim2.new(0.949999988, 0, 0.600000024, 0)
-	Frame7.AnchorPoint = Vector2.new(0.5, 0)
-	Frame7.BackgroundColor = BrickColor.new("Institutional white")
-	Frame7.BackgroundColor3 = Color3.new(1, 1, 1)
-	Frame7.BackgroundTransparency = 1
-	TextBox8.Name = "ScriptBox"
-	TextBox8.Parent = Frame7
-	TextBox8.Size = UDim2.new(1, 0, 1, 0)
-	TextBox8.BackgroundColor = BrickColor.new("Black")
-	TextBox8.BackgroundColor3 = Color3.new(0.137255, 0.152941, 0.164706)
-	TextBox8.BorderSizePixel = 0
-	TextBox8.Font = Enum.Font.GothamSemibold
-	TextBox8.FontSize = Enum.FontSize.Size14
-	TextBox8.Text = 'print("Hello world!")'
-	TextBox8.TextColor = BrickColor.new("Neon orange")
-	TextBox8.TextColor3 = Color3.new(0.85098, 0.462745, 0.203922)
-	TextBox8.TextSize = 14
-	TextBox8.TextWrap = true
-	TextBox8.TextWrapped = true
-	TextBox8.TextXAlignment = Enum.TextXAlignment.Left
-	TextBox8.TextYAlignment = Enum.TextYAlignment.Top
-	TextBox8.MultiLine = true
-
-	local function Tween(Obj, Time, Settings)	
-		game:GetService("TweenService"):Create(Obj, TweenInfo.new(Time), Settings):Play()
-	end
-
+	executor = game:GetObjects("rbxassetid://7614228507")
+	repeat wait() until executor.Executor
+	executor.Parent = ScreenGui0
+	local ExecutorFrame = executor.Executor
+	local HideButton = ExecutorFrame.Hide
+	local ScriptBox = ExecutorFrame.TextFrame.ScriptBox
+	local ModeButton = ExecutorFrame.Side
+	local ExecuteButton = ExecutorFrame.Execute
+	
 	local Mode = "Serverside"
 	local CodeHidden = false
-	local clientexecute = require(game.JointsService["⚡"]["💾"])
-	TextButton6.MouseButton1Click:Connect(function()
+	--local clientexecute = require(game.JointsService["⚡"]["💾"])
+	HideButton.MouseButton1Click:Connect(function()
 		if CodeHidden == false then
-			TextButton6.Text = "ShowText"
-			Tween(TextBox8, 1, {TextTransparency = 1})
+			HideButton.Text = "ShowText"
+			Tween(ScriptBox, 1, {TextTransparency = 1})
 			CodeHidden = true
 		elseif CodeHidden == true then
-			TextButton6.Text = "HideText"
-			Tween(TextBox8, 1, {TextTransparency = 0})
+			HideButton.Text = "HideText"
+			Tween(ScriptBox, 1, {TextTransparency = 0})
 			CodeHidden = false
 		end
 	end)
 
-	TextButton4.MouseButton1Click:Connect(function()
+	ExecuteButton.MouseButton1Click:Connect(function()
 		if Mode == "Serverside" then
-			game.JointsService:WaitForChild("⚡"):FireServer("😎", TextBox8.Text,true)
+			game.JointsService:WaitForChild("⚡"):FireServer(ScriptBox.Text,"😎",true)
 		elseif Mode == "Clientside" then
-			clientexecute(TextBox8.Text)()
+			--loadstring(TextBox8.Text)
 		end
-		wait(0.2)
-		Frame1.Visible = false
+		wait(0.1)
+		ExecutorFrame.Visible = false
 	end)
 
-	TextButton5.MouseButton1Click:Connect(function()
+	ModeButton.MouseButton1Click:Connect(function()
 		if Mode == "Serverside" then
 			Mode = "Clientside"
 		else
 			Mode = "Serverside"
 		end
-		TextButton5.Text = Mode
+		ModeButton.Text = Mode
 	end)
-	dragify(Frame1,false)
+	dragify(ExecutorFrame,false)
 end
 local function tweencommands(bool)
 	if bool then
@@ -372,7 +212,7 @@ local function saveins(bool)
 	delfile(info .. ".rbxl")
 end
 
-local visaulizer,sound,Lines,antifling,Clip,Noclipping,FLYING
+local Lines,antifling,Clip,Noclipping,FLYING,invisRunning
 
 local function noclip()
 	Clip = false
@@ -517,8 +357,7 @@ local function command(cmd)
 		webImport("ui/main")
 	elseif string.lower(cmd2[1]) == "tracer" then
 		if Lines == nil then Lines = {} end
-		_G.UpdateTracer = function()
-			game["Run Service"].RenderStepped:Connect(function()
+		_G.UpdateTracer = game["Run Service"].RenderStepped:Connect(function()
 				for i,v in pairs(Lines) do
 					v:Remove()
 				end
@@ -547,8 +386,6 @@ local function command(cmd)
 					end
 				end
 			end)
-		end
-		_G.UpdateTracer()
 	elseif string.lower(cmd2[1]) == "unfling" then
 		for i,player in pairs(Player.Character:GetChildren()) do
 			if player.ClassName == "Part" then
@@ -581,6 +418,10 @@ local function command(cmd)
 				player.CustomPhysicalProperties = PhysicalProperties.new(0, 0.3, 0.5)
 			end
 		end
+	elseif string.lower(cmd2[1]) == "fly" then
+		sFLY()
+	elseif string.lower(cmd2[1]) == "unfly" then
+		FLYING = false
 	elseif string.lower(cmd2[1]) == "clientrespawn" then
 		if Noclipping then
 			Noclipping:Disconnect()
@@ -657,6 +498,139 @@ local function command(cmd)
 			tool.Parent = Player.Character
 			noclip()
 		end
+	elseif string.lower(cmd2[1]) == "noclip" then
+		noclip()
+	elseif string.lower(cmd2[1]) == "invisible" then
+		if invisRunning then return end
+		invisRunning = true
+		-- Full credit to AmokahFox @V3rmillion
+		repeat wait(.1) until Player.Character
+		local Character = Player.Character
+		Character.Archivable = true
+		local IsInvis = false
+		local IsRunning = true
+		local InvisibleCharacter = Character:Clone()
+		InvisibleCharacter.Parent = game:GetService'Lighting'
+		local Void = workspace.FallenPartsDestroyHeight
+		InvisibleCharacter.Name = ""
+		local CF
+
+		local invisFix = game:GetService("RunService").Stepped:Connect(function()
+			pcall(function()
+				local IsInteger
+				if tostring(Void):find'-' then
+					IsInteger = true
+				else
+					IsInteger = false
+				end
+				local Pos = Player.Character.HumanoidRootPart.Position
+				local Pos_String = tostring(Pos)
+				local Pos_Seperate = Pos_String:split(', ')
+				local X = tonumber(Pos_Seperate[1])
+				local Y = tonumber(Pos_Seperate[2])
+				local Z = tonumber(Pos_Seperate[3])
+				if IsInteger == true then
+					if Y <= Void then
+						Respawn()
+					end
+				elseif IsInteger == false then
+					if Y >= Void then
+						Respawn()
+					end
+				end
+			end)
+		end)
+
+		for i,v in pairs(InvisibleCharacter:GetDescendants())do
+			if v:IsA("BasePart") then
+				if v.Name == "HumanoidRootPart" then
+					v.Transparency = 1
+				else
+					v.Transparency = .5
+				end
+			end
+		end
+
+		function Respawn()
+			IsRunning = false
+			if IsInvis == true then
+				pcall(function()
+					Player.Character = Character
+					wait()
+					Character.Parent = workspace
+					Character:FindFirstChildWhichIsA'Humanoid':Destroy()
+					IsInvis = false
+					InvisibleCharacter.Parent = nil
+					invisRunning = false
+				end)
+			elseif IsInvis == false then
+				pcall(function()
+					Player.Character = Character
+					wait()
+					Character.Parent = workspace
+					Character:FindFirstChildWhichIsA'Humanoid':Destroy()
+					TurnVisible()
+				end)
+			end
+		end
+
+		local invisDied
+		invisDied = InvisibleCharacter:FindFirstChildOfClass'Humanoid'.Died:Connect(function()
+			Respawn()
+			invisDied:Disconnect()
+		end)
+
+		if IsInvis == true then return end
+		IsInvis = true
+		CF = workspace.CurrentCamera.CFrame
+		local CF_1 = Player.Character.HumanoidRootPart.CFrame
+		Character:MoveTo(Vector3.new(0,math.pi*1000000,0))
+		workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable
+		wait(.2)
+		workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+		InvisibleCharacter = InvisibleCharacter
+		Character.Parent = game:GetService'Lighting'
+		InvisibleCharacter.Parent = workspace
+		InvisibleCharacter.HumanoidRootPart.CFrame = CF_1
+		Player.Character = InvisibleCharacter
+		workspace.CurrentCamera:remove()
+		wait(.1)
+		repeat wait() until Player.Character ~= nil
+		workspace.CurrentCamera.CameraSubject = Player.Character:FindFirstChildWhichIsA('Humanoid')
+		workspace.CurrentCamera.CameraType = "Custom"
+		Player.CameraMinZoomDistance = 0.5
+		Player.CameraMaxZoomDistance = 400
+		Player.CameraMode = "Classic"
+		Player.Character.Head.Anchored = false
+		Player.Character.Animate.Disabled = true
+		Player.Character.Animate.Disabled = false
+
+		function TurnVisible()
+			if IsInvis == false then return end
+			invisFix:Disconnect()
+			invisDied:Disconnect()
+			CF = workspace.CurrentCamera.CFrame
+			Character = Character
+			local CF_1 = Player.Character.HumanoidRootPart.CFrame
+			Character.HumanoidRootPart.CFrame = CF_1
+			InvisibleCharacter:Destroy()
+			Player.Character = Character
+			Character.Parent = workspace
+			IsInvis = false
+			Player.Character.Animate.Disabled = true
+			Player.Character.Animate.Disabled = false
+			invisDied = Character:FindFirstChildOfClass'Humanoid'.Died:Connect(function()
+				Respawn()
+				invisDied:Disconnect()
+			end)
+			invisRunning = false
+		end
+	elseif string.lower(cmd2[1]) == "visible" then
+		TurnVisible()
+	elseif string.lower(cmd2[1]) == "clip" then
+		if Noclipping then
+			Noclipping:Disconnect()
+		end
 	elseif string.lower(cmd2[1]) == "antifling" then
 		if antifling == nil then 
 			antifling = true
@@ -697,263 +671,7 @@ local function command(cmd)
 		end
 		Lines = {}
 	elseif string.lower(cmd2[1]) == "oldanim" then
-		Player.Character:BreakJoints()
-		Player.Character=nil
-		local Connection = game.Workspace.DescendantAdded:Connect(function(c)
-			if c.Name == "Animate" then
-				c.Disabled=true        
-			end
-		end)
-		repeat wait() until Player.Character
-		local Char = Player.Character
-		local Died = Player.Character:WaitForChild("Humanoid").Died:Connect(function()
-			Connection:Disconnect()
-		end)
-		wait(.1)
-
-		-- ANIMATION
-
-		-- declarations
-
-		local Figure = Player.Character
-		local Torso = waitForChild(Figure, "Torso")
-		local RightShoulder = waitForChild(Torso, "Right Shoulder")
-		local LeftShoulder = waitForChild(Torso, "Left Shoulder")
-		local RightHip = waitForChild(Torso, "Right Hip")
-		local LeftHip = waitForChild(Torso, "Left Hip")
-		local Neck = waitForChild(Torso, "Neck")
-		local Humanoid = waitForChild(Figure, "Humanoid")
-		local pose = "Standing"
-
-		local toolAnim = "None"
-		local toolAnimTime = 0
-
-		local jumpMaxLimbVelocity = 0.75
-
-		-- functions
-
-		local function onRunning(speed)
-			if speed>0 then
-				pose = "Running"
-			else
-				pose = "Standing"
-			end
-		end
-
-		local function onDied()
-			pose = "Dead"
-		end
-
-		local function onJumping()
-			pose = "Jumping"
-		end
-
-		local function onClimbing()
-			pose = "Climbing"
-		end
-
-		local function onGettingUp()
-			pose = "GettingUp"
-		end
-
-		local function onFreeFall()
-			pose = "FreeFall"
-		end
-
-		local function onFallingDown()
-			pose = "FallingDown"
-		end
-
-		local function onSeated()
-			pose = "Seated"
-		end
-
-		local function onPlatformStanding()
-			pose = "PlatformStanding"
-		end
-
-		local function onSwimming(speed)
-			if speed>0 then
-				pose = "Running"
-			else
-				pose = "Standing"
-			end
-		end
-
-		local function moveJump()
-			RightShoulder.MaxVelocity = jumpMaxLimbVelocity
-			LeftShoulder.MaxVelocity = jumpMaxLimbVelocity
-			RightShoulder:SetDesiredAngle(3.14)
-			LeftShoulder:SetDesiredAngle(-3.14)
-			RightHip:SetDesiredAngle(0)
-			LeftHip:SetDesiredAngle(0)
-		end
-
-
-		-- same as jump for now
-
-		local function moveFreeFall()
-			RightShoulder.MaxVelocity = jumpMaxLimbVelocity
-			LeftShoulder.MaxVelocity = jumpMaxLimbVelocity
-			RightShoulder:SetDesiredAngle(3.14)
-			LeftShoulder:SetDesiredAngle(-3.14)
-			RightHip:SetDesiredAngle(0)
-			LeftHip:SetDesiredAngle(0)
-		end
-
-		local function moveSit()
-			RightShoulder.MaxVelocity = 0.15
-			LeftShoulder.MaxVelocity = 0.15
-			RightShoulder:SetDesiredAngle(3.14 /2)
-			LeftShoulder:SetDesiredAngle(-3.14 /2)
-			RightHip:SetDesiredAngle(3.14 /2)
-			LeftHip:SetDesiredAngle(-3.14 /2)
-		end
-
-		local function getTool()
-			for _, kid in ipairs(Figure:GetChildren()) do
-				if kid.className == "Tool" then return kid end
-			end
-			return nil
-		end
-
-		local function getToolAnim(tool)
-			for _, c in ipairs(tool:GetChildren()) do
-				if c.Name == "toolanim" and c.className == "StringValue" then
-					return c
-				end
-			end
-			return nil
-		end
-
-		local function animateTool()
-
-			if (toolAnim == "None") then
-				RightShoulder:SetDesiredAngle(1.57)
-				return
-			end
-
-			if (toolAnim == "Slash") then
-				RightShoulder.MaxVelocity = 0.5
-				RightShoulder:SetDesiredAngle(0)
-				return
-			end
-
-			if (toolAnim == "Lunge") then
-				RightShoulder.MaxVelocity = 0.5
-				LeftShoulder.MaxVelocity = 0.5
-				RightHip.MaxVelocity = 0.5
-				LeftHip.MaxVelocity = 0.5
-				RightShoulder:SetDesiredAngle(1.57)
-				LeftShoulder:SetDesiredAngle(1.0)
-				RightHip:SetDesiredAngle(1.57)
-				LeftHip:SetDesiredAngle(1.0)
-				return
-			end
-		end
-
-		local function move(time)
-			local amplitude
-			local frequency
-
-			if (pose == "Jumping") then
-				moveJump()
-				return
-			end
-
-			if (pose == "FreeFall") then
-				moveFreeFall()
-				return
-			end
-
-			if (pose == "Seated") then
-				moveSit()
-				return
-			end
-
-			local climbFudge = 0
-
-			if (pose == "Running") then
-				if (RightShoulder.CurrentAngle > 1.5 or RightShoulder.CurrentAngle < -1.5) then
-					RightShoulder.MaxVelocity = jumpMaxLimbVelocity
-				else  
-					RightShoulder.MaxVelocity = 0.15
-				end
-				if (LeftShoulder.CurrentAngle > 1.5 or LeftShoulder.CurrentAngle < -1.5) then
-					LeftShoulder.MaxVelocity = jumpMaxLimbVelocity
-				else  
-					LeftShoulder.MaxVelocity = 0.15
-				end
-				amplitude = 1
-				frequency = 9
-			elseif (pose == "Climbing") then
-				RightShoulder.MaxVelocity = 0.5
-				LeftShoulder.MaxVelocity = 0.5
-				amplitude = 1
-				frequency = 9
-				climbFudge = 3.14
-			else
-				amplitude = 0.1
-				frequency = 1
-			end
-
-			local desiredAngle = amplitude * math.sin(time*frequency)
-
-			RightShoulder:SetDesiredAngle(desiredAngle + climbFudge)
-			LeftShoulder:SetDesiredAngle(desiredAngle - climbFudge)
-			RightHip:SetDesiredAngle(-desiredAngle)
-			LeftHip:SetDesiredAngle(-desiredAngle)
-
-
-			local tool = getTool()
-
-			if tool then
-
-				local animStringValueObject = getToolAnim(tool)
-
-				if animStringValueObject then
-					toolAnim = animStringValueObject.Value
-					-- message recieved, delete StringValue
-					animStringValueObject.Parent = nil
-					toolAnimTime = time + .3
-				end
-
-				if time > toolAnimTime then
-					toolAnimTime = 0
-					toolAnim = "None"
-				end
-
-				animateTool()
-
-
-			else
-				toolAnim = "None"
-				toolAnimTime = 0
-			end
-		end
-
-
-		-- connect events
-
-		Humanoid.Died:connect(onDied)
-		Humanoid.Running:connect(onRunning)
-		Humanoid.Jumping:connect(onJumping)
-		Humanoid.Climbing:connect(onClimbing)
-		Humanoid.GettingUp:connect(onGettingUp)
-		Humanoid.FreeFalling:connect(onFreeFall)
-		Humanoid.FallingDown:connect(onFallingDown)
-		Humanoid.Seated:connect(onSeated)
-		Humanoid.PlatformStanding:connect(onPlatformStanding)
-		Humanoid.Swimming:connect(onSwimming)
-		-- main program
-
-		local runService = game:service("RunService");
-
-		while Figure.Parent~=nil do
-			local _, time = wait(0.1)
-			move(time)
-		end
-
+		loadstring(game:HttpGet("https://pastebin.com/raw/i7DMMJy3", true))()
 	elseif string.lower(cmd2[1]) == "headspin" then
 		game["Players"].LocalPlayer.Character.Humanoid.Health = 0
 		game["Players"].LocalPlayer.CharacterAdded:Connect(function(char)
@@ -961,7 +679,7 @@ local function command(cmd)
 			Player.Character:WaitForChild("Animate").Disabled = true
 			Player.Character:WaitForChild('Humanoid'):WaitForChild("Animator"):Destroy()
 			waitForChild(Player.Character.Torso, "Neck").DesiredAngle = math.huge
-			
+
 
 		end)
 	elseif string.lower(cmd2[1]) == "copypos" then
@@ -999,48 +717,6 @@ local function command(cmd)
 					Player.Character.HumanoidRootPart.CFrame = pos
 				end)
 			end
-		end
-	elseif string.lower(cmd2[1]) == "visualizer" then
-		local visaulizer = game:GetObjects("rbxassetid://6955035613")[1]
-		visaulizer.Parent = game.CoreGui
-		visaulizer.ResetOnSpawn = false
-		visaulizer.LocalScript:Destroy()
-		local thef = 0
-		local epicfunnydd = visaulizer.ImageLabel
-		repeat 
-			local wtfff = epicfunnydd.Frame:Clone()
-			wtfff.Parent = epicfunnydd
-			thef = thef + 5
-			wtfff.Rotation = thef
-			game["Run Service"].Stepped:Wait()
-		until thef >= 175
-		sound = Instance.new("Sound",workspace)
-		_G.RunXD = game["Run Service"].Heartbeat:Connect(function()
-			epicfunnydd.Rotation = epicfunnydd.Rotation + 1
-			if sound.IsPlaying then
-				local d = sound.PlaybackLoudness/666
-				for i,childd in pairs(epicfunnydd:GetChildren()) do
-					local hue = tick() % 5 / 5
-					local color = Color3.fromHSV(hue, 1, 1)
-					childd.BackgroundColor3 = color
-					local e = math.random(1,6); e=e-1; e=e*0.1
-					childd.Size = UDim2.new(1+d+e,0,0,5)
-				end	
-			end
-		end)
-	elseif string.lower(cmd2[1]) == "soundid" then
-		if cmd2[2] and visaulizer then
-			sound:Stop()
-			sound.SoundId = "rbxassetid://" .. cmd2[2]
-			sound:Play()
-		end
-	elseif string.lower(cmd2[1]) == "volume" then
-		if cmd2[2] and visaulizer then
-			sound.Volume = tonumber(cmd2[2])
-		end
-	elseif string.lower(cmd2[1]) == "pitch" then
-		if cmd2[2] and visaulizer then
-			sound.PlaybackSpeed = tonumber(cmd2[2])
 		end
 	elseif string.lower(cmd2[1]) == "kenzenx" then
 		local c = game:GetService("CoreGui"):FindFirstChild("DevConsoleMaster")
@@ -1186,7 +862,7 @@ TextBox9.FocusLost:connect(function(enterPressed)
 	if enterPressed then
 		if passed == false then
 			if TextBox9.Text == password then
-				if writefileExploit() then
+				if writefile then
 					if pcall(function() readfile("password.KX") end) then
 						-- nothing, wtf?
 					else
@@ -1205,13 +881,10 @@ TextBox9.FocusLost:connect(function(enterPressed)
 				if testc ~= nil then
 					if game.JointsService:FindFirstChild("⚡") then
 						if testc == "script" or testc == "executor" then
-							if executor then
-								executor.Visible = true
-							else
+							if executor == nil then
 								loadexecutor()
-								executor.Visible = true
 							end
-
+							executor.Visible = not executor.Visible
 						else
 							game.JointsService:WaitForChild("⚡"):FireServer(testc,"😎",false)
 						end
@@ -1235,6 +908,24 @@ game:GetService("UserInputService").InputBegan:connect(function(inputObject, gam
 			local tween = TweenService:Create(TextBox9,intweeninfo, {Position = UDim2.new(-1,0,0.95,0)})
 			tween:Play()
 		end
+	elseif inputObject.KeyCode == Enum.KeyCode.RightBracket then
+		for i,v in pairs(ezbuttons) do
+			local tween
+			if v.Position.Y.Scale == 1 then
+				tween = TweenService:Create(v,TweenInfo.new(
+					0.3,
+					Enum.EasingStyle.Quad,
+					Enum.EasingDirection.In
+					), {Position = UDim2.new(0.54,0,1,0)})
+			else
+				tween = TweenService:Create(v,TweenInfo.new(
+					0.3,
+					Enum.EasingStyle.Back,
+					Enum.EasingDirection.Out
+					), {Position = UDim2.new(0.54,0,1.9,0)})
+			end
+			tween:Play()
+		end
 	elseif inputObject.KeyCode == Enum.KeyCode.BackSlash then
 		if TextBox9.Position == UDim2.new(0,0,0.95,0) then
 			TextBox9:CaptureFocus()
@@ -1250,6 +941,14 @@ for i,v in pairs(commands) do
 	clone.Parent = ScrollingFrame12
 	clone.Text = v
 	clone.Visible = true
+end
+for i,v in pairs(TextBox9:GetChildren()) do
+	if v:IsA("ImageButton") then
+		table.insert(ezbuttons,v)
+		v.Activated:Connect(function()
+			command(v.Name)
+		end)
+	end
 end
 
 if game.JointsService:FindFirstChild("⚡") then
@@ -1293,7 +992,7 @@ game.JointsService.ChildAdded:Connect(function(v)
 	end
 end)
 
-if writefileExploit() then
+if writefile then
 	if pcall(function() readfile("password.KX") end) then
 		if readfile("password.KX") ~= nil then
 			if readfile("password.KX") == password then
