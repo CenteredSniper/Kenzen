@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 0
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 1
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -54,7 +54,7 @@ local executor
 local ScreenGui0 = game:GetObjects("rbxassetid://7614129325")[1]
 repeat wait() until ScreenGui0:FindFirstChild("Cmdbar")
 local TextBox9 = ScreenGui0:WaitForChild("Cmdbar")
-local Frame10 = ScreenGui0:WaitForChild("Commands")
+local Frame10 = TextBox9:WaitForChild("Commands")
 local ScrollingFrame12 = Frame10:WaitForChild("ScrollingFrame")
 local TextLabel14 = Instance.new("TextLabel")
 TextLabel14.Visible = false
