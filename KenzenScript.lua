@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 2
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 3
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -648,7 +648,7 @@ local function command(cmd)
 				end
 			end
 		end
-		if check ~= true then
+		if check then
 			PhysicsService:CreateCollisionGroup("KPlayers")
 		end
 		PhysicsService:CollisionGroupSetCollidable("KPlayers", "KPlayers", false)
