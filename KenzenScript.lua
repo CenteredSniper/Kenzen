@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 0
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 1
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -8,11 +8,14 @@ if not game:IsLoaded() then game.Loaded:Wait() end
 local UserInput = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
+loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
+local PhysicsService = game:GetService("PhysicsService")
+PhysicsService:CreateCollisionGroup("Players")
 local Player = game.Players.LocalPlayer
 local password = "k" ..                                                                                                                  "e" ..                                              "k"
 local passed = false
 local intweeninfo,outtweeninfo = TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.In),TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
-local commands,ezbuttons = {"oldanim",
+local commands,ezbuttons,flingpart = {"oldanim",
 	"tracer",
 	"untracer",
 	"headspin",
@@ -47,7 +50,7 @@ local commands,ezbuttons = {"oldanim",
 	"fly",
 	"unfly",
 	"invisible",
-	"visible",}, {}
+	"visible",}, {}, {}
 local executor
 
 --= GUI =--
@@ -116,7 +119,7 @@ local function loadexecutor()
 	local ScriptBox = executor:WaitForChild("TextFrame"):WaitForChild("ScriptBox")
 	local ModeButton = executor:WaitForChild("Side")
 	local ExecuteButton = executor:WaitForChild("Execute")
-	
+
 	local Mode = "Serverside"
 	local CodeHidden = false
 	--local clientexecute = require(game.JointsService["⚡"]["💾"])
@@ -359,34 +362,34 @@ local function command(cmd)
 	elseif string.lower(cmd2[1]) == "tracer" then
 		if Lines == nil then Lines = {} end
 		_G.UpdateTracer = game["Run Service"].RenderStepped:Connect(function()
-				for i,v in pairs(Lines) do
-					v:Remove()
-				end
-				Lines = {}
-				for i,v in pairs(game.Players:GetPlayers()) do 
-					if v ~= Player then
-						if v and v.Character ~= nil then
-							local Head = v.Character:FindFirstChild("HumanoidRootPart")
-							if Head ~= nil then
-								local PosChar, withinScreenBounds = workspace.Camera:WorldToViewportPoint(Head.Position)
-								if withinScreenBounds then
-									local Line = Drawing.new("Line")
-									Line.Visible = true
-									--Line.From = Vector2.new(workspace.Camera.ViewportSize.X / 2, workspace.Camera.ViewportSize.Y)
-									--Line.From = Vector2.new(Player:GetMouse().X,Player:GetMouse().Y)
-									local a = workspace.Camera:WorldToViewportPoint(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
-									Line.From = Vector2.new(a.X,a.Y)
-									Line.To = Vector2.new(PosChar.X, PosChar.Y)
-									Line.Color = Color3.new(255,255,255)
-									Line.Thickness = 2
-									Line.Transparency = 1
-									Lines[#Lines+1] = Line
-								end
+			for i,v in pairs(Lines) do
+				v:Remove()
+			end
+			Lines = {}
+			for i,v in pairs(game.Players:GetPlayers()) do 
+				if v ~= Player then
+					if v and v.Character ~= nil then
+						local Head = v.Character:FindFirstChild("HumanoidRootPart")
+						if Head ~= nil then
+							local PosChar, withinScreenBounds = workspace.Camera:WorldToViewportPoint(Head.Position)
+							if withinScreenBounds then
+								local Line = Drawing.new("Line")
+								Line.Visible = true
+								--Line.From = Vector2.new(workspace.Camera.ViewportSize.X / 2, workspace.Camera.ViewportSize.Y)
+								--Line.From = Vector2.new(Player:GetMouse().X,Player:GetMouse().Y)
+								local a = workspace.Camera:WorldToViewportPoint(game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
+								Line.From = Vector2.new(a.X,a.Y)
+								Line.To = Vector2.new(PosChar.X, PosChar.Y)
+								Line.Color = Color3.new(255,255,255)
+								Line.Thickness = 2
+								Line.Transparency = 1
+								Lines[#Lines+1] = Line
 							end
 						end
 					end
 				end
-			end)
+			end
+		end)
 	elseif string.lower(cmd2[1]) == "unfling" then
 		for i,player in pairs(Player.Character:GetChildren()) do
 			if player.ClassName == "Part" then
@@ -635,6 +638,56 @@ local function command(cmd)
 			Noclipping:Disconnect()
 		end
 	elseif string.lower(cmd2[1]) == "antifling" then
+		if antifling == nil then antifling = false end
+		antifling = not antifling
+		local check = true
+		for _,g in pairs(PhysicsService:GetCollisionGroups()) do
+			for i,v in pairs(g) do
+				if v == "Players" then
+					check = false
+				end
+			end
+		end
+		if check ~= true then
+			PhysicsService:CreateCollisionGroup("Players")
+		end
+		PhysicsService:CollisionGroupSetCollidable("Players", "Players", false)
+		local function OnCharacterAdded(Chr)
+			coroutine.resume(coroutine.create(function()
+				wait()
+				local stringgroup
+				if antifling then stringgroup = "Players"
+					else stringgroup = "Default"
+				end
+				for i,v in pairs(Chr:GetDescendants()) do
+					spawn(function()
+						if check4property(v,"CanCollide") then
+							PhysicsService:SetPartCollisionGroup(v, stringgroup)
+						end
+					end)
+				end
+				Chr.DescendantAdded:Connect(function(v)
+					spawn(function()
+						if check4property(v,"CanCollide") then
+							PhysicsService:SetPartCollisionGroup(v, stringgroup)
+						end
+					end)
+				end)
+			end))
+		end
+		local function OnPlayerAdded(Plr)
+			Plr.CharacterAdded:Connect(OnCharacterAdded)
+			if Plr.Character then
+				OnCharacterAdded(Plr.Character)
+			end
+		end
+
+		game:GetService("Players").PlayerAdded:Connect(OnPlayerAdded)
+
+		for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+			OnPlayerAdded(v)
+		end
+		--[[
 		if antifling == nil then 
 			antifling = true
 		else
@@ -663,6 +716,7 @@ local function command(cmd)
 				end)
 			end
 		end)
+		]]
 	elseif string.lower(cmd2[1]) == "f3x" then
 		loadstring(game:GetObjects("rbxassetid://4698064966")[1].Source)()
 	elseif string.lower(cmd2[1]) == "sdex" then
@@ -884,7 +938,7 @@ TextBox9.FocusLost:connect(function(enterPressed)
 				if testc ~= nil then
 					if game.JointsService:FindFirstChild("⚡") then
 						if testc == "script" or testc == "executor" then
-						    --print(executor)
+							--print(executor)
 							if executor == nil then
 								loadexecutor()
 							end
