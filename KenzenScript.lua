@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 1
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 2
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -643,20 +643,20 @@ local function command(cmd)
 		local check = true
 		for _,g in pairs(PhysicsService:GetCollisionGroups()) do
 			for i,v in pairs(g) do
-				if v == "Players" then
+				if v == "KPlayers" then
 					check = false
 				end
 			end
 		end
 		if check ~= true then
-			PhysicsService:CreateCollisionGroup("Players")
+			PhysicsService:CreateCollisionGroup("KPlayers")
 		end
-		PhysicsService:CollisionGroupSetCollidable("Players", "Players", false)
+		PhysicsService:CollisionGroupSetCollidable("KPlayers", "KPlayers", false)
 		local function OnCharacterAdded(Chr)
 			coroutine.resume(coroutine.create(function()
 				wait()
 				local stringgroup
-				if antifling then stringgroup = "Players"
+				if antifling then stringgroup = "KPlayers"
 					else stringgroup = "Default"
 				end
 				for i,v in pairs(Chr:GetDescendants()) do
