@@ -1,4 +1,4 @@
-local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 4
+local RTYGFHSWRGYJJRTG = "Kenzen // V: " .. 2 .. "." .. 0 .. "." .. 5
 if printconsole then printconsole(RTYGFHSWRGYJJRTG) else print(RTYGFHSWRGYJJRTG) end
 --= Start Up =--
 if _G.KenzenLoaded then error("kenzen already running") return end
@@ -49,6 +49,7 @@ local commands,ezbuttons,flingpart = {"oldanim",
 	"fly",
 	"unfly",
 	"invisible",
+	"animy",
 	"visible",}, {}, {}
 local executor
 
@@ -718,6 +719,8 @@ local function command(cmd)
 		]]
 	elseif string.lower(cmd2[1]) == "f3x" then
 		loadstring(game:GetObjects("rbxassetid://4698064966")[1].Source)()
+	elseif string.lower(cmd2[1]) == "animy" then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/AnimY.lua", true))()
 	elseif string.lower(cmd2[1]) == "sdex" then
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/others/sdex", true))()
 	elseif string.lower(cmd2[1]) == "untracer" then
