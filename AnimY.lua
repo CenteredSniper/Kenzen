@@ -296,6 +296,7 @@ local function AnimationLoader()
 		wait(0.1) 
 		StopAll(); wait(.1); Animation:Play() Animation['Speed'] = 1
 		dancing = true
+		warn(boombox)
 		if boombox == nil then
 			sound:Play()
 		else
