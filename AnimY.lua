@@ -179,7 +179,10 @@ local function AnimationLoader()
 		AP['RigidityEnabled'] = true; AO['RigidityEnabled'] = true; AP['Attachment0'] = A0; AP['Attachment1'] = A1; AO['Attachment0'] = A0; AO['Attachment1'] = A1;
 		A0['Name'] = 'CFAttachment0'; A1['Name'] = 'CFAttachment1'; 
 	end
-	game:GetService("RunService").Heartbeat:connect(function()
+	local deltt = 0
+	local renderstp  = game:GetService("RunService").RenderStepped:Connect(function(delta)
+	    deltt = deltt + delta
+	    if delta <= 0.01 then return end
 		if boombox then
 			if boombox.Handle.CanCollide then boombox.Handle.CanCollide = false end
 			boombox.Handle.Velocity = Vector3.new(0x1e,0,0)
@@ -214,7 +217,7 @@ local function AnimationLoader()
 		AP['RigidityEnabled'] = true; AO['RigidityEnabled'] = true; AP['Attachment0'] = A0; AP['Attachment1'] = A1; AO['Attachment0'] = A0; AO['Attachment1'] = A1;
 		A0['Name'] = 'CFAttachment0'; A1['Name'] = 'CFAttachment1'; A0['CFrame'] = V['C1'] * V['C0']:Inverse(); V:Remove()
 	end
-
+    
 	if not run_service:FindFirstChild('Delta') then
 		local Delta = Create('BindableEvent',run_service); Delta['Name'] = 'Delta'
 		local A, B = 0, tick()
@@ -316,6 +319,7 @@ local function AnimationLoader()
 		if sound then sound:Destroy() end
 		if boombox then boombox = nil end
 		if play_the_animation then play_the_animation = nil end
+		if renderstp then renderstp:Disconnect() end
 		if A1 then A1 = nil end
 		for K,V in next, character:GetDescendants() do 
 			if V['Name']:match('Align') then 
