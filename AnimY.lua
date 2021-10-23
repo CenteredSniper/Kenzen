@@ -95,7 +95,8 @@ local PreloadAnimation = function(AssetId)
 		Class['Stopped'] = false
 		if boombox and dancing then
 			repeat wait() until boombox.Handle.Sound.Playing and boombox.Handle.Sound.TimeLength ~= 0
-		elseif sound then
+		elseif sound and dancing then
+			print(sound) print(sound.SoundId)
 			repeat wait() until sound.Playing
 		end
 		coroutine.wrap(function()
