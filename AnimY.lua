@@ -151,7 +151,14 @@ local StopAll = function()
 	end
 end
 
-local cframey,cframey2,boomlocation,A1 = CFrame.new(0,-2.3,0),CFrame.Angles(math.rad(90),math.rad(90),math.rad(90)),"Right Arm",nil
+local cframey = CFrame.new(0,-2.3,0)
+local cframey2 = CFrame.Angles(math.rad(90),math.rad(90),math.rad(90))
+local cframey3 = CFrame.new(0,-1.5,1)
+local cframey4 = CFrame.Angles(math.rad(180),math.rad(0),math.rad(110))
+local boomlocation = "Right Arm"
+local miclocation = "Right Arm"
+local A1 = nil
+local A2 = nil
 --_G.CFramey = CFrame.new(0,-2.3,0)
 --_G.CFramey2 = CFrame.Angles(math.rad(90),math.rad(90),math.rad(90))
 local function CFrameBypass(pos)
@@ -168,6 +175,7 @@ local function AnimationLoader()
 	settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
 	settings().Physics.AllowSleep = false
 	boombox = game:GetService("Players").LocalPlayer.Character:FindFirstChild("Remote",true)
+	microphone = game:GetService("Players").LocalPlayer.Character:FindFirstChild("Microphone")
 	if boombox then
 		repeat 
 			boombox = boombox.Parent
@@ -179,6 +187,13 @@ local function AnimationLoader()
 		AP['RigidityEnabled'] = true; AO['RigidityEnabled'] = true; AP['Attachment0'] = A0; AP['Attachment1'] = A1; AO['Attachment0'] = A0; AO['Attachment1'] = A1;
 		A0['Name'] = 'CFAttachment0'; A1['Name'] = 'CFAttachment1'; 
 	end
+    if microphone then
+        microphone.Handle.AccessoryWeld:Destroy()
+        local AP, AO, A0 = Create('AlignPosition',microphone.Handle), Create('AlignOrientation',microphone.Handle), Create('Attachment',microphone.Handle)
+		A2 = Create('Attachment',game.Players.LocalPlayer.Character[miclocation])
+		AP['RigidityEnabled'] = true; AO['RigidityEnabled'] = true; AP['Attachment0'] = A0; AP['Attachment1'] = A2; AO['Attachment0'] = A0; AO['Attachment1'] = A2;
+		A0['Name'] = 'CFAttachment0'; A2['Name'] = 'CFAttachment1'; 
+    end
 	local deltt = 0
 	local renderstp  = game:GetService("RunService").RenderStepped:Connect(function(delta)
 	    deltt = deltt + delta
@@ -186,9 +201,14 @@ local function AnimationLoader()
 		if boombox then
 			if boombox.Handle.CanCollide then boombox.Handle.CanCollide = false end
 			boombox.Handle.Velocity = Vector3.new(0x1e,0,0)
-			--boombox.Handle:FindFirstChild('CFAttachment0').CFrame = CFrameBypass(player.Character['Right Arm'].CFrame * CFrame.new(0,-2.3,0) * CFrame.Angles(math.rad(90),math.rad(90),math.rad(90)))--math.rad(_G.Value1),math.rad(_G.Value3),math.rad(_G.Value2)))
-			boombox.Handle:FindFirstChild('CFAttachment0').CFrame = CFrameBypass(player.Character[boomlocation].CFrame * cframey * cframey2)
+			--boombox.Handle:FindFirstChild('CFAttachment0').CFrame = CFrameBypass(player.Character[boomlocation].CFrame * cframey * cframey2)
+			tween_service:Create(boombox.Handle:FindFirstChild('CFAttachment0'),TweenInfo.new((1/60)),{CFrame = CFrameBypass(player.Character[boomlocation].CFrame * cframey * cframey2)}):Play()
 		end
+		if microphone then
+		    if microphone.Handle.CanCollide then microphone.Handle.CanCollide = false end
+			microphone.Handle.Velocity = Vector3.new(0x1e,0,0)
+		    tween_service:Create(microphone.Handle:FindFirstChild('CFAttachment0'),TweenInfo.new((1/60)),{CFrame = CFrameBypass(player.Character[miclocation].CFrame * cframey3 * cframey4)}):Play()
+        end
 		for i,v in next, game:GetService("Players").LocalPlayer.Character:GetDescendants() do
 			if v:IsA("BasePart") and v.Name ~="HumanoidRootPart" then
 					v.Velocity = Vector3.new(0x1e,0,0)
@@ -321,6 +341,7 @@ local function AnimationLoader()
 		if play_the_animation then play_the_animation = nil end
 		if renderstp then renderstp:Disconnect() end
 		if A1 then A1 = nil end
+		if A2 then A2 = nil end
 		for K,V in next, character:GetDescendants() do 
 			if V['Name']:match('Align') then 
 				V:Destroy()
@@ -428,7 +449,6 @@ frametomove.Main.ScrollingFrame.TextBox:GetPropertyChangedSignal("Text"):Connect
 		end
 	end
 end)
-_G.YAYAYAYA = CFrame.Angles(math.rad(90),math.rad(90),math.rad(90))
 player.Chatted:Connect(function(msg)
 	if string.sub(string.lower(msg),1,5) == "/load" or string.sub(string.lower(msg),1,7) == "/e load" then
 		coroutine.wrap(AnimationLoader)()
@@ -437,12 +457,24 @@ player.Chatted:Connect(function(msg)
 	elseif string.sub(string.lower(msg),1,7) == "/cframe" or string.sub(string.lower(msg),1,9) == "/e cframe" then
 		cframetoggle = not cframetoggle
 		printconsole("Cframe: " .. tostring(cframetoggle))
+	elseif string.sub(string.lower(msg),1,4) == "/mic" or string.sub(string.lower(msg),1,6) == "/e mic" then
+	    if A2 then
+			if miclocation == "Right Arm" then
+				miclocation = "Left Arm"
+				cframey4 = CFrame.Angles(math.rad(180),math.rad(0),math.rad(70))
+				A2.Parent = game.Players.LocalPlayer.Character[miclocation]
+			else 
+				miclocation = "Right Arm"
+				cframey4 = CFrame.Angles(math.rad(180),math.rad(0),math.rad(110))
+				A2.Parent = game.Players.LocalPlayer.Character[miclocation]
+			end
+		end
 	elseif string.sub(string.lower(msg),1,5) == "/boom" or string.sub(string.lower(msg),1,7) == "/e boom" then
 		if A1 then
 			if boomlocation == "Torso" then
 				boomlocation = "Left Arm"
 				cframey = CFrame.new(0,-2.3,0)
-				cframey2 = _G.YAYAYAYA
+				cframey2 = CFrame.Angles(math.rad(90),math.rad(90),math.rad(90))
 				A1.Parent = game.Players.LocalPlayer.Character[boomlocation]
 			elseif boomlocation == "Right Arm" then
 				boomlocation = "Torso"
