@@ -110,7 +110,7 @@ local PreloadAnimation = function(AssetId)
 						coroutine.wrap(function()
 							for I = 1,#K1:GetDescendants() do 
 								local Pose = K1:GetDescendants()[I]
-								if Contains(joints,Pose['Name']) then 
+								if Contains(joints,Pose['Name']) and player.Character:FindFirstChild(Pose['Name']) then 
 									local Duration = K2 ~= nil and (K2['Time'] - K1['Time'])/Class['Speed'] or .5
 									Edit(player.Character[Pose['Name']],PoseToCF(Pose,joints[Pose['Name']]),Duration,Pose['EasingStyle'],Pose['EasingDirection'])
 								end
