@@ -200,18 +200,21 @@ local function AnimationLoader()
 	    if delta <= 0.01 then return end
 		if boombox then
 			if boombox.Handle.CanCollide then boombox.Handle.CanCollide = false end
-			boombox.Handle.Velocity = Vector3.new(0x1e,0,0)
+			--boombox.Handle.Velocity = Vector3.new(0x1e,0,0)
+			boombox.Handle.Velocity = Vector3.new(-30,0,0)
 			--boombox.Handle:FindFirstChild('CFAttachment0').CFrame = CFrameBypass(player.Character[boomlocation].CFrame * cframey * cframey2)
 			tween_service:Create(boombox.Handle:FindFirstChild('CFAttachment0'),TweenInfo.new((1/60)),{CFrame = CFrameBypass(player.Character[boomlocation].CFrame * cframey * cframey2)}):Play()
 		end
 		if microphone then
 		    if microphone.Handle.CanCollide then microphone.Handle.CanCollide = false end
-			microphone.Handle.Velocity = Vector3.new(0x1e,0,0)
+			--microphone.Handle.Velocity = Vector3.new(0x1e,0,0)
+				microphone.Handle.Velocity = Vector3.new(-30,0,0)
 		    tween_service:Create(microphone.Handle:FindFirstChild('CFAttachment0'),TweenInfo.new((1/60)),{CFrame = CFrameBypass(player.Character[miclocation].CFrame * cframey3 * cframey4)}):Play()
         end
 		for i,v in next, game:GetService("Players").LocalPlayer.Character:GetDescendants() do
 			if v:IsA("BasePart") and v.Name ~="HumanoidRootPart" then
-					v.Velocity = Vector3.new(0x1e,0,0)
+					--v.Velocity = Vector3.new(0x1e,0,0)
+					v.Velocity = Vector3.new(-30,0,0)
 			end
 		end
 	end)
