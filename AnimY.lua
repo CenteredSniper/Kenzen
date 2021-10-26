@@ -255,9 +255,10 @@ local function AnimationLoader()
 			end
 		end)
 	end
-
+    local randomidle = {180435571,7840378308}
+    randomidle = randomidle[math.random(1,2)]
 	anims = {
-		['Idle'] = PreloadAnimation({180435571,7840378308}[math.random(1,2],true,character); --5183986020
+		['Idle'] = PreloadAnimation(randomidle,true,character); --5183986020
 		['Walk'] = PreloadAnimation(6606119539,true,character);  --5053650512,180426354
 		['Run'] = PreloadAnimation(180426354,true,character); --5053715968
 		['Jump'] = PreloadAnimation(125750702,true,character); --4073859368
