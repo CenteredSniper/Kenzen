@@ -9,12 +9,20 @@ local UIS = game:GetService("UserInputService")
 local run_service = game:GetService("RunService")
 local player = game:GetService("Players").LocalPlayer
 local gui = game:GetObjects("rbxassetid://7113228606")[1]
+local partgui = game:GetObjects("rbxassetid://7866869891")[1]
 local dancing,dancingplay,can_collide,cframetoggle = false,false,true,false
 local play_the_animation, joints, anims, connections, character, dragToggle, dragInput, dragStart, selected, sound, boombox
-repeat wait() until gui
+repeat wait() until gui and partgui
 local frametomove,dragSpeed,closed = gui.Drag,0,true
 
 -- Functions //
+
+for i,v in pairs(partgui.Frame:GetChildren()) do
+    if v:IsA("TextLabel") then
+        v.Text = v.Name
+    end
+end
+partgui.ResetOnSpawn = false; partgui.Parent = game.CoreGui
 
 local function runanimation(button)
 	if selected == button.Name then
@@ -217,17 +225,34 @@ local function AnimationLoader()
 			boombox.Handle.Velocity = Vector3.new(-30,0,0)
 			--boombox.Handle:FindFirstChild('CFAttachment0').CFrame = CFrameBypass(player.Character[boomlocation].CFrame * cframey * cframey2)
 			tween_service:Create(boombox.Handle:FindFirstChild('CFAttachment0'),TweenInfo.new((1/60)),{CFrame = CFrameBypass(player.Character[boomlocation].CFrame * cframey * cframey2)}):Play()
+		    if isnetworkowner(boombox.Handle) then
+                partgui.Frame.boombox.BackgroundColor3 =  Color3.new(0,1,0)
+            else
+                partgui.Frame.boombox.BackgroundColor3 =  Color3.new(1,0,0)
+            end
 		end
 		if microphone then
 		    if microphone.Handle.CanCollide then microphone.Handle.CanCollide = false end
 			--microphone.Handle.Velocity = Vector3.new(0x1e,0,0)
 				microphone.Handle.Velocity = Vector3.new(-30,0,0)
 		    tween_service:Create(microphone.Handle:FindFirstChild('CFAttachment0'),TweenInfo.new((1/60)),{CFrame = CFrameBypass(player.Character[miclocation].CFrame * cframey3 * cframey4)}):Play()
+            if isnetworkowner(microphone.Handle) then
+                partgui.Frame.microphone.BackgroundColor3 =  Color3.new(0,1,0)
+            else
+                partgui.Frame.microphone.BackgroundColor3 =  Color3.new(1,0,0)
+            end
         end
 		for i,v in next, game:GetService("Players").LocalPlayer.Character:GetDescendants() do
 			if v:IsA("BasePart") and v.Name ~="HumanoidRootPart" then
 					--v.Velocity = Vector3.new(0x1e,0,0)
 					v.Velocity = Vector3.new(-30,0,0)
+				if partgui.Frame:FindFirstChild(v.Name) then
+				    if isnetworkowner(v) then
+                        partgui.Frame[v.Name].BackgroundColor3 =  Color3.new(0,1,0)
+                    else
+                        partgui.Frame[v.Name].BackgroundColor3 =  Color3.new(1,0,0)
+                    end
+				end
 			end
 		end
 	end)
@@ -348,10 +373,10 @@ local function AnimationLoader()
 	coroutine.wrap(function()
 		repeat
 			torso.CanCollide = false
-			character.Head.CanCollide = false
-			run_service.Stepped:Wait()
+			if character:FindFirstChild("Head") then character.Head.CanCollide = false end
 			game.Players.LocalPlayer.MaximumSimulationRadius=math.pow(math.huge,math.huge)
 			sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",math.huge*math.huge)
+			run_service.Stepped:Wait()
 		until humanoid.Health < 1
 		if sound then sound:Destroy() end
 		if boombox then boombox = nil end
