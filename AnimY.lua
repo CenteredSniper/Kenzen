@@ -159,6 +159,7 @@ local boomlocation = "Right Arm"
 local miclocation = "Right Arm"
 local A1 = nil
 local A2 = nil
+local claim2 = false
 --_G.CFramey = CFrame.new(0,-2.3,0)
 --_G.CFramey2 = CFrame.Angles(math.rad(90),math.rad(90),math.rad(90))
 local function CFrameBypass(pos)
@@ -179,9 +180,11 @@ local function AnimationLoader()
 	settings().Physics.AllowSleep = false
 	boombox = game:GetService("Players").LocalPlayer.Character:FindFirstChild("Remote",true)
 	microphone = game:GetService("Players").LocalPlayer.Character:FindFirstChild("Microphone")
-	for i,v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-		if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart"then
-			NoFall(v)
+	if claim2 then
+		for i,v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+			if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart"then
+				NoFall(v)
+			end
 		end
 	end
 	if boombox then
@@ -468,8 +471,9 @@ player.Chatted:Connect(function(msg)
 		coroutine.wrap(AnimationLoader)()
 	elseif string.sub(string.lower(msg),1,5) == "/head" or string.sub(string.lower(msg),1,7) == "/e head" then
 		workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Head
-	--elseif string.sub(string.lower(msg),1,8) == "/netless" or string.sub(string.lower(msg),1,10) == "/e netless" then
-		
+	elseif string.sub(string.lower(msg),1,8) == "/netless" or string.sub(string.lower(msg),1,10) == "/e netless" then
+		claim2 = not claim2
+		printconsole("netless2: " .. tostring(claim2))
 	elseif string.sub(string.lower(msg),1,7) == "/cframe" or string.sub(string.lower(msg),1,9) == "/e cframe" then
 		cframetoggle = not cframetoggle
 		printconsole("Cframe: " .. tostring(cframetoggle))
