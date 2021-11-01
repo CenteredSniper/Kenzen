@@ -169,25 +169,35 @@ local function CFrameBypass(pos)
 	--tool.Parent = game.Players.LocalPlayer.Character
 	return cframe
  end
-
+local function NoFall(Part)
+    Instance.new("BodyForce",Part).Force = Vector3.new(0,196.2,0)
+    Instance.new("BodyAngularVelocity",Part).AngularVelocity = Vector3.new(0,0,0)
+end
 ---_G.Value1,_G.Value2,_G.Value3 = 180,90,0
 local function AnimationLoader()
 	settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
 	settings().Physics.AllowSleep = false
 	boombox = game:GetService("Players").LocalPlayer.Character:FindFirstChild("Remote",true)
 	microphone = game:GetService("Players").LocalPlayer.Character:FindFirstChild("Microphone")
+	for i,v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+		if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart"then
+			NoFall(v)
+		end
+	end
 	if boombox then
 		repeat 
 			boombox = boombox.Parent
 			wait()
 		until boombox:IsA("Tool")
 		game:GetService("Players").LocalPlayer.Character:FindFirstChild("RightGrip",true):Destroy()
+		--NoFall(boombox.Handle)
 		local AP, AO, A0 = Create('AlignPosition',boombox.Handle), Create('AlignOrientation',boombox.Handle), Create('Attachment',boombox.Handle)
 		A1 = Create('Attachment',game.Players.LocalPlayer.Character[boomlocation])
 		AP['RigidityEnabled'] = true; AO['RigidityEnabled'] = true; AP['Attachment0'] = A0; AP['Attachment1'] = A1; AO['Attachment0'] = A0; AO['Attachment1'] = A1;
 		A0['Name'] = 'CFAttachment0'; A1['Name'] = 'CFAttachment1'; 
 	end
     if microphone then
+	--NoFall(microphone.Handle)
         microphone.Handle.AccessoryWeld:Destroy()
         local AP, AO, A0 = Create('AlignPosition',microphone.Handle), Create('AlignOrientation',microphone.Handle), Create('Attachment',microphone.Handle)
 		A2 = Create('Attachment',game.Players.LocalPlayer.Character[miclocation])
@@ -458,6 +468,8 @@ player.Chatted:Connect(function(msg)
 		coroutine.wrap(AnimationLoader)()
 	elseif string.sub(string.lower(msg),1,5) == "/head" or string.sub(string.lower(msg),1,7) == "/e head" then
 		workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Head
+	--elseif string.sub(string.lower(msg),1,8) == "/netless" or string.sub(string.lower(msg),1,10) == "/e netless" then
+		
 	elseif string.sub(string.lower(msg),1,7) == "/cframe" or string.sub(string.lower(msg),1,9) == "/e cframe" then
 		cframetoggle = not cframetoggle
 		printconsole("Cframe: " .. tostring(cframetoggle))
