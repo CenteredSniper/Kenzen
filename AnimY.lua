@@ -35,6 +35,7 @@ local function runanimation(button)
 			play_the_animation(theidslol[1],theidslol[2])
 		else
 			if printconsole then printconsole("Please use /load!"); else warn("Please use /load!") end
+			wait(0.1)
 			game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "AnimY; Please use /load or /e load!"})
 		end
 	end
@@ -500,10 +501,12 @@ player.Chatted:Connect(function(msg)
 	elseif string.sub(string.lower(msg),1,8) == "/netless" or string.sub(string.lower(msg),1,10) == "/e netless" then
 		claim2 = not claim2
 		if printconsole then printconsole("netless2: " .. tostring(claim2)) end
+			wait(0.1)
 		game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "AnimY; " .. "netless2: " .. tostring(claim2)})
 	elseif string.sub(string.lower(msg),1,7) == "/cframe" or string.sub(string.lower(msg),1,9) == "/e cframe" then
 		cframetoggle = not cframetoggle
 		if printconsole then printconsole("Cframe: " .. tostring(cframetoggle)) end
+			wait(0.1)
 		game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "AnimY; " .. "Cframe: " .. tostring(cframetoggle)})
 	elseif string.sub(string.lower(msg),1,4) == "/mic" or string.sub(string.lower(msg),1,6) == "/e mic" then
 	    if A2 then
