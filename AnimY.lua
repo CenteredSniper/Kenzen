@@ -34,7 +34,8 @@ local function runanimation(button)
 			local theidslol = button.Name:split(" ")
 			play_the_animation(theidslol[1],theidslol[2])
 		else
-			printconsole("Please use /load!"); warn("Please use /load!")
+			if printconsole then printconsole("Please use /load!"); else warn("Please use /load!") end
+			game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "AnimY; Please use /load or /e load!"})
 		end
 	end
 end
@@ -104,7 +105,7 @@ local PreloadAnimation = function(AssetId)
 		if boombox and dancing then
 			repeat wait() until boombox.Handle.Sound.Playing and boombox.Handle.Sound.TimeLength ~= 0
 		elseif sound and dancing then
-			print(sound) print(sound.SoundId)
+			--print(sound) print(sound.SoundId)
 			repeat wait() until sound.Playing
 		end
 		coroutine.wrap(function()
@@ -361,7 +362,7 @@ local function AnimationLoader()
 		wait(0.1) 
 		StopAll(); wait(.1); Animation:Play() Animation['Speed'] = 1
 		dancing = true
-		warn(boombox)
+		--warn(boombox)
 		if boombox == nil then
 			sound:Play()
 		else
@@ -498,10 +499,12 @@ player.Chatted:Connect(function(msg)
 		workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Head
 	elseif string.sub(string.lower(msg),1,8) == "/netless" or string.sub(string.lower(msg),1,10) == "/e netless" then
 		claim2 = not claim2
-		printconsole("netless2: " .. tostring(claim2))
+		if printconsole then printconsole("netless2: " .. tostring(claim2)) end
+		game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "AnimY; " .. "netless2: " .. tostring(claim2)})
 	elseif string.sub(string.lower(msg),1,7) == "/cframe" or string.sub(string.lower(msg),1,9) == "/e cframe" then
 		cframetoggle = not cframetoggle
-		printconsole("Cframe: " .. tostring(cframetoggle))
+		if printconsole then printconsole("Cframe: " .. tostring(cframetoggle)) end
+		game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "AnimY; " .. "Cframe: " .. tostring(cframetoggle)})
 	elseif string.sub(string.lower(msg),1,4) == "/mic" or string.sub(string.lower(msg),1,6) == "/e mic" then
 	    if A2 then
 			if miclocation == "Right Arm" then
