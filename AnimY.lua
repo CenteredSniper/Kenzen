@@ -542,7 +542,7 @@ player.Chatted:Connect(function(msg)
 	end
 end)
 local dummy = frametomove.Main.ScrollingFrame.ScrollingFrame.TextButton
-local animationslist = game:GetObjects("rbxassetid://7867407346")[1] --7113399253")[1]
+local animationslist = game:GetObjects("rbxassetid://7948728902")[1] --7113399253")[1]
 for i,v in pairs(animationslist:GetChildren()) do
 	spawn(function()
 		repeat wait() until v:FindFirstChildOfClass("Sound")
