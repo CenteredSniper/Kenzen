@@ -10,7 +10,7 @@ local run_service = game:GetService("RunService")
 local player = game:GetService("Players").LocalPlayer
 local gui = game:GetObjects("rbxassetid://7113228606")[1]
 local partgui = game:GetObjects("rbxassetid://7866869891")[1]
-local dancing,dancingplay,can_collide,cframetoggle = false,false,true,false
+local dancing,dancingplay,can_collide,cframetoggle,fakehead = false,false,true,false,false
 local play_the_animation, joints, anims, connections, character, dragToggle, dragInput, dragStart, selected, sound, boombox
 repeat wait() until gui and partgui
 local frametomove,dragSpeed,closed = gui.Drag,0,true
@@ -185,7 +185,17 @@ local function NoFall(Part)
     Instance.new("BodyAngularVelocity",Part).AngularVelocity = Vector3.new(0,0,0)
 end
 ---_G.Value1,_G.Value2,_G.Value3 = 180,90,0
+
+local function fakeheadfun()
+    local head = game.Players.LocalPlayer.Character.Head
+    local a = head:Clone(); a.Name = "Head"; head.Name = "FakeHead"; a.Parent = game.Players.LocalPlayer.Character; a.CanCollide = false
+    local b = game.Players.LocalPlayer.Character.Torso.Neck:Clone(); b.Name = "FakeNeck"; b.Part1 = a; b.Parent = game.Players.LocalPlayer.Character.Torso
+    head.Transparency = 1; head.face:Destroy()
+    for i,v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do if v:IsA("Accessory") then if v.Handle.AccessoryWeld.Part1 == head then v.Handle.AccessoryWeld.Part1 = a end end end
+end
+
 local function AnimationLoader()
+    if fakehead then fakeheadfun() end
 	settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
 	settings().Physics.AllowSleep = false
 	boombox = game:GetService("Players").LocalPlayer.Character:FindFirstChild("Remote",true)
@@ -260,7 +270,6 @@ local function AnimationLoader()
 	end)
 	character = player['Character']
 	local torso, root, humanoid = character['Torso'], character['HumanoidRootPart'], character['Humanoid']
-
 	joints = {
 		['Torso'] = root['RootJoint'];
 		['Left Arm'] = torso['Left Shoulder'];
@@ -268,7 +277,7 @@ local function AnimationLoader()
 		['Left Leg'] = torso['Left Hip'];
 		['Right Leg'] = torso['Right Hip'];
 	}
-
+    if fakehead then joints['Head'] = torso['FakeNeck'] end
 	coroutine.wrap(function()
 		root['Anchored'] = true;
 		wait(.8)
@@ -508,6 +517,11 @@ player.Chatted:Connect(function(msg)
 		if printconsole then printconsole("Cframe: " .. tostring(cframetoggle)) end
 			wait(0.1)
 		game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "AnimY; " .. "Cframe: " .. tostring(cframetoggle)})
+	elseif string.sub(string.lower(msg),1,5) == "/neck" or string.sub(string.lower(msg),1,7) == "/e neck" then
+		fakehead = not fakehead
+		if printconsole then printconsole("Cframe: " .. tostring(fakehead)) end
+			wait(0.1)
+		game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "AnimY; " .. "Cframe: " .. tostring(fakehead)})
 	elseif string.sub(string.lower(msg),1,4) == "/mic" or string.sub(string.lower(msg),1,6) == "/e mic" then
 	    if A2 then
 			if miclocation == "Right Arm" then
