@@ -10,7 +10,7 @@ local run_service = game:GetService("RunService")
 local player = game:GetService("Players").LocalPlayer
 local gui = game:GetObjects("rbxassetid://7113228606")[1]
 local partgui = game:GetObjects("rbxassetid://7866869891")[1]
-local dancing,dancingplay,can_collide,cframetoggle,fakehead = false,false,true,false,false
+local dancing,dancingplay,can_collide,cframetoggle,fakehead,godmode = false,false,true,false,false,false
 local play_the_animation, joints, anims, connections, character, dragToggle, dragInput, dragStart, selected, sound, boombox
 repeat wait() until gui and partgui
 local frametomove,dragSpeed,closed = gui.Drag,0,true
@@ -36,7 +36,7 @@ local function runanimation(button)
 		else
 			if printconsole then printconsole("Please use /load!"); else warn("Please use /load!") end
 			wait(0.1)
-			game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "AnimY; Please use /load or /e load!"})
+			game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "{AnimY}: Please use /load or /e load!"})
 		end
 	end
 end
@@ -194,8 +194,60 @@ local function fakeheadfun()
     for i,v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do if v:IsA("Accessory") then if v.Handle.AccessoryWeld.Part1 == head then v.Handle.AccessoryWeld.Part1 = a end end end
 end
 
+local function god()
+    local Cam = workspace.CurrentCamera
+	local Pos, Char = Cam.CFrame, player.Character
+	local Human = Char and Char.FindFirstChildWhichIsA(Char, "Humanoid")
+	local nHuman = Human.Clone(Human)
+	nHuman.Parent, player.Character = Char, nil
+	nHuman.SetStateEnabled(nHuman, 15, false)
+	nHuman.SetStateEnabled(nHuman, 1, false)
+	nHuman.SetStateEnabled(nHuman, 0, false)
+	nHuman.BreakJointsOnDeath, Human = true, Human.Destroy(Human)
+	player.Character, Cam.CameraSubject, Cam.CFrame = Char, nHuman, wait() and Pos
+	nHuman.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+	local Script = Char.FindFirstChild(Char, "Animate")
+	if Script then
+		Script.Disabled = true
+		wait()
+		Script.Disabled = false
+	end
+	nHuman.Health = nHuman.MaxHealth
+end
+
 local function AnimationLoader()
     if fakehead then fakeheadfun() end
+	local hatinfoforgod = {}
+	if godmode then
+		--[[
+		for i,v in pairs(player.Character:GetChildren()) do
+			if v:IsA("Accessory") and v.Name ~= "Microphone" then
+				local aw = v.Handle:FindFirstChild("AccessoryWeld"):Clone()
+				v.Handle:FindFirstChild("AccessoryWeld"):Destroy()
+				local AP, AO, A0 = Create('AlignPosition',v.Handle), Create('AlignOrientation',v.Handle), Create('Attachment',v.Handle)
+				local A1 = Create('Attachment',v.Handle.AccessoryWeld.Part1)
+				AP['RigidityEnabled'] = true; AO['RigidityEnabled'] = true; AP['Attachment0'] = A0; AP['Attachment1'] = A1; AO['Attachment0'] = A0; AO['Attachment1'] = A1;
+				A0['Name'] = 'CFAttachment0'; A1['Name'] = 'CFAttachment1'; 
+				--A0.CFrame = v.Handle.AccessoryWeld.C0; A1.CFrame = v.Handle.AccessoryWeld.C1
+				--local aw = v.Handle.AccessoryWeld:Clone(); aw.Parent = v.Handle; aw.Part0 = nil; aw.Part1 = nil
+				--aw.Name = "OldWeld"; v.Handle.AccessoryWeld:Destroy()
+				A0.CFrame = aw.C0; A1.CFrame = aw.C1
+				local tablenameidk = tostring(math.random(1,10000000))
+				hatinfoforgod[tablenameidk] = {}
+				hatinfoforgod[tablenameidk]["Accessory"] = v
+				hatinfoforgod[tablenameidk]["Weld1"] = {}; hatinfoforgod[tablenameidk]["Weld2"] = {}
+				hatinfoforgod[tablenameidk]["Weld1"]["Part"] = A0
+				hatinfoforgod[tablenameidk]["Weld1"]["C0"] = aw.C0
+				hatinfoforgod[tablenameidk]["Weld2"]["Part"] = A1
+				hatinfoforgod[tablenameidk]["Weld2"]["C0"] = aw.C1
+				aw:Destroy()
+				--print(v.Handle.AccessoryWeld)
+				--print(hatinfoforgod[tablenameidk]["Weld1"]["Part"]) warn(hatinfoforgod[tablenameidk]["Weld1"]["C0"])
+			end
+		end
+		]]
+		god()
+	end
 	settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
 	settings().Physics.AllowSleep = false
 	boombox = game:GetService("Players").LocalPlayer.Character:FindFirstChild("Remote",true)
@@ -277,17 +329,21 @@ local function AnimationLoader()
 		['Left Leg'] = torso['Left Hip'];
 		['Right Leg'] = torso['Right Hip'];
 	}
-    if fakehead then joints['Head'] = torso['FakeNeck'] end
+	if fakehead then joints['Head'] = torso['FakeNeck'] end
 	coroutine.wrap(function()
 		root['Anchored'] = true;
 		wait(.8)
 		root['Anchored'] = false;
 	end)()
+	if godmode then joints['Head'] = torso['Neck']; root['Anchored'] = true; 
+		game.StarterGui:SetCore("SendNotification",{Title = "Please wait 4-6 seconds",Text = "godmode method is cringe Lol."})
+		wait(4); root['Anchored'] = false
+	end
 
 	for K,V in next, joints do 
 		local AP, AO, A0, A1 = Create('AlignPosition',V['Part1']), Create('AlignOrientation',V['Part1']), Create('Attachment',V['Part1']), Create('Attachment',V['Part0'])
 		AP['RigidityEnabled'] = true; AO['RigidityEnabled'] = true; AP['Attachment0'] = A0; AP['Attachment1'] = A1; AO['Attachment0'] = A0; AO['Attachment1'] = A1;
-		A0['Name'] = 'CFAttachment0'; A1['Name'] = 'CFAttachment1'; A0['CFrame'] = V['C1'] * V['C0']:Inverse(); V:Remove()
+		A0['Name'] = 'CFAttachment0'; A1['Name'] = 'CFAttachment1'; A0['CFrame'] = V['C1'] * V['C0']:Inverse(); V.Parent = nil --V:Remove()
 	end
     
 	if not run_service:FindFirstChild('Delta') then
@@ -511,17 +567,32 @@ player.Chatted:Connect(function(msg)
 		claim2 = not claim2
 		if printconsole then printconsole("netless2: " .. tostring(claim2)) end
 			wait(0.1)
-		game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "AnimY; " .. "netless2: " .. tostring(claim2)})
+		game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "{AnimY}: " .. "netless2: " .. tostring(claim2)})
 	elseif string.sub(string.lower(msg),1,7) == "/cframe" or string.sub(string.lower(msg),1,9) == "/e cframe" then
 		cframetoggle = not cframetoggle
 		if printconsole then printconsole("Cframe: " .. tostring(cframetoggle)) end
 			wait(0.1)
-		game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "AnimY; " .. "Cframe: " .. tostring(cframetoggle)})
+		game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "{AnimY}: " .. "Cframe: " .. tostring(cframetoggle)})
 	elseif string.sub(string.lower(msg),1,5) == "/neck" or string.sub(string.lower(msg),1,7) == "/e neck" then
 		fakehead = not fakehead
-		if printconsole then printconsole("Cframe: " .. tostring(fakehead)) end
+		if godmode and fakehead then
+		    godmode = false
+		    game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "{AnimY}: " .. "God: " .. tostring(godmode)})
+		    if printconsole then printconsole("God: " .. tostring(godmode)) end
+		end
+		if printconsole then printconsole("FakeNeck: " .. tostring(fakehead)) end
 			wait(0.1)
-		game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "AnimY; " .. "Cframe: " .. tostring(fakehead)})
+		game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "{AnimY}: " .. "FakeNeck: " .. tostring(fakehead)})
+	elseif string.sub(string.lower(msg),1,4) == "/god" or string.sub(string.lower(msg),1,6) == "/e god" then
+		godmode = not godmode
+		if godmode and fakehead then
+		    fakehead = false
+		    game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "{AnimY}: " .. "FakeNeck: " .. tostring(fakehead)})
+		    if printconsole then printconsole("FakeNeck: " .. tostring(fakehead)) end
+		end
+		if printconsole then printconsole("God: " .. tostring(godmode)) end
+			wait(0.1)
+		game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "{AnimY}: " .. "God: " .. tostring(godmode)})
 	elseif string.sub(string.lower(msg),1,4) == "/mic" or string.sub(string.lower(msg),1,6) == "/e mic" then
 	    if A2 then
 			if miclocation == "Right Arm" then
