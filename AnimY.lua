@@ -172,8 +172,8 @@ local A2 = nil
 local claim2 = false
 --_G.CFramey = CFrame.new(0,-2.3,0)
 --_G.CFramey2 = CFrame.Angles(math.rad(90),math.rad(90),math.rad(90))
-local function CFrameBypass(pos)
-	local Arm = game.Players.LocalPlayer.Character[boomlocation].CFrame * CFrame.new(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0)
+local function CFrameBypass(pos,location)
+	local Arm = game.Players.LocalPlayer.Character[location].CFrame * CFrame.new(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0)
 	local cframe = Arm:toObjectSpace(pos):inverse()
 	--tool.Parent = game.Players.LocalPlayer.Backpack
 	--tool.Grip = cframe
@@ -288,7 +288,7 @@ local function AnimationLoader()
 			--boombox.Handle.Velocity = Vector3.new(0x1e,0,0)
 			boombox.Handle.Velocity = Vector3.new(-30,0,0)
 			--boombox.Handle:FindFirstChild('CFAttachment0').CFrame = CFrameBypass(player.Character[boomlocation].CFrame * cframey * cframey2)
-			tween_service:Create(boombox.Handle:FindFirstChild('CFAttachment0'),TweenInfo.new((1/60)),{CFrame = CFrameBypass(player.Character[boomlocation].CFrame * cframey * cframey2)}):Play()
+			tween_service:Create(boombox.Handle:FindFirstChild('CFAttachment0'),TweenInfo.new((1/60)),{CFrame = CFrameBypass(player.Character[boomlocation].CFrame * cframey * cframey2,boomlocation)}):Play()
 		    if isnetworkowner(boombox.Handle) then
                 partgui.Frame.boombox.BackgroundColor3 =  Color3.new(0,1,0)
             else
@@ -299,7 +299,7 @@ local function AnimationLoader()
 		    if microphone.Handle.CanCollide then microphone.Handle.CanCollide = false end
 			--microphone.Handle.Velocity = Vector3.new(0x1e,0,0)
 				microphone.Handle.Velocity = Vector3.new(-30,0,0)
-		    tween_service:Create(microphone.Handle:FindFirstChild('CFAttachment0'),TweenInfo.new((1/60)),{CFrame = CFrameBypass(player.Character[miclocation].CFrame * cframey3 * cframey4)}):Play()
+		    tween_service:Create(microphone.Handle:FindFirstChild('CFAttachment0'),TweenInfo.new((1/60)),{CFrame = CFrameBypass(player.Character[miclocation].CFrame * cframey3 * cframey4,miclocation)}):Play()
             if isnetworkowner(microphone.Handle) then
                 partgui.Frame.microphone.BackgroundColor3 =  Color3.new(0,1,0)
             else
