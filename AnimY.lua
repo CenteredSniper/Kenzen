@@ -598,7 +598,7 @@ player.Chatted:Connect(function(msg)
 			wait(0.1)
 		game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "{AnimY}: " .. "FakeNeck: " .. tostring(fakehead)})
 	elseif string.sub(string.lower(msg),1,6) == "/speed" or string.sub(string.lower(msg),1,8) == "/e speed" then
-		local msg = msg:split()
+		local msg = msg:split(" ")
 		if msg[2] and tonumber(msg[2]) then
 			animspeed = tonumber(msg[2])
 		end
