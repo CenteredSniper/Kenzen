@@ -416,7 +416,7 @@ local function AnimationLoader()
 	end)
 	wait(0.5)
 	play_the_animation = function(animationid,soundid)
-		if boombox == nil then
+		if boombox == nil and soundid then
 			if sound then sound:Destroy() sound = nil end
 			sound = Instance.new("Sound",root)
 			sound.SoundId = "rbxassetid://" .. soundid
@@ -429,7 +429,7 @@ local function AnimationLoader()
 		StopAll(); wait(.1); Animation:Play() Animation['Speed'] = 1
 		dancing = true
 		--warn(boombox)
-		if boombox == nil then
+		if boombox == nil and sound then
 			sound:Play()
 		else
 			boombox.Remote:FireServer("PlaySong", soundid)
