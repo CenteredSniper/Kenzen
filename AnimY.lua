@@ -233,33 +233,18 @@ local function AnimationLoader()
     if fakehead then fakeheadfun() end
 	local hatinfoforgod = {}
 	if godmode then
-		--[[
 		for i,v in pairs(player.Character:GetChildren()) do
-			if v:IsA("Accessory") and v.Name ~= "Microphone" then
-				local aw = v.Handle:FindFirstChild("AccessoryWeld"):Clone()
-				v.Handle:FindFirstChild("AccessoryWeld"):Destroy()
+			if v:IsA("Accessory") then
 				local AP, AO, A0 = Create('AlignPosition',v.Handle), Create('AlignOrientation',v.Handle), Create('Attachment',v.Handle)
-				local A1 = Create('Attachment',v.Handle.AccessoryWeld.Part1)
-				AP['RigidityEnabled'] = true; AO['RigidityEnabled'] = true; AP['Attachment0'] = A0; AP['Attachment1'] = A1; AO['Attachment0'] = A0; AO['Attachment1'] = A1;
-				A0['Name'] = 'CFAttachment0'; A1['Name'] = 'CFAttachment1'; 
-				--A0.CFrame = v.Handle.AccessoryWeld.C0; A1.CFrame = v.Handle.AccessoryWeld.C1
-				--local aw = v.Handle.AccessoryWeld:Clone(); aw.Parent = v.Handle; aw.Part0 = nil; aw.Part1 = nil
-				--aw.Name = "OldWeld"; v.Handle.AccessoryWeld:Destroy()
-				A0.CFrame = aw.C0; A1.CFrame = aw.C1
-				local tablenameidk = tostring(math.random(1,10000000))
-				hatinfoforgod[tablenameidk] = {}
-				hatinfoforgod[tablenameidk]["Accessory"] = v
-				hatinfoforgod[tablenameidk]["Weld1"] = {}; hatinfoforgod[tablenameidk]["Weld2"] = {}
-				hatinfoforgod[tablenameidk]["Weld1"]["Part"] = A0
-				hatinfoforgod[tablenameidk]["Weld1"]["C0"] = aw.C0
-				hatinfoforgod[tablenameidk]["Weld2"]["Part"] = A1
-				hatinfoforgod[tablenameidk]["Weld2"]["C0"] = aw.C1
-				aw:Destroy()
-				--print(v.Handle.AccessoryWeld)
-				--print(hatinfoforgod[tablenameidk]["Weld1"]["Part"]) warn(hatinfoforgod[tablenameidk]["Weld1"]["C0"])
+				A2 = Create('Attachment',v.Handle.AccessoryWeld.Part1)
+				AP['RigidityEnabled'] = true; AO['RigidityEnabled'] = true; AP['Attachment0'] = A0; AP['Attachment1'] = A2; AO['Attachment0'] = A0; AO['Attachment1'] = A2;
+				A0['Name'] = 'HatCFAttachment0'; A2['Name'] = 'HatCFAttachment0'; 
+				A0.CFrame = v.Handle.AccessoryWeld.C0
+				A2.CFrame = v.Handle.AccessoryWeld.C1
+				table.insert(hatinfoforgod,{A0,A2})
+				v.Handle.AccessoryWeld:Destroy()
 			end
 		end
-		]]
 		god()
 	end
 	settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
@@ -296,13 +281,12 @@ local function AnimationLoader()
 	local deltt = 0
 	local renderstp  = game:GetService("RunService").RenderStepped:Connect(function(delta)
 	    deltt = deltt + delta
-	    if delta <= 0.01 then return end
 		if boombox then
 			if boombox.Handle.CanCollide then boombox.Handle.CanCollide = false end
 			--boombox.Handle.Velocity = Vector3.new(0x1e,0,0)
-			boombox.Handle.Velocity = Vector3.new(-30,0,0)
+			--boombox.Handle.Velocity = Vector3.new(-30,0,0)
 			--boombox.Handle:FindFirstChild('CFAttachment0').CFrame = CFrameBypass(player.Character[boomlocation].CFrame * cframey * cframey2)
-			tween_service:Create(boombox.Handle:FindFirstChild('CFAttachment0'),TweenInfo.new((1/60)),{CFrame = CFrameBypass(player.Character[boomlocation].CFrame * cframey * cframey2,boomlocation)}):Play()
+			tween_service:Create(boombox.Handle:FindFirstChild('CFAttachment0'),TweenInfo.new((delta)),{CFrame = CFrameBypass(player.Character[boomlocation].CFrame * cframey * cframey2,boomlocation)}):Play()
 		    if isnetworkowner(boombox.Handle) then
                 partgui.Frame.boombox.BackgroundColor3 =  Color3.new(0,1,0)
             else
@@ -312,14 +296,26 @@ local function AnimationLoader()
 		if microphone then
 		    if microphone.Handle.CanCollide then microphone.Handle.CanCollide = false end
 			--microphone.Handle.Velocity = Vector3.new(0x1e,0,0)
-				microphone.Handle.Velocity = Vector3.new(-30,0,0)
-		    tween_service:Create(microphone.Handle:FindFirstChild('CFAttachment0'),TweenInfo.new((1/60)),{CFrame = CFrameBypass(player.Character[miclocation].CFrame * cframey3 * cframey4,miclocation)}):Play()
+				--microphone.Handle.Velocity = Vector3.new(-30,0,0)
+		    tween_service:Create(microphone.Handle:FindFirstChild('CFAttachment0'),TweenInfo.new((delta)),{CFrame = CFrameBypass(player.Character[miclocation].CFrame * cframey3 * cframey4,miclocation)}):Play()
             if isnetworkowner(microphone.Handle) then
                 partgui.Frame.microphone.BackgroundColor3 =  Color3.new(0,1,0)
             else
                 partgui.Frame.microphone.BackgroundColor3 =  Color3.new(1,0,0)
             end
         end
+		if godmode then
+			for _,g in pairs(hatinfoforgod) do
+				for i,v in pairs(g) do
+					game:GetService("TweenService"):Create(v,TweenInfo.new(delta),{CFrame = v.CFrame}):Play()
+				end
+				--g[1].Parent.Velocity = Vector3.new(-30,0,0)
+				if g[1].Parent:FindFirstChild("AccessoryWeld") then
+					g[1].Parent.AccessoryWeld:Destroy()
+				end
+			end
+		end
+		if delta <= 0.01 then return end
 		for i,v in next, game:GetService("Players").LocalPlayer.Character:GetDescendants() do
 			if v:IsA("BasePart") and v.Name ~="HumanoidRootPart" then
 					--v.Velocity = Vector3.new(0x1e,0,0)
