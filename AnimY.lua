@@ -87,11 +87,13 @@ local PoseToCF = function(Pose,Motor)
 	return (Motor['Part0'].CFrame * Motor['C0'] * Pose['CFrame'] * Motor['C1']:Inverse()):ToObjectSpace(Motor['Part0'].CFrame)
 end
 
+local animspeed = 1
+
 local PreloadAnimation = function(AssetId)
 	local Sequence = game:GetObjects('rbxassetid://'..tostring(AssetId))[1]; assert(Sequence:IsA('KeyframeSequence'),'Instance is not a KeyframeSequence.')
 	repeat run_service.RenderStepped:Wait() until Sequence
 	local Class = {}
-	Class['Speed'] = 1
+	Class['Speed'] = animspeed
 	local Keyframes = Sequence:GetKeyframes()
 	local Yield = function(Seconds)
 		local Time = Seconds * (60.8) --+ Keyframes[#Keyframes].Time)
@@ -213,6 +215,18 @@ local function god()
 		Script.Disabled = false
 	end
 	nHuman.Health = nHuman.MaxHealth
+end
+
+local function respawn()
+	local char = player.Character
+	if char:FindFirstChildOfClass("Humanoid") then char:FindFirstChildOfClass("Humanoid"):ChangeState(15) end
+	char:ClearAllChildren()
+	local newChar = Instance.new("Model")
+	newChar.Parent = workspace
+	plr.Character = newChar
+	wait()
+	plr.Character = char
+	newChar:Destroy()
 end
 
 local function AnimationLoader()
@@ -583,6 +597,13 @@ player.Chatted:Connect(function(msg)
 		if printconsole then printconsole("FakeNeck: " .. tostring(fakehead)) end
 			wait(0.1)
 		game.StarterGui:SetCore("ChatMakeSystemMessage",{Text = "{AnimY}: " .. "FakeNeck: " .. tostring(fakehead)})
+	elseif string.sub(string.lower(msg),1,6) == "/speed" or string.sub(string.lower(msg),1,8) == "/e speed" then
+		local msg = msg:split()
+		if msg[2] and tonumber(msg[2]) then
+			animspeed = tonumber(msg[2])
+		end
+	elseif string.sub(string.lower(msg),1,4) == "/res" or string.sub(string.lower(msg),1,6) == "/e res" then
+		respawn()
 	elseif string.sub(string.lower(msg),1,4) == "/god" or string.sub(string.lower(msg),1,6) == "/e god" then
 		godmode = not godmode
 		if godmode and fakehead then
@@ -627,7 +648,7 @@ player.Chatted:Connect(function(msg)
 	end
 end)
 local dummy = frametomove.Main.ScrollingFrame.ScrollingFrame.TextButton
-local animationslist = game:GetObjects("rbxassetid://7979526466")[1] --7948728902")[1] --7113399253")[1]
+local animationslist = game:GetObjects("rbxassetid://7979581499")[1] --7979526466")[1] --7948728902")[1] --7113399253")[1]
 for i,v in pairs(animationslist:GetChildren()) do
 	spawn(function()
 		repeat wait() until v:FindFirstChildOfClass("Sound")
