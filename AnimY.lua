@@ -93,11 +93,11 @@ local PreloadAnimation = function(AssetId)
 	local Sequence = game:GetObjects('rbxassetid://'..tostring(AssetId))[1]; assert(Sequence:IsA('KeyframeSequence'),'Instance is not a KeyframeSequence.')
 	repeat run_service.RenderStepped:Wait() until Sequence
 	local Class = {}
-	Class['Speed'] = animspeed
+	--Class['Speed'] = animspeed
 	local Keyframes = Sequence:GetKeyframes()
 	local Yield = function(Seconds)
 		local Time = Seconds * (60.8) --+ Keyframes[#Keyframes].Time)
-		for I = 1,Time,Class['Speed'] do 
+		for I = 1,Time,animspeed do 
 			run_service.Delta['Event']:Wait()
 		end
 	end
@@ -123,7 +123,7 @@ local PreloadAnimation = function(AssetId)
 							for I = 1,#K1:GetDescendants() do 
 								local Pose = K1:GetDescendants()[I]
 								if Contains(joints,Pose['Name']) and player.Character:FindFirstChild(Pose['Name']) then 
-									local Duration = K2 ~= nil and (K2['Time'] - K1['Time'])/Class['Speed'] or .5
+									local Duration = K2 ~= nil and (K2['Time'] - K1['Time'])/animspeed or .5
 									Edit(player.Character[Pose['Name']],PoseToCF(Pose,joints[Pose['Name']]),Duration,Pose['EasingStyle'],Pose['EasingDirection'])
 								end
 							end
