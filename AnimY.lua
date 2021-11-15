@@ -346,8 +346,9 @@ local function AnimationLoader()
 		root['Anchored'] = false;
 	end)()
 	if godmode then joints['Head'] = torso['Neck']; root['Anchored'] = true; 
-		game.StarterGui:SetCore("SendNotification",{Title = "Please wait 4-6 seconds",Text = "godmode method is cringe Lol."})
-		wait(4); root['Anchored'] = false
+		game.StarterGui:SetCore("SendNotification",{Title = "Please wait " .. tostring(game.Players.RespawnTime + 2) .. " seconds",Text = "godmode method is cringe Lol."})
+		--wait(4); root['Anchored'] = false
+		wait(game.Players.RespawnTime + 2); root['Anchored'] = false
 	end
 
 	for K,V in next, joints do 
