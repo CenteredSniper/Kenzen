@@ -1,7 +1,7 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
 if _G.Fling == nil then _G.Fling = false end
 if _G.ShowReal == nil then _G.ShowReal = false end
-if _G.GodMode == nil then _G.GodMode = false end
+if _G.GodMode == nil then _G.GodMode = true end
 local PhysicsService = game:GetService("PhysicsService")
 local check
 pcall(function() check = PhysicsService:GetCollisionGroupId("NoCollide") end)
