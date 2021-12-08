@@ -1,4 +1,7 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
+if _G.Fling == nil then _G.Fling = false end
+if _G.ShowReal == nil then _G.ShowReal = false end
+if _G.GodMode == nil then _G.GodMode = false end
 local PhysicsService = game:GetService("PhysicsService")
 local check
 pcall(function() check = PhysicsService:GetCollisionGroupId("NoCollide") end)
@@ -26,7 +29,8 @@ for i,v in pairs(originalrig:GetDescendants()) do
     end
 end
 
-for i,v in pairs(originalrig:GetChildren()) do
+local invisrig = _G.ShowReal and Character or originalrig
+for i,v in pairs(invisrig:GetChildren()) do
     if v:IsA("BasePart") then
         v.Transparency = 1
         local selectionbox = Instance.new("SelectionBox",v)
@@ -84,5 +88,7 @@ Character.Humanoid.Died:Connect(function()
     Character:Destroy()
 end)
 
+if _G.GodMode then
 wait(game.Players.RespawnTime + 1)
 originalrig.Torso.Neck.Parent = nil
+end
