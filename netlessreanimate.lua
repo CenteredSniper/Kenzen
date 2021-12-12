@@ -56,6 +56,7 @@ game["Run Service"].RenderStepped:Connect(function(delta)
     for i,v in pairs(originalrig:GetChildren()) do
         coroutine.resume(coroutine.create(function()
             if v:IsA("BasePart") then
+                v.CanCollide = false
                 v.Velocity = Vector3.new(-25.05, -25.05, -25.05)
                     if v.Name == "HumanoidRootPart" and _G.Fling then
                         --nothing
