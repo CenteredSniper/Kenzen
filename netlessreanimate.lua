@@ -120,12 +120,11 @@ game["Run Service"].RenderStepped:Connect(function(delta)
 					v.Velocity = Vector3.new(-25.05, -25.05, -25.05)
 				elseif v:IsA("Accessory") then
 					v.Handle.Velocity = Vector3.new(-25.05, -25.05, -25.05)
-                    print(Character[v.Name].Handle.CFrame)
 					game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = Character[v.Name].Handle.CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
 				end
 			end))
 		end
-		if originalrig:FindFirstChild("HumanoidRootPart") and _G.Fling then
+		if originalrig:FindFirstChild("HumanoidRootPart") and not _G.Fling then
 			game:GetService("TweenService"):Create(originalrig["HumanoidRootPart"],TweenInfo.new((delta)),{CFrame = Character["HumanoidRootPart"].CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
 		end
 	else
@@ -168,6 +167,5 @@ end)
 
 if _G.GodMode then
 	wait(game.Players.RespawnTime + 1)
-    repeat wait() until isnetworkowner(originalrig.Head)
 	originalrig:FindFirstChild("Neck",true).Parent = nil
 end
