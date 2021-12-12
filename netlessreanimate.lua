@@ -60,11 +60,11 @@ game["Run Service"].RenderStepped:Connect(function(delta)
                     if v.Name == "HumanoidRootPart" and _G.Fling then
                         --nothing
                     else
-                        game:GetService("TweenService"):Create(v,TweenInfo.new((delta)),{CFrame = Character[v.Name].CFrame * CFrame.new(0,0.3,0)}):Play()
+                        game:GetService("TweenService"):Create(v,TweenInfo.new((delta)),{CFrame = Character[v.Name].CFrame * CFrame.new(0.42,0.42,0.42)}):Play()
                     end
             elseif v:IsA("Accessory") then
                 v.Handle.Velocity = Vector3.new(-25.05, -25.05, -25.05)
-                game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = Character[v.Name].Handle.CFrame * CFrame.new(0,0.3,0)}):Play()
+                game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = Character[v.Name].Handle.CFrame * CFrame.new(0.42,0.42,0.42)}):Play()
             end
         end))
     end
