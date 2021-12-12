@@ -3,6 +3,7 @@ if _G.Fling == nil then _G.Fling = false end
 if _G.ShowReal == nil then _G.ShowReal = false end
 if _G.GodMode == nil then _G.GodMode = true end
 if _G.R15toR6 == nil then _G.R15toR6 = true end
+if _G.Tools == nil then _G.Tools = true end
 local PhysicsService = game:GetService("PhysicsService")
 local check
 pcall(function() check = PhysicsService:GetCollisionGroupId("NoCollide") end)
@@ -52,6 +53,11 @@ if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
     for i=1,10 do
         game["Run Service"].RenderStepped:Wait()
     end
+    for i,v in pairs(originalrig:GetChildren()) do
+        if v:IsA("Tool") then
+            v:Clone().Parent = Character
+        end
+    end
 else
 	plr.Character.Archivable = true
 	Character = plr.Character:Clone()
@@ -77,7 +83,7 @@ for i,v in pairs(invisrig:GetChildren()) do
 		v.Transparency = 1
 		local selectionbox = Instance.new("SelectionBox",v)
 		selectionbox.Transparency = 1; selectionbox.Adornee = v;
-	elseif v:IsA("Accessory") then
+	elseif v:IsA("Accessory") or v:IsA("Tool") then
 		v.Handle.Transparency = 1
 	end
 end
@@ -145,6 +151,15 @@ game["Run Service"].RenderStepped:Connect(function(delta)
 			end))
 		end
 	end
+    if _G.Tools then
+        for i,v in pairs(originalrig:GetChildren()) do
+            if v:IsA("Tool") and Character:FindFirstChild(v.Name) then
+                game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = Character[v.Name].Handle.CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
+            elseif v:IsA("Tool") then
+                game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = Character["Left Leg"].CFrame * CFrame.new(0,5,0) + Vector3.new(0.42,0.42,0.42)}):Play()
+            end
+        end
+    end
 end)
 
 plr.Chatted:Connect(function(msg)
