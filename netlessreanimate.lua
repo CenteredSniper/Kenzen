@@ -1,6 +1,7 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
 if _G.Fling == nil then _G.Fling = false end
 if _G.ShowReal == nil then _G.ShowReal = false end
+if _G.FakeGod == nil then _G.FakeGod = false end
 if _G.GodMode == nil then _G.GodMode = true end
 if _G.R15toR6 == nil then _G.R15toR6 = true end
 if _G.Tools == nil then _G.Tools = true end
@@ -41,6 +42,8 @@ local offsets = {
 local Character,originalrig
 
 local rigtype = plr.Character.Humanoid.RigType
+
+if _G.FakeGod and rigtype == Enum.HumanoidRigType.R6 then _G.GodMode = false else _G.FakeGod = false _G.GodMode = true end
 
 if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
 	originalrig = plr.Character
@@ -86,6 +89,29 @@ for i,v in pairs(invisrig:GetChildren()) do
 	elseif v:IsA("Accessory") or v:IsA("Tool") then
 		v.Handle.Transparency = 1
 	end
+end
+
+local FakeTorso,FakeTorso1,FakeHead
+
+if _G.FakeGod then
+    if originalrig:FindFirstChild("SeeMonkey") then
+        FakeTorso = originalrig.SeeMonkey.Handle
+    else
+        FakeTorso1 = originalrig["Kate Hair"].Handle
+        FakeTorso1.Mesh:Destroy();
+        FakeTorso = originalrig.Robloxclassicred.Handle
+    end
+    if originalrig:FindFirstChild("Dummy_Head") then
+        FakeHead = originalrig.Dummy_Head.Handle
+    else
+        FakeHead = originalrig.MediHood.Handle
+    end
+    FakeTorso.Mesh:Destroy();
+    for i,v in pairs(originalrig:GetChildren()) do
+        if v:IsA("Accessory") then
+	    	v.Handle.AccessoryWeld:Destroy()
+	    end
+    end
 end
 
 plr.Character.Parent = Character
@@ -141,10 +167,21 @@ game["Run Service"].RenderStepped:Connect(function(delta)
 					v.Velocity = Vector3.new(-25.05, -25.05, -25.05)
 					if v.Name == "HumanoidRootPart" and _G.Fling then
 						--nothing
+					elseif _G.FakeGod and v.Name == "Head" then
+					    game:GetService("TweenService"):Create(FakeHead,TweenInfo.new((delta)),{CFrame = Character["Head"].CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
+					elseif _G.FakeGod and v.Name == "Torso" then
+					    if FakeTorso1 then
+		                    game:GetService("TweenService"):Create(FakeTorso,TweenInfo.new((delta)),{CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(0.5,0,0) + Vector3.new(0.42,0.42,0.42)}):Play()
+		                    game:GetService("TweenService"):Create(FakeTorso1,TweenInfo.new((delta)),{CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(-0.5,0,0) + Vector3.new(0.42,0.42,0.42)}):Play()
+	                    else
+		                    game:GetService("TweenService"):Create(FakeTorso,TweenInfo.new((delta)),{CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) + Vector3.new(0.42,0.42,0.42)}):Play()
+	                    end
 					else
 						game:GetService("TweenService"):Create(v,TweenInfo.new((delta)),{CFrame = Character[v.Name].CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
 					end
-				elseif v:IsA("Accessory") then
+					
+				elseif v:IsA("Accessory") and v.Handle ~= FakeTorso and v.Handle ~= FakeTorso1 and v.Handle ~= FakeHead then
+				    --print(FakeHead); print(FakeTorso); 
 					v.Handle.Velocity = Vector3.new(-25.05, -25.05, -25.05)
 					game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = Character[v.Name].Handle.CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
 				end
