@@ -348,6 +348,7 @@ local function waitForChild(parent, childName)
 end
 
 local function command(cmd)
+	warn(cmd)
 	local returnvaluee = TextBox9.Text
 	TextBox9.Text = ""
 	local cmd2 = cmd:split(" ")
@@ -936,6 +937,7 @@ TextBox9.FocusLost:connect(function(enterPressed)
 			if TextBox9.Text == "cmds" or TextBox9.Text == "commands" then
 				tweencommands(false)
 			else
+					print(TextBox9.Text)
 				local testc = command(TextBox9.Text)
 				if testc ~= nil then
 					if game.JointsService:FindFirstChild("⚡") then
