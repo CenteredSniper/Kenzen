@@ -69,6 +69,17 @@ else
 	Character.Parent = workspace
 	Character.Name = "FakeBody"
 end
+local function findmatchingaccessory(hat)
+	for i,v in pairs(Character:GetChildren()) do
+		if v:IsA("Accessory") then
+			if v.Handle:FindFirstChildOfClass("SpecialMesh").MeshId == hat.Handle:FindFirstChildOfClass("SpecialMesh").MeshId and v.Handle:FindFirstChildOfClass("SpecialMesh").TextureId == hat.Handle:FindFirstChildOfClass("SpecialMesh").TextureId then
+				local origweld = Instance.new("ObjectValue",hat.Handle)
+				origweld.Value = v.Handle
+				origweld.Name = "CloneHat"
+			end
+		end
+	end
+end
 
 for i,v in pairs(originalrig:GetDescendants()) do
 	if v:IsA("Motor6D") and v.Name ~= "Neck" then v:Destroy()
@@ -77,7 +88,9 @@ for i,v in pairs(originalrig:GetDescendants()) do
 		a.MaxForce = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.Velocity = Vector3.new(-25.05,-25.05,-25.05)
 		local a = Instance.new("BodyAngularVelocity",v)
 		a.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.AngularVelocity = Vector3.new(0,0,0)
-	end
+	elseif v:IsA("Accessory") then
+	findmatchingaccessory(v)
+end
 end
 
 local invisrig = _G.ShowReal and Character or originalrig
@@ -152,7 +165,8 @@ game["Run Service"].RenderStepped:Connect(function(delta)
 					v.Velocity = Vector3.new(-25.05, -25.05, -25.05)
 				elseif v:IsA("Accessory") then
 					v.Handle.Velocity = Vector3.new(-25.05, -25.05, -25.05)
-					game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = Character[v.Name].Handle.CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
+					--game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = Character[v.Name].Handle.CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
+					game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = v.Handle.CloneHat.Value.CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
 				end
 			end))
 		end
@@ -181,9 +195,9 @@ game["Run Service"].RenderStepped:Connect(function(delta)
 					end
 					
 				elseif v:IsA("Accessory") and v.Handle ~= FakeTorso and v.Handle ~= FakeTorso1 and v.Handle ~= FakeHead then
-				    --print(FakeHead); print(FakeTorso); 
 					v.Handle.Velocity = Vector3.new(-25.05, -25.05, -25.05)
-					game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = Character[v.Name].Handle.CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
+					--game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = Character[v.Name].Handle.CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
+					game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = v.Handle.CloneHat.Value.CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
 				end
 			end))
 		end
