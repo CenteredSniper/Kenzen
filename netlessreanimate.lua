@@ -5,6 +5,7 @@ if _G.FakeGod == nil then _G.FakeGod = false end
 if _G.GodMode == nil then _G.GodMode = true end
 if _G.R15toR6 == nil then _G.R15toR6 = true end
 if _G.Tools == nil then _G.Tools = true end
+if _G.Velocity == nil then _G.Velocity = -25.05 end
 local PhysicsService = game:GetService("PhysicsService")
 local check
 pcall(function() check = PhysicsService:GetCollisionGroupId("NoCollide") end)
@@ -14,6 +15,8 @@ end
 PhysicsService:CollisionGroupSetCollidable("NoCollide", "NoCollide", false)
 
 local plr = game.Players.LocalPlayer
+
+local velocityoffset = 0.0167664670659*_G.Velocity
 
 local offsets = {
 	["Left Arm"] = {["LeftUpperArm"] = CFrame.new(0,0.39,0),
@@ -43,24 +46,24 @@ local Character,originalrig
 
 local rigtype = plr.Character.Humanoid.RigType
 
-if _G.FakeGod and rigtype == Enum.HumanoidRigType.R6 then _G.GodMode = false else _G.FakeGod = false _G.GodMode = true end
+if _G.FakeGod and rigtype == Enum.HumanoidRigType.R6 then _G.GodMode = false end
 
 if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
 	originalrig = plr.Character
 	Character = game:GetObjects("rbxassetid://8232772380")[1]:Clone()
-    Character.Parent = workspace
-    local desc = game.Players:GetHumanoidDescriptionFromUserId(plr.UserId)
-    Character.Humanoid:ApplyDescription(desc)
+	Character.Parent = workspace
+	local desc = game.Players:GetHumanoidDescriptionFromUserId(plr.UserId)
+	Character.Humanoid:ApplyDescription(desc)
 	Character.Name = "FakeBody"
-    Character:MoveTo(plr.Character.HumanoidRootPart.Position)
-    for i=1,10 do
-        game["Run Service"].RenderStepped:Wait()
-    end
-    for i,v in pairs(originalrig:GetChildren()) do
-        if v:IsA("Tool") then
-            v:Clone().Parent = Character
-        end
-    end
+	Character:MoveTo(plr.Character.HumanoidRootPart.Position)
+	for i=1,10 do
+		game["Run Service"].RenderStepped:Wait()
+	end
+	for i,v in pairs(originalrig:GetChildren()) do
+		if v:IsA("Tool") then
+			v:Clone().Parent = Character
+		end
+	end
 else
 	plr.Character.Archivable = true
 	Character = plr.Character:Clone()
@@ -72,10 +75,18 @@ end
 local function findmatchingaccessory(hat)
 	for i,v in pairs(Character:GetChildren()) do
 		if v:IsA("Accessory") then
-			if v.Handle:FindFirstChildOfClass("SpecialMesh").MeshId == hat.Handle:FindFirstChildOfClass("SpecialMesh").MeshId and v.Handle:FindFirstChildOfClass("SpecialMesh").TextureId == hat.Handle:FindFirstChildOfClass("SpecialMesh").TextureId then
-				local origweld = Instance.new("ObjectValue",hat.Handle)
-				origweld.Value = v.Handle
-				origweld.Name = "CloneHat"
+			if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
+				if v.Handle:FindFirstChildOfClass("SpecialMesh").MeshId == hat.Handle.MeshId and v.Handle:FindFirstChildOfClass("SpecialMesh").TextureId == hat.Handle.TextureID then
+					local origweld = Instance.new("ObjectValue",hat.Handle)
+					origweld.Value = v.Handle
+					origweld.Name = "CloneHat"
+				end
+			else
+				if v.Handle:FindFirstChildOfClass("SpecialMesh").MeshId == hat.Handle:FindFirstChildOfClass("SpecialMesh").MeshId and v.Handle:FindFirstChildOfClass("SpecialMesh").TextureId == hat.Handle:FindFirstChildOfClass("SpecialMesh").TextureId then
+					local origweld = Instance.new("ObjectValue",hat.Handle)
+					origweld.Value = v.Handle
+					origweld.Name = "CloneHat"
+				end
 			end
 		end
 	end
@@ -84,13 +95,14 @@ end
 for i,v in pairs(originalrig:GetDescendants()) do
 	if v:IsA("Motor6D") and v.Name ~= "Neck" then v:Destroy()
 	elseif v:IsA("BasePart") then
+		v.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
 		local a = Instance.new("BodyVelocity",v)
-		a.MaxForce = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.Velocity = Vector3.new(-25.05,-25.05,-25.05)
+		a.MaxForce = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.Velocity = Vector3.new(_G.Velocity,_G.Velocity,_G.Velocity)
 		local a = Instance.new("BodyAngularVelocity",v)
 		a.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.AngularVelocity = Vector3.new(0,0,0)
 	elseif v:IsA("Accessory") then
-	findmatchingaccessory(v)
-end
+		findmatchingaccessory(v)
+	end
 end
 
 local invisrig = _G.ShowReal and Character or originalrig
@@ -107,35 +119,35 @@ end
 local FakeTorso,FakeTorso1,FakeHead
 
 if _G.FakeGod then
-    if originalrig:FindFirstChild("SeeMonkey") then
-        FakeTorso = originalrig.SeeMonkey.Handle
-    else
-        FakeTorso1 = originalrig["Kate Hair"].Handle
-        FakeTorso1.Mesh:Destroy();
-        FakeTorso = originalrig.Robloxclassicred.Handle
-    end
-    if originalrig:FindFirstChild("Dummy_Head") then
-        FakeHead = originalrig.Dummy_Head.Handle
-    else
-        FakeHead = originalrig.MediHood.Handle
-    end
-    FakeTorso.Mesh:Destroy();
-    for i,v in pairs(originalrig:GetChildren()) do
-        if v:IsA("Accessory") then
-	    	v.Handle.AccessoryWeld:Destroy()
-	    end
-    end
+	if originalrig:FindFirstChild("SeeMonkey") then
+		FakeTorso = originalrig.SeeMonkey.Handle
+	else
+		FakeTorso1 = originalrig["Kate Hair"].Handle
+		FakeTorso1.Mesh:Destroy();
+		FakeTorso = originalrig.Robloxclassicred.Handle
+	end
+	if originalrig:FindFirstChild("Dummy_Head") then
+		FakeHead = originalrig.Dummy_Head.Handle
+	else
+		FakeHead = originalrig.MediHood.Handle
+	end
+	FakeTorso.Mesh:Destroy();
+	for i,v in pairs(originalrig:GetChildren()) do
+		if v:IsA("Accessory") then
+			v.Handle.AccessoryWeld:Destroy()
+		end
+	end
 end
 
 plr.Character.Parent = Character
 plr.Character = Character
 if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
-    coroutine.resume(coroutine.create(function()
-        _G.ForHonor = Character.Animate
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/Animate"))()
-    end))
+	coroutine.resume(coroutine.create(function()
+		_G.ForHonor = Character.Animate
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/Animate"))()
+	end))
 else
-    Character.Animate.Disabled = true; wait() Character.Animate.Disabled = false
+	Character.Animate.Disabled = true; wait() Character.Animate.Disabled = false
 end
 workspace.CurrentCamera.CameraSubject = Character.Humanoid
 for i,v in pairs(Character:GetDescendants()) do
@@ -145,72 +157,91 @@ for i,v in pairs(Character:GetDescendants()) do
 end
 
 --originalrig.Torso.Neck.Parent = nil
-
+game["Run Service"].Stepped:Connect(function(delta)
+	for i,v in pairs(originalrig:GetDescendants()) do
+		if v:IsA("BasePart") then
+			v.CanCollide = false	
+		end
+	end
+end)
 game["Run Service"].RenderStepped:Connect(function(delta)
 	if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
 		for _,abc in pairs(offsets) do
 			for i,abcd in pairs(abc) do
-                coroutine.resume(coroutine.create(function()
-                    if originalrig:FindFirstChild(i) then
-                        local ExpectedPosition = Character[_].CFrame * abcd
-                        game:GetService("TweenService"):Create(originalrig[i],TweenInfo.new((delta)),{CFrame = ExpectedPosition + Vector3.new(0.42,0.42,0.42)}):Play()
-                    end
-                end))
+				coroutine.resume(coroutine.create(function()
+					if originalrig:FindFirstChild(i) and isnetworkowner(originalrig[i]) then
+						local ExpectedPosition = Character[_].CFrame * abcd
+						--game:GetService("TweenService"):Create(originalrig[i],TweenInfo.new((delta)),{CFrame = ExpectedPosition - Vector3.new(velocityoffset,velocityoffset,velocityoffset)}):Play()
+						originalrig[i].CFrame = ExpectedPosition - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
+					end
+				end))
 			end
 		end
 		for i,v in pairs(originalrig:GetChildren()) do
 			coroutine.resume(coroutine.create(function()
 				if v:IsA("BasePart") then
-					v.CanCollide = false
-					v.Velocity = Vector3.new(-25.05, -25.05, -25.05)
-				elseif v:IsA("Accessory") then
-					v.Handle.Velocity = Vector3.new(-25.05, -25.05, -25.05)
+					--v.CanCollide = false
+					v.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
+				elseif v:IsA("Accessory") and isnetworkowner(v.Handle) then
+					v.Handle.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
 					--game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = Character[v.Name].Handle.CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
-					game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = v.Handle.CloneHat.Value.CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
+					--game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = v.Handle.CloneHat.Value.CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)}):Play()
+					v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
 				end
 			end))
 		end
-		if originalrig:FindFirstChild("HumanoidRootPart") and not _G.Fling then
-			game:GetService("TweenService"):Create(originalrig["HumanoidRootPart"],TweenInfo.new((delta)),{CFrame = Character["HumanoidRootPart"].CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
+		if originalrig:FindFirstChild("HumanoidRootPart") and isnetworkowner(originalrig["HumanoidRootPart"]) and not _G.Fling then
+			--game:GetService("TweenService"):Create(originalrig["HumanoidRootPart"],TweenInfo.new((delta)),{CFrame = Character["HumanoidRootPart"].CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)}):Play()
+			originalrig["HumanoidRootPart"].CFrame = Character["HumanoidRootPart"].CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
 		end
 	else
 		for i,v in pairs(originalrig:GetChildren()) do
 			coroutine.resume(coroutine.create(function()
-				if v:IsA("BasePart") then
-					v.CanCollide = false
-					v.Velocity = Vector3.new(-25.05, -25.05, -25.05)
+				if v:IsA("BasePart") and isnetworkowner(v) then
+					--v.CanCollide = false
+					v.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
 					if v.Name == "HumanoidRootPart" and _G.Fling then
 						--nothing
 					elseif _G.FakeGod and v.Name == "Head" then
-					    game:GetService("TweenService"):Create(FakeHead,TweenInfo.new((delta)),{CFrame = Character["Head"].CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
+						--game:GetService("TweenService"):Create(FakeHead,TweenInfo.new((delta)),{CFrame = Character["Head"].CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)}):Play()
+						FakeHead.CFrame = Character["Head"].CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
 					elseif _G.FakeGod and v.Name == "Torso" then
-					    if FakeTorso1 then
-		                    game:GetService("TweenService"):Create(FakeTorso,TweenInfo.new((delta)),{CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(0.5,0,0) + Vector3.new(0.42,0.42,0.42)}):Play()
-		                    game:GetService("TweenService"):Create(FakeTorso1,TweenInfo.new((delta)),{CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(-0.5,0,0) + Vector3.new(0.42,0.42,0.42)}):Play()
-	                    else
-		                    game:GetService("TweenService"):Create(FakeTorso,TweenInfo.new((delta)),{CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) + Vector3.new(0.42,0.42,0.42)}):Play()
-	                    end
+						if FakeTorso1 then
+							--game:GetService("TweenService"):Create(FakeTorso,TweenInfo.new((delta)),{CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(0.5,0,0) - Vector3.new(velocityoffset,velocityoffset,velocityoffset)}):Play()
+							--game:GetService("TweenService"):Create(FakeTorso1,TweenInfo.new((delta)),{CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(-0.5,0,0) - Vector3.new(velocityoffset,velocityoffset,velocityoffset)}):Play()
+							FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(0.5,0,0) - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
+							FakeTorso1.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(-0.5,0,0) - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
+						else
+							--game:GetService("TweenService"):Create(FakeTorso,TweenInfo.new((delta)),{CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) - Vector3.new(velocityoffset,velocityoffset,velocityoffset)}):Play()
+							FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
+						end
 					else
-						game:GetService("TweenService"):Create(v,TweenInfo.new((delta)),{CFrame = Character[v.Name].CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
+						--game:GetService("TweenService"):Create(v,TweenInfo.new((delta)),{CFrame = Character[v.Name].CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)}):Play()
+						v.CFrame = Character[v.Name].CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
 					end
-					
-				elseif v:IsA("Accessory") and v.Handle ~= FakeTorso and v.Handle ~= FakeTorso1 and v.Handle ~= FakeHead then
-					v.Handle.Velocity = Vector3.new(-25.05, -25.05, -25.05)
+
+				elseif v:IsA("Accessory") and v.Handle ~= FakeTorso and v.Handle ~= FakeTorso1 and v.Handle ~= FakeHead and isnetworkowner(v.Handle) then
+					v.Handle.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
 					--game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = Character[v.Name].Handle.CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
-					game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = v.Handle.CloneHat.Value.CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
+					--game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = v.Handle.CloneHat.Value.CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)}):Play()
+					v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
 				end
 			end))
 		end
 	end
-    if _G.Tools then
-        for i,v in pairs(originalrig:GetChildren()) do
-            if v:IsA("Tool") and Character:FindFirstChild(v.Name) then
-                game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = Character[v.Name].Handle.CFrame + Vector3.new(0.42,0.42,0.42)}):Play()
-            elseif v:IsA("Tool") then
-                game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = Character["Left Leg"].CFrame * CFrame.new(0,5,0) + Vector3.new(0.42,0.42,0.42)}):Play()
-            end
-        end
-    end
+	if _G.Tools then
+		for i,v in pairs(originalrig:GetChildren()) do
+			if v:IsA("Tool") and Character:FindFirstChild(v.Name) then
+				v.Handle.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
+				--game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = Character[v.Name].Handle.CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)}):Play()--Vector3.new(0.42,0.42,0.42)}):Play()
+				v.Handle.CFrame = 	Character[v.Name].Handle.CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
+			elseif v:IsA("Tool") then
+				--game:GetService("TweenService"):Create(v.Handle,TweenInfo.new((delta)),{CFrame = Character["Left Leg"].CFrame * CFrame.new(0,5,0) - Vector3.new(velocityoffset,velocityoffset,velocityoffset)}):Play()
+				v.Handle.CFrame = Character["Left Leg"].CFrame * CFrame.new(0,5,0) - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
+				v.Handle.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
+			end
+		end
+	end
 end)
 
 plr.Chatted:Connect(function(msg)
