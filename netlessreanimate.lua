@@ -12,6 +12,7 @@ if _G.Velocity == nil then _G.Velocity = -25.05 end
 if _G.Collisions == nil then _G.Collisions = true end
 if _G.Network == nil then _G.Network = true end
 if _G.CheckForDeath == nil then _G.CheckForDeath = true end
+if _G.Netless2 then _G.Netless2 = false end
 
 settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
 settings().Physics.AllowSleep = false
@@ -110,10 +111,18 @@ for i,v in pairs(originalrig:GetDescendants()) do
 	cr(cc(function()
 		if v:IsA("BasePart") then
 			v.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
-			local a = Instance.new("BodyVelocity",v)
-			a.MaxForce = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.Velocity = Vector3.new(_G.Velocity,_G.Velocity,_G.Velocity)
-			local a = Instance.new("BodyAngularVelocity",v)
-			a.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.AngularVelocity = Vector3.new(0,0,0)
+			if _G.Netless2 then
+				local a = Instance.new("BodyVelocity",v)
+				a.MaxForce = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.Velocity = Vector3.new(0,0,0)
+				local a = Instance.new("BodyAngularVelocity",v)
+				a.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.AngularVelocity = Vector3.new(0,0,0)
+			else
+				local a = Instance.new("BodyVelocity",v)
+				a.MaxForce = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.Velocity = Vector3.new(_G.Velocity,_G.Velocity,_G.Velocity)
+				local a = Instance.new("BodyAngularVelocity",v)
+				a.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.AngularVelocity = Vector3.new(0,0,0)
+			end
+			
 			if v.Parent:IsA("Accessory") then
 				findmatchingaccessory(v)
 			end
@@ -219,6 +228,7 @@ local Conversion = RunService.RenderStepped:Connect(function(delta)
 		sethiddenproperty(plr,"SimulationRadius",1000)
 	end
 	velocityoffset = round(delta,3)*_G.Velocity
+	if _G.Netless2 then velocityoffset = 0 end
 	if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
 		for R6PartName,R15PartNames in pairs(offsets) do
 			for i,R15PartNameOffset in pairs(R15PartNames) do
