@@ -11,6 +11,7 @@ if _G.Tools == nil then _G.Tools = true end
 if _G.Velocity == nil then _G.Velocity = -25.05 end
 if _G.Collisions == nil then _G.Collisions = true end
 if _G.Network == nil then _G.Network = true end
+if _G.CheckForDeath == nil then _G.CheckForDeath = true end
 
 settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
 settings().Physics.AllowSleep = false
@@ -283,8 +284,10 @@ local Conversion = RunService.RenderStepped:Connect(function(delta)
 end)
 
 -- // Check for death
-Character.Humanoid.Died:Connect(function() pcall(function() Noclip:Disconnect(); Conversion:Disconnect(); plr.Character = originalrig; originalrig:ClearAllChildren(); originalrig.Parent = workspace; Character:Destroy() end) end) -- checking for resetting
-plr.CharacterAdded:Connect(function() Noclip:Disconnect(); Conversion:Disconnect(); Character:Destroy() end) -- checking to see if server respawned you
+if _G.CheckForDeath then
+	Character.Humanoid.Died:Connect(function() pcall(function() Noclip:Disconnect(); Conversion:Disconnect(); plr.Character = originalrig; originalrig:ClearAllChildren(); originalrig.Parent = workspace; Character:Destroy() end) end) -- checking for resetting
+	plr.CharacterAdded:Connect(function() Noclip:Disconnect(); Conversion:Disconnect(); Character:Destroy() end) -- checking to see if server respawned you
+end
 
 -- // God Mode
 if _G.GodMode then wait(game.Players.RespawnTime + 1); originalrig:FindFirstChild("Neck",true).Parent = nil end
