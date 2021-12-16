@@ -1,3 +1,4 @@
+
 -- // Modules/Setup
 loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
 
@@ -66,7 +67,7 @@ if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
 	Character.Parent = workspace
 	Character.Humanoid:ApplyDescription(Players:GetHumanoidDescriptionFromUserId(plr.UserId))
 	Character.Name = "Clone " .. originalrig.Name
-	Character.HumanoidRootPart:MoveTo(originalrig.HumanoidRootPart.Position)
+	Character.HumanoidRootPart.CFrame = originalrig.HumanoidRootPart.CFrame
 	RunService.RenderStepped:Wait()
 	for i,v in pairs(originalrig:GetChildren()) do
 		if v:IsA("Tool") then
