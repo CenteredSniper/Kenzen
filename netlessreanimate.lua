@@ -213,7 +213,7 @@ local Noclip = RunService.Stepped:Connect(function(delta)
 	end
 end)
 
--- You're probably wondering, why have two runservices? stepped is the only way to have cancollide off permananetly, but renderstepped is better for physics based things like cframing and velocity.
+-- You're probably wondering, why have two runservices? stepped is the only way to have cancollide off permananetly, but heartbeat is better for physics based things like cframing and velocity.
 
 -- // Round
 local function round(num, numDecimalPlaces)
@@ -222,7 +222,7 @@ local function round(num, numDecimalPlaces)
 end
 
 -- // Conversion
-local Conversion = RunService.RenderStepped:Connect(function(delta)
+local Conversion = RunService.Heartbeat:Connect(function(delta)
 	if _G.Network then 
 		plr.MaximumSimulationRadius=1000
 		sethiddenproperty(plr,"SimulationRadius",1000)
