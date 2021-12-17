@@ -227,7 +227,8 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 		plr.MaximumSimulationRadius=1000
 		sethiddenproperty(plr,"SimulationRadius",1000)
 	end
-	velocityoffset = round(delta,3)*_G.Velocity
+	--velocityoffset = round(delta,3)*_G.Velocity
+	velocityoffset = 0
 	if _G.Netless2 then velocityoffset = 0 end
 	if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
 		for R6PartName,R15PartNames in pairs(offsets) do
@@ -256,19 +257,19 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 	else
 		for i,v in pairs(originalrig:GetChildren()) do
 			cr(cc(function()
-				if v:IsA("BasePart") and networkownership(v) then
+				if v:IsA("BasePart") then
 					v.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
-					if v.Name == "HumanoidRootPart" and _G.Fling then
-					elseif _G.FakeGod and v.Name == "Head" then
-						FakeHead.CFrame = Character["Head"].CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
-					elseif _G.FakeGod and v.Name == "Torso" then
+					if v.Name == "HumanoidRootPart" and _G.Fling and networkownership(v) then
+					elseif _G.FakeGod and v.Name == "Head" and networkownership(FakeHead)  then
+						FakeHead.CFrame = Character["Head"].CFrame
+					elseif _G.FakeGod and v.Name == "Torso" and networkownership(FakeTorso)  then
 						if FakeTorso1 then
 							FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(0.5,0,0) - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
 							FakeTorso1.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(-0.5,0,0) - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
 						else
 							FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
 						end
-					else
+					elseif networkownership(v) then
 						v.CFrame = Character[v.Name].CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
 					end
 				elseif v:IsA("Accessory") and v.Handle ~= FakeTorso and v.Handle ~= FakeTorso1 and v.Handle ~= FakeHead and networkownership(v.Handle) then
