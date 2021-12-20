@@ -13,6 +13,7 @@ if _G.Collisions == nil then _G.Collisions = true end
 if _G.Network == nil then _G.Network = true end
 if _G.CheckForDeath == nil then _G.CheckForDeath = true end
 if _G.Netless2 == nil then _G.Netless2 = false end
+if _G.Claim2 == nil then _G.Claim2 = false end
 
 settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
 settings().Physics.AllowSleep = false
@@ -106,6 +107,30 @@ local function findmatchingaccessory(hat)
 	end
 end
 
+-- // Claim 2
+
+local origpos
+
+if _G.Claim2 then
+	origpos = plr.Character.HumanoidRootPart.CFrame
+	local actualpos
+	repeat wait() 
+		local pos = plr.Character.HumanoidRootPart.Position + Vector3.new(math.random(-1500,1500),0,math.random(-1500,1500))
+		local check = true
+		for i,v in pairs(game.Players:GetPlayers()) do
+			if v~= plr then
+				if (v.Character.HumanoidRootPart.Position-pos).magnitude <= gethiddenproperty(v, "SimulationRadius") then
+					check = false
+				end
+			end
+		end
+		if check then
+			actualpos = pos
+		end
+	until actualpos
+	plr.Character.HumanoidRootPart.CFrame = CFrame.new(actualpos)
+end
+
 -- // Netless claiming
 for i,v in pairs(originalrig:GetDescendants()) do
 	cr(cc(function()
@@ -122,7 +147,7 @@ for i,v in pairs(originalrig:GetDescendants()) do
 				local a = Instance.new("BodyAngularVelocity",v)
 				a.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.AngularVelocity = Vector3.new(0,0,0)
 			end
-			
+
 			if v.Parent:IsA("Accessory") then
 				findmatchingaccessory(v)
 			end
@@ -131,6 +156,14 @@ for i,v in pairs(originalrig:GetDescendants()) do
 end
 
 wait(0.1) -- adding a wait as extra safety
+
+-- // Claim 2 Bring back
+if _G.Claim2 then
+    wait(0.5)
+	local animat = game:GetService("TweenService"):Create(game.Players.LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(5), {CFrame = origpos})
+	animat:Play()
+	animat.Completed:wait()
+end
 
 -- // Weld Removing
 for i,v in pairs(originalrig:GetDescendants()) do
@@ -301,4 +334,4 @@ if _G.CheckForDeath then
 end
 
 -- // God Mode
-if _G.GodMode then wait(game.Players.RespawnTime + 1); originalrig:FindFirstChild("Neck",true).Parent = nil end
+if _G.GodMode and originalrig:FindFirstChild("Neck",true) then wait(game.Players.RespawnTime + 1); originalrig:FindFirstChild("Neck",true).Parent = nil end
