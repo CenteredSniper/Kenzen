@@ -190,17 +190,23 @@ end
 if _G.FakeGod then
 	if originalrig:FindFirstChild("SeeMonkey") then
 		FakeTorso = originalrig.SeeMonkey.Handle
+		Character.SeeMonkey.Handle.Transparency = 1
 	else
 		FakeTorso1 = originalrig["Kate Hair"].Handle
 		FakeTorso1.Mesh:Destroy();
 		FakeTorso = originalrig.Robloxclassicred.Handle
+		Character["Kate Hair"].Handle.Transparency = 1
+		Character["Robloxclassicred"].Handle.Transparency = 1
 	end
 	if originalrig:FindFirstChild("Void Head") then
 		FakeHead = originalrig["Void Head"].Handle
+		Character["Void Head"].Handle.Transparency = 1
 	elseif originalrig:FindFirstChild("Dummy_Head") then
 		FakeHead = originalrig["Dummy_Head"].Handle
+		Character["Dummy_Head"].Handle.Transparency = 1
 	else
 		FakeHead = originalrig.MediHood.Handle
+		Character["MediHood"].Handle.Transparency = 1
 	end
 	FakeTorso.Mesh:Destroy();
 	for i,v in pairs(originalrig:GetChildren()) do
