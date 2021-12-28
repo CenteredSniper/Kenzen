@@ -197,6 +197,8 @@ if _G.FakeGod then
 	end
 	if originalrig:FindFirstChild("Void Head") then
 		FakeHead = originalrig["Void Head"].Handle
+	elseif originalrig:FindFirstChild("Dummy_Head") then
+		FakeHead = originalrig["Dummy_Head"].Handle
 	else
 		FakeHead = originalrig.MediHood.Handle
 	end
