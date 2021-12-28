@@ -195,8 +195,8 @@ if _G.FakeGod then
 		FakeTorso1.Mesh:Destroy();
 		FakeTorso = originalrig.Robloxclassicred.Handle
 	end
-	if originalrig:FindFirstChild("Dummy_Head") then
-		FakeHead = originalrig.Dummy_Head.Handle
+	if originalrig:FindFirstChild("Void Head") then
+		FakeHead = originalrig["Void Head"].Handle
 	else
 		FakeHead = originalrig.MediHood.Handle
 	end
