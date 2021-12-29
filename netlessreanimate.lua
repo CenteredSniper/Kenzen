@@ -147,7 +147,8 @@ for i,v in pairs(originalrig:GetDescendants()) do
 				local a = Instance.new("BodyAngularVelocity",v)
 				a.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.AngularVelocity = Vector3.new(0,0,0)
 			end
-
+			v.Massless = true
+			v.CustomPhysicalProperties = PhysicalProperties.new(0,0,0,0,0)
 			if v.Parent:IsA("Accessory") then
 				findmatchingaccessory(v)
 			end
