@@ -1,0 +1,481 @@
+local _decompile = assert(decompile or syn_decompile)
+local _getscriptclosure = assert(getscriptclosure)
+local _getrenv = assert(getrenv or syn_getrenv)
+local _getgenv = assert(getgenv or syn_getgenv)
+local _getsenv = assert(getsenv or syn_getsenv)
+local _getmenv = assert(getmenv or syn_getmenv)
+local _getprotos = assert(getprotos or debug.getprotos)
+local _getconstants = assert(getconstants or debug.getconstants)
+local _getinfo = debug.info
+local stringsplit = string.split
+local stringmatch = string.match
+local stringfind = string.find
+local stringlower = string.lower
+local stringgmatch = string.gmatch
+local stringgsub = string.gsub
+local stringsub = string.sub
+local tableclear = table.clear
+local tableinsert = table.insert
+local tableremove = table.remove
+
+local IsA = game.IsA
+
+local genv = _getgenv()
+local renv = _getrenv()
+
+local GetFuncs
+do
+local Funcs = {}
+function GetFuncs(Closure, Globals)
+local Protos = _getprotos(Closure)
+if Protos and #Protos > 0 then
+for Index, Proto in ipairs(_getprotos(Closure)) do
+local Name, Args, VarArg = _getinfo(Proto, "na")
+local Protos = _getprotos(Proto)
+if #Name > 0 and not Globals[Name] then -- we dont need globals
+tableinsert(Funcs, {Name, Args, VarArg, _getconstants(Proto)}) 
+end
+if Protos and #Protos > 0 then
+GetFuncs(Proto, Globals)
+end
+end
+end
+return Funcs
+end
+end
+
+local VarPrefix = "l__"
+local VarPostfix = "__"
+
+local IsASpecial
+local IsNil
+local IsABoolean
+local IsAString
+local IsANumber
+do
+    local Specials = {
+        -- Instance
+        getpropertychangedsignal = function(isavar, argpattern, object, settings)
+            return stringmatch(argpattern, '(%w+)%)$') .. "Changed"
+        end,
+        getattributechangedsignal = function(isavar, argpattern, object, settings)
+            return "Attribute" .. stringmatch(argpattern, '(%w+)%)$') .. "Changed"
+        end,
+        getchildren = function(isavar, argpattern, object, settings)
+            return "children"
+        end,
+        getdescendants = function(isavar, argpattern, object, settings)
+            return "descendants"
+        end,
+        getattributes = function(isavar, argpattern, object, settings)
+            return "attributes"
+        end,
+        getattribute = function(isavar, argpattern, object, settings)
+            if isavar then
+                return "attribute"
+            else
+                return stringmatch(argpattern, '(%w+)%)$')
+            end
+            return "attribute"
+        end,
+        isa = function(isavar, argpattern, object, settings)
+            return "boolean"
+        end,
+        clone = function(isavar, argpattern, object, settings)
+            if isavar then
+                return isavar
+            else
+                return object
+            end
+        end,
+        findfirstchild = function(isavar, argpattern, object, settings)
+            return stringmatch(argpattern, '^%("(%w+)"')
+        end,
+        -- TweenService
+        create = function(isavar, argpattern, object, settings)
+            return "Tween"
+        end,
+        getvalue = function(isavar, argpattern, object, settings)
+            return "number"
+        end,
+-- PhysicsService
+getcollisiongroupname = function(isavar, argpattern, object, settings)
+            return "CollisionGroup"
+        end,
+getcollisiongroups = function(isavar, argpattern, object, settings)
+            return "CollisionGroups"
+        end,
+-- LogService
+getloghistory = function(isavar, argpattern, object, settings)
+            return "LogHistory"
+        end,
+-- RunService
+isclient = function(isavar, argpattern, object, settings)
+            return "IsClient"
+        end,
+isrunmode = function(isavar, argpattern, object, settings)
+            return "IsRunMode"
+        end,
+isrunning = function(isavar, argpattern, object, settings)
+            return "IsRunning"
+        end,
+isserver = function(isavar, argpattern, object, settings)
+            return "IsServer"
+        end,
+isstudio = function(isavar, argpattern, object, settings)
+            return "IsStudio"
+        end,
+-- UserInputService
+getconnectedgamepads = function(isavar, argpattern, object, settings)
+            return "ConnectedGamepads"
+        end,
+getnavigationgamepads = function(isavar, argpattern, object, settings)
+            return "NagivationGamepads"
+        end,
+getsupportedgamepadkeycodes = function(isavar, argpattern, object, settings)
+            return "SupportedGamepadKeys"
+        end,
+getusercframe = function(isavar, argpattern, object, settings)
+            return "UserCFrame"
+        end,
+getstringforkeycode = function(isavar, argpattern, object, settings)
+            return "string"
+        end,
+getdeviceacceleration = function(isavar, argpattern, object, settings)
+            return "DeviceAcceleration"
+        end,
+getdevicegravity = function(isavar, argpattern, object, settings)
+            return "DeviceGravity"
+        end,
+getgamepadstate = function(isavar, argpattern, object, settings)
+            return "GamepadState"
+        end,
+getkeyspressed = function(isavar, argpattern, object, settings)
+            return "PressedKeys"
+        end,
+getmousebuttonspressed = function(isavar, argpattern, object, settings)
+            return "PressedMouseButtons"
+        end,
+getlastinputtype = function(isavar, argpattern, object, settings)
+            return "UserInputType"
+        end,
+getfocusedtextbox = function(isavar, argpattern, object, settings)
+            return "TextBox"
+        end,
+getmousedelta = function(isavar, argpattern, object, settings)
+            return "MouseDelta"
+        end,
+getmouselocation = function(isavar, argpattern, object, settings)
+            return "MouseLocation"
+        end,
+-- ContextActionService
+getallboundactioninfo = function(isavar, argpattern, object, settings)
+            return "AllBoundActionInfo"
+        end,
+getboundactioninfo = function(isavar, argpattern, object, settings)
+            return "BoundActionInfo"
+        end,
+getbutton = function(isavar, argpattern, object, settings)
+            return "BoundImageButton"
+        end,
+getcurrentlocaltoolicon = function(isavar, argpattern, object, settings)
+            return "LocalToolIcon"
+        end,
+        -- Lighting
+        getsundirection = function(isavar, argpattern, object, settings)
+            return "Vector3"
+        end,
+        -- Workspace
+        getrealphysicsfps = function(isavar, argpattern, object, settings)
+            return "physicsfps"
+        end,
+        -- Humanoid / Animator / AnimationController
+        loadanimation = function(isavar, argpattern, object, settings)
+            return stringmatch(argpattern, '(%w+)%)$')
+        end,
+        getplayinganimationtracks = function(isavar, argpattern, object, settings)
+            return "animationtracks"
+        end,
+        -- Humanoid
+        getaccessories = function(isavar, argpattern, object, settings)
+            return "accessories"
+        end,
+        getapplieddescription = function(isavar, argpattern, object, settings)
+            return "HumanoidDescription"
+        end,
+        getbodypartr15 = function(isavar, argpattern, object, settings)
+            return "BodyPartR15"
+        end,
+        getlimb = function(isavar, argpattern, object, settings)
+            return "Limb"
+        end,
+        getstate = function(isavar, argpattern, object, settings)
+            return "HumanoidStateType"
+        end
+    }
+    local SpecialsMap = {
+-- Instance
+        children = "getchildren", -- "children"
+        isancestorof = "isa", -- "boolean"
+        isdescendantof = "isa", -- "boolean"
+        waitforchild = "findfirstchild", -- Child
+        findfirstdescendant = "findfirstchild", -- Child
+        findfirstdescendantofclass = "findfirstchild", -- Child
+        findfirstdescendantwhichisa = "findfirstchild", -- Child
+        findfirstancestor = "findfirstchild", -- Child
+        findfirstancestorofclass = "findfirstchild", -- Child
+        findfirstancestorwhichisa = "findfirstchild", -- Child
+        findfirstchildofclass = "findfirstchild", -- Child
+        findfirstchildwhichisa = "findfirstchild", -- Child
+-- PhysicsService
+collisiongroupcontainspart = "isa", -- "boolean"
+collisiongroupsarecollidable = "isa", -- "boolean"
+createcollisiongroup = "getvalue", -- "number"
+getcollisiongroupid = "getvalue", -- "number"
+getmaxcollisiongroups = "getvalue", -- "number"
+-- GuiService
+getemotesmenuopen = "isa", -- "boolean"
+getgameplaypausednotificationenabled = "isa", -- "boolean"
+getinspectmenuenabled = "isa", -- "boolean"
+istenfootinterface = "isa", -- "boolean"
+-- UserInputService
+gamepadsupports = "isa", -- "boolean"
+getgamepadconnected = "isa", -- "boolean"
+isgamepadbuttondown = "isa", -- "boolean"
+iskeydown = "isa", -- "boolean"
+ismousebuttonpressed = "isa", -- "boolean"
+isnagivationgamepad = "isa", -- "boolean"
+-- Lighting
+getminutesaftermidnight = "getvalue", -- Child
+getmoonphase = "getvalue", -- "number"
+getmoondirection = "getsundirection", -- Vector3
+-- Workspace
+getnumawakeparts = "getvalue", -- "number"
+getphysicsthrottling = "getvalue", -- "number"
+getservertimenow = "getvalue", -- "number"
+-- Humanoid
+getstateenabled = "isa", -- "boolean"
+playemote = "isa", -- "boolean"
+replacebodypartr15 = "isa", -- "boolean"
+    }
+    for key, special in pairs(SpecialsMap) do
+        Specials[key] = Specials[special]
+    end
+    function IsASpecial(Value, Settings)
+        Settings = Settings or {}
+        local Global, Match = stringmatch(Value, "(%w+)%.new(%b());")
+        if Match then
+            if renv[Global] then
+                if Global ~= "Instance" then
+                    return Global
+                elseif Global == "Instance" then
+                    return stringmatch(Match, '"(.-)"')
+                end
+            end
+        end
+        local Match = stringmatch(Value, "require(%b());") -- ModuleScript requiring
+        if Match then
+            local Module = stringmatch(Match, "(%w+)%)")
+            if Module then
+                return Module
+            end
+            local Module = stringmatch(Match, '"(%w+)"%)%)')
+            if Module then
+                return Module
+            end
+        end
+        local Object, Method, ArgPattern = stringmatch(Value, "([" .. VarPrefix .. "%w" .. VarPostfix .. "%d]+):(%w+)(%b());$")
+        if Object and Method and ArgPattern then
+            local Method = stringlower(Method)
+            local IsAVariable = stringmatch(Object, VarPrefix .. "(%w+)" .. VarPostfix .. "%d+")
+            local Handler = Specials[Method]
+            if Handler then
+                return Handler(IsAVariable, ArgPattern, Object, Settings)
+            end
+        end
+        return
+    end
+    function IsNil(Value)
+        Value = stringsub(Value, 1, #Value - 1)
+        return Value == "nil"
+    end
+    local Constants = {
+        ["false"] = true,
+        ["true"] = true
+    }
+    function IsABoolean(Value)
+        Value = stringsub(Value, 1, #Value - 1)
+        if #Value > 3 then
+            if Constants[Value] then
+                return true
+            end
+        end
+        return false
+    end
+    function IsAString(Value)
+        Value = stringsub(Value, 1, #Value - 1)
+        if stringmatch(Value, '^"') and stringmatch(Value, '"$') then
+            return true
+        end
+        if stringmatch(Value, "tostring%b()") then
+            return true
+        end
+        return false
+    end
+    local AllowedOperators = {
+        ["-"] = true,
+        ["+"] = true,
+        ["/"] = true,
+        ["*"] = true,
+        ["^"] = true,
+        ["%"] = true
+    }
+    function IsANumber(Value)
+        Value = stringsub(Value, 1, #Value - 1)
+        if tonumber(Value) then
+            return true
+        end
+        local Operator = stringmatch(Value, "^%d+%s?(%p)%s?.+")
+        if Operator and AllowedOperators[Operator] then
+            return true
+        end
+        if stringmatch(Value, "^#") then
+            return true
+        end
+        return false
+    end
+end
+
+local AdvVar = true -- advanced variable names (might be cringe to read)
+genv.decompile = (function(Script, ...)
+if typeof(Script) == "Instance" then
+local isModuleScript = IsA(Script, "ModuleScript")
+if (isModuleScript or IsA(Script, "LocalScript")) then
+local Success, Globals
+task.spawn(function()
+    Success, Globals = pcall(((isModuleScript and require) or _getsenv), Script)
+end)
+local Yielded = 0
+repeat
+    task.wait(1)
+    Yielded += 1
+until Success or Yielded >= 10
+if not Success or not Globals then
+    Success, Globals = true, nil
+end
+local Closure = _getscriptclosure(Script)
+if isModuleScript and Success then
+    if type(Globals) ~= "table" then
+        Success, Globals = pcall(_getmenv, Script)
+    end
+end
+if Success and Closure then
+local Source = _decompile(Script, ...)
+if Source then
+    if isModuleScript or (not isModuleScript and not Script.Disabled) then
+    do -- local function names
+    local Funcs = GetFuncs(Closure, Globals)
+    for Name in stringgmatch(Source, "function %w+%.(%w+)%b()") do
+        for Iteration = 1, #Funcs do
+            if Funcs[Iteration][1] == Name then
+                tableremove(Funcs, Iteration)
+                break
+            end
+        end
+    end
+    for Spaces, GeneratedName, ArgPattern in stringgmatch(Source, "(%s+)local function (%l%d+)(%b())") do
+    local _, Args = stringgsub(ArgPattern, "p%d+", "")
+    local IsVarArg = stringfind(ArgPattern, "...", 1, true) ~= nil
+    local ProtoClosure = stringmatch(Source, "local function " .. GeneratedName .. "%b().+" .. Spaces .. "end;") or ""
+    ProtoClosure = stringgsub(ProtoClosure, "local function %l%d+%b().+end;$", function(Match)
+    local Split = stringsplit(Match, Spaces .. "end;\n")
+    local NumSplit = #Split
+    if NumSplit > 1 then
+    for Index = 1, NumSplit do
+    local SplitI = Split[Index]
+    if stringmatch(SplitI, GeneratedName) then
+    return SplitI .. Spaces .. "end;"
+    end
+    end
+    end
+    return Match
+    end)
+    for Iteration = 1, #Funcs do
+    local Func = Funcs[Iteration]
+    local Name = Func[1]
+    if Args == Func[2] then
+    if IsVarArg == Func[3] then
+    local Constants = Func[4]
+    local HasConstants = true
+    for Index = 1, #Constants do
+    local Constant = Constants[Index]
+    if type(Constant) == "string" then
+    if not stringfind(ProtoClosure, Constant, 1, true) then
+    HasConstants = false
+    break
+    end
+    end
+    end
+    if HasConstants then
+    tableremove(Funcs, Iteration)
+    Source = stringgsub(Source, "%f[%w]" .. GeneratedName .. "%f[%W]", Name)
+    break
+    else
+    continue
+    end
+    end
+    end
+    end
+    end
+    tableclear(Funcs)
+    end
+    end
+    if AdvVar then
+    do -- Advanced variable names
+        for Type, Order, Value in stringgmatch(Source, "local (%l)(%d+)%s?=%s?(.-;)") do
+                                local Name
+                                local Class = IsASpecial(Value)
+                                if Class then
+                                    Name = VarPrefix .. Class .. VarPostfix .. Order
+                                end
+                                if IsABoolean(Value) then
+                                    Name = VarPrefix .. "boolean" .. VarPostfix .. Order
+                                end
+                                if IsAString(Value) then
+                                    Name = VarPrefix .. "string" .. VarPostfix .. Order
+                                end
+                                if IsANumber(Value) then
+                                    Name = VarPrefix .. "number" .. VarPostfix .. Order
+                                end
+                                if IsNil(Value) then
+                                    for Value in stringgmatch(Source, (Type .. Order) .. "%s?=%s?(.-;)") do
+                                        local Class = IsASpecial(Value, {
+                                            Recursive = true
+                                        })
+                                        if Class then
+                                            Name = VarPrefix .. Class .. VarPostfix .. Order
+                                        end
+                                        if IsABoolean(Value) then
+                                            Name = VarPrefix .. "boolean" .. VarPostfix .. Order
+                                        end
+                                        if IsAString(Value) then
+                                            Name = VarPrefix .. "string" .. VarPostfix .. Order
+                                        end
+                                        if IsANumber(Value) then
+                                            Name = VarPrefix .. "number" .. VarPostfix .. Order
+                                        end
+                                    end
+                                end
+                                if Name then
+                                    Source = stringgsub(Source, "%f[%w]" .. Type .. Order .. "%f[%W]", Name) -- Updated to use frontier pattern
+                                end
+                            end
+    end
+    end
+return Source
+end
+end
+end
+end
+return _decompile(Script, ...)
+end)
