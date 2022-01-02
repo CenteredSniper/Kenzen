@@ -1,0 +1,23 @@
+game.Players.LocalPlayer.Character.Torso.ChildAdded:Connect(function(v)
+    game["Run Service"].RenderStepped:Wait()
+    if v.Name == "GrabbingWeld" then
+        v:Destroy()
+        game.Players.LocalPlayer.Character.Humanoid.PlatformStand = false
+    end
+end)
+game.Players.LocalPlayer.CharacterAdded:Connect(function(g)
+    repeat wait() until g:FindFirstChild("Torso")
+    g.Torso.ChildAdded:Connect(function(v)
+    game["Run Service"].RenderStepped:Wait()
+    if v.Name == "GrabbingWeld" then
+        v:Destroy()
+        game.Players.LocalPlayer.Character.Humanoid.PlatformStand = false
+    end
+end)
+end)
+while wait() do
+    game:FindService("StarterGui"):SetCore("ResetButtonCallback", true)
+    if game.Players.LocalPlayer.Character:FindFirstChild("Transformed") then
+        game.Players.LocalPlayer.Character:BreakJoints()
+    end
+end
