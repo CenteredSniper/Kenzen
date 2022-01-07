@@ -74,11 +74,21 @@ end
 local purple,red
 for i,v in pairs(Char:GetChildren()) do
 	if v.Name == "LargeTasseledScarf" then
-		local a = string.match(tostring(v.Handle.Mesh.TextureId) , "%d+")
-		if a == "99856307" then
-			red = v.Handle
-		elseif a == "323400642" then
-			purple = v.Handle
+		local bc = v.Handle:FindFirstChild("Mesh")
+		if bc then
+			local a = string.match(tostring(bc.TextureId) , "%d+")
+			if a == "99856307" then
+				red = v.Handle
+			elseif a == "323400642" then
+				purple = v.Handle
+			end
+		else
+			local a = string.match(tostring(v.Handle.TextureID) , "%d+")
+			if a == "99856307" then
+				red = v.Handle
+			elseif a == "323400642" then
+				purple = v.Handle
+			end
 		end
 	end
 end
