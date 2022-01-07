@@ -85,7 +85,7 @@ if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
 			clonehats.Parent = Character
 			for _,g in pairs(offsets) do
 				if g[v.Handle.AccessoryWeld.Part1.Name] then
-					clonehats.Handle.AccessoryWeld.Part1 = Character[g]
+					clonehats.Handle.AccessoryWeld.Part1 = Character[_]
 				end
 			end
 			--clonehats.Handle.AccessoryWeld.Part1 = Character[v.Handle.AccessoryWeld.Part1.Name]
