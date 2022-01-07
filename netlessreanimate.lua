@@ -65,7 +65,6 @@ PhysicsService:CollisionGroupSetCollidable("NoCollide", "NoCollide", false)
 
 if _G.FakeGod and rigtype == Enum.HumanoidRigType.R6 then _G.GodMode = false end
 if _G.TorsoFling then _G.Fling = false end
-warn(_G.TorsoFling)
 
 -- // RigType
 if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
@@ -73,9 +72,22 @@ if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
 	Character = game:GetObjects("rbxassetid://8232772380")[1]:Clone()
 	Character.Parent = workspace
 	Character.Humanoid:ApplyDescription(Players:GetHumanoidDescriptionFromUserId(plr.UserId))
+	task.wait()
+	for i,v in pairs(Character:GetChildren()) do
+		if v:IsA("Accessory") then
+			v:Destroy()
+		end
+	end
+	for i,v in pairs(originalrig:GetChildren()) do
+		if v:IsA("Accessory") then
+			local clonehats = v:Clone()
+			clonehats.Parent = Character
+			clonehats.Handle.AccessoryWeld.Part1 = Character[v.Handle.AccessoryWeld.Part1.Name]
+		end
+	end
 	Character.Name = "Clone " .. originalrig.Name
 	Character.HumanoidRootPart.CFrame = originalrig.HumanoidRootPart.CFrame
-	RunService.RenderStepped:Wait()
+	task.wait()
 	for i,v in pairs(originalrig:GetChildren()) do
 		if v:IsA("Tool") then
 			v:Clone().Parent = Character
@@ -95,7 +107,7 @@ local function findmatchingaccessory(hat)
 	for i,v in pairs(Character:GetChildren()) do
 		if v:IsA("Accessory") then
 			if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
-				if v.Handle:FindFirstChildOfClass("SpecialMesh").MeshId == hat.MeshId and v.Handle:FindFirstChildOfClass("SpecialMesh").TextureId == hat.TextureID then
+				if v.Handle.MeshId == hat.MeshId and v.Handle.TextureID == hat.TextureID then
 					local origweld = Instance.new("ObjectValue",hat)
 					origweld.Value = v.Handle
 					origweld.Name = "CloneHat"
@@ -381,4 +393,3 @@ end
 
 -- // God Mode
 if _G.GodMode and originalrig:FindFirstChild("Neck",true) then wait(game.Players.RespawnTime + 1); originalrig:FindFirstChild("Neck",true).Parent = nil keepinplace = false end
-
