@@ -16,6 +16,7 @@ if _G.Network == nil then _G.Network = true end
 if _G.CheckForDeath == nil then _G.CheckForDeath = true end
 if _G.Netless2 == nil then _G.Netless2 = false end
 if _G.Claim2 == nil then _G.Claim2 = false end
+if _G.ExtremeNetless == nil then _G.ExtremeNetless = false end
 
 settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
 settings().Physics.AllowSleep = false
@@ -291,7 +292,7 @@ local Noclip = RunService.Stepped:Connect(function(delta)
 		cr(cc(function()
 			if v:IsA("BasePart") then
 				v.CanCollide = false
-				if v:IsDescendantOf(originalrig) then
+				if v:IsDescendantOf(originalrig) and _G.ExtremeNetless then
 					v.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
 				end
 			end
@@ -301,19 +302,12 @@ end)
 
 -- You're probably wondering, why have two runservices? stepped is the only way to have cancollide off permananetly, but heartbeat is better for physics based things like cframing and velocity.
 
--- // Round
-local function round(num, numDecimalPlaces)
-	local mult = 10^(numDecimalPlaces or 0)
-	return math.floor(num * mult + 0.5) / mult
-end
-
 -- // Conversion
 local Conversion = RunService.Heartbeat:Connect(function(delta)
 	if _G.Network then 
 		plr.MaximumSimulationRadius=1000
 		sethiddenproperty(plr,"SimulationRadius",1000)
 	end
-	--velocityoffset = round(delta,3)*_G.Velocity
 	velocityoffset = 0
 	if _G.Netless2 then velocityoffset = 0 end
 	if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
@@ -384,6 +378,28 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 		end
 	end
 end)
+
+-- // Extreme Claiming
+if _G.ExtremeNetless then
+	cr(cc(function()
+		while RunService.RenderStepped:Wait() and Character do
+			for i,v in pairs(originalrig:GetDescendants()) do
+				if v:IsA("BasePart") then
+					v.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
+				end
+			end
+		end
+	end))
+	cr(cc(function()
+		while wait() and Character do
+			for i,v in pairs(originalrig:GetDescendants()) do
+				if v:IsA("BasePart") then
+					v.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
+				end
+			end
+		end
+	end))
+end
 
 -- // Check for death
 if _G.CheckForDeath then
