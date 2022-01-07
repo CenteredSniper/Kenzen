@@ -3,6 +3,7 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
 
 if _G.Fling == nil then _G.Fling = false end
+if _G.TorsoFling == nil then _G.TorsoFling = false end
 if _G.ShowReal == nil then _G.ShowReal = false end
 if _G.FakeGod == nil then _G.FakeGod = false end
 if _G.GodMode == nil then _G.GodMode = true end
@@ -63,6 +64,8 @@ if not check then PhysicsService:CreateCollisionGroup("NoCollide") end
 PhysicsService:CollisionGroupSetCollidable("NoCollide", "NoCollide", false)
 
 if _G.FakeGod and rigtype == Enum.HumanoidRigType.R6 then _G.GodMode = false end
+if _G.TorsoFling then _G.Fling = false end
+warn(_G.TorsoFling)
 
 -- // RigType
 if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
@@ -174,13 +177,27 @@ end
 
 -- // Godmode Keep Humroot in place during fling
 local keepinplace = true
-if _G.GodMode and originalrig:FindFirstChild("Neck",true) and _G.Fling then
-	local savepos = originalrig.HumanoidRootPart.CFrame
-	cr(cc(function()
-		while keepinplace and task.wait() do
-			originalrig.HumanoidRootPart.CFrame = savepos
-		end
-	end))
+if _G.GodMode and originalrig:FindFirstChild("Neck",true) then
+	if _G.Fling then
+		local savepos = originalrig.HumanoidRootPart.CFrame
+		cr(cc(function()
+			while keepinplace and task.wait() do
+				originalrig.HumanoidRootPart.CFrame = savepos
+			end
+		end))
+	elseif _G.TorsoFling then
+		local savepos = originalrig.HumanoidRootPart.CFrame
+		cr(cc(function()
+			while keepinplace and task.wait() do
+				if rigtype == Enum.HumanoidRigType.R6 then
+					originalrig.Torso.CFrame = savepos
+				else
+					originalrig["LowerTorso"].CFrame = savepos
+				end
+				
+			end
+		end))
+	end
 end
 
 -- // Turning Chosen Rig Invisible
@@ -292,8 +309,12 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 			for i,R15PartNameOffset in pairs(R15PartNames) do
 				cr(cc(function()
 					if originalrig:FindFirstChild(i) and networkownership(originalrig[i]) then
-						local ExpectedPosition = Character[R6PartName].CFrame * R15PartNameOffset
-						originalrig[i].CFrame = ExpectedPosition - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
+						if i == "LowerTorso" and _G.TorsoFling then
+						elseif i == "Torso" and _G.TorsoFling then
+						else
+							local ExpectedPosition = Character[R6PartName].CFrame * R15PartNameOffset
+							originalrig[i].CFrame = ExpectedPosition - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
+						end
 					end
 				end))
 			end
@@ -317,6 +338,7 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 				if v:IsA("BasePart") then
 					v.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
 					if v.Name == "HumanoidRootPart" and _G.Fling and networkownership(v) then
+					elseif _G.TorsoFling and v.Name == "Torso" or v.Name == "LowerTorso" and networkownership(FakeHead)  then	
 					elseif _G.FakeGod and v.Name == "Head" and networkownership(FakeHead)  then
 						FakeHead.CFrame = Character["Head"].CFrame
 					elseif _G.FakeGod and v.Name == "Torso" and networkownership(FakeTorso)  then
@@ -359,3 +381,4 @@ end
 
 -- // God Mode
 if _G.GodMode and originalrig:FindFirstChild("Neck",true) then wait(game.Players.RespawnTime + 1); originalrig:FindFirstChild("Neck",true).Parent = nil keepinplace = false end
+
