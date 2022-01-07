@@ -161,7 +161,7 @@ wait(0.1) -- adding a wait as extra safety
 
 -- // Claim 2 Bring back
 if _G.Claim2 then
-    wait(0.5)
+	wait(0.5)
 	local animat = game:GetService("TweenService"):Create(game.Players.LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(5), {CFrame = origpos})
 	animat:Play()
 	animat.Completed:wait()
@@ -170,6 +170,17 @@ end
 -- // Weld Removing
 for i,v in pairs(originalrig:GetDescendants()) do
 	cr(cc(function() if v:IsA("Motor6D") and v.Name ~= "Neck" then v:Destroy() end end))
+end
+
+-- // Godmode Keep Humroot in place during fling
+local keepinplace = true
+if _G.GodMode and originalrig:FindFirstChild("Neck",true) and _G.Fling then
+	local savepos = originalrig.HumanoidRootPart.CFrame
+	cr(cc(function()
+		while keepinplace and task.wait() do
+			originalrig.HumanoidRootPart.CFrame = savepos
+		end
+	end))
 end
 
 -- // Turning Chosen Rig Invisible
@@ -347,4 +358,4 @@ if _G.CheckForDeath then
 end
 
 -- // God Mode
-if _G.GodMode and originalrig:FindFirstChild("Neck",true) then wait(game.Players.RespawnTime + 1); originalrig:FindFirstChild("Neck",true).Parent = nil end
+if _G.GodMode and originalrig:FindFirstChild("Neck",true) then wait(game.Players.RespawnTime + 1); originalrig:FindFirstChild("Neck",true).Parent = nil keepinplace = false end
