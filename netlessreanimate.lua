@@ -1,4 +1,4 @@
--- https://discord.gg/487bhkqX // ProductionTakeOne#3330
+-- https://discord.gg/8EZcyvtDcq // ProductionTakeOne#3330
 
 -- // Modules/Setup
 loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
