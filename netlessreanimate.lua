@@ -138,18 +138,20 @@ if _G.Claim2 then
 	origpos = plr.Character.HumanoidRootPart.CFrame
 	local actualpos
 	repeat wait() 
-		local pos = plr.Character.HumanoidRootPart.Position + Vector3.new(math.random(-1500,1500),100,math.random(-1500,1500))
-		local check = true
-		for i,v in pairs(game.Players:GetPlayers()) do
-			if v~= plr then
-				if (v.Character.HumanoidRootPart.Position-pos).magnitude <= gethiddenproperty(v, "SimulationRadius") then
-					check = false
+		pcall(function()
+			local pos = plr.Character.HumanoidRootPart.Position + Vector3.new(math.random(-1500,1500),100,math.random(-1500,1500))
+			local check = true
+			for i,v in pairs(game.Players:GetPlayers()) do
+				if v~= plr then
+					if (v.Character.HumanoidRootPart.Position-pos).magnitude <= gethiddenproperty(v, "SimulationRadius") then
+						check = false
+					end
 				end
 			end
-		end
-		if check then
-			actualpos = pos
-		end
+			if check then
+				actualpos = pos
+			end
+		end)
 	until actualpos
 	plr.Character.HumanoidRootPart.CFrame = CFrame.new(actualpos)
 end
@@ -178,6 +180,15 @@ for i,v in pairs(originalrig:GetDescendants()) do
 		end
 	end))
 end
+
+local tools = {}
+for i,v in pairs(originalrig:GetChildren()) do
+	if v:IsA("Tool") then
+		v.Parent = plr.Backpack
+		table.insert(tools,v)
+	end
+end
+
 
 wait(0.1) -- adding a wait as extra safety
 
@@ -236,22 +247,6 @@ if _G.GodMode and originalrig:FindFirstChild("Neck",true) then
 	end
 end
 
--- // Turning Chosen Rig Invisible
-local invisrig = _G.ShowReal and Character or originalrig
-for i,v in pairs(invisrig:GetDescendants()) do
-	cr(cc(function()
-		if v:IsA("BasePart") or v:IsA("Decal") then
-			v.Transparency = 1
-			if v:IsA("BasePart") then
-				local selectionbox = Instance.new("SelectionBox",v)
-				selectionbox.Transparency = 1; selectionbox.Adornee = v;
-			end
-		elseif v:IsA("Accessory") or v:IsA("Tool") then
-			v.Handle.Transparency = 1
-		end
-	end))
-end
-
 -- // FakeGod
 if _G.FakeGod then
 	if originalrig:FindFirstChild("SeeMonkey") then
@@ -283,8 +278,30 @@ if _G.FakeGod then
 end
 
 -- // Setting player onto the fake rig
+for i,v in pairs(tools) do
+	if v:IsA("Tool") then
+		v.Parent = originalrig
+	end
+end
+task.wait()
 plr.Character.Parent = Character; plr.Character = Character
 workspace.CurrentCamera.CameraSubject = Character.Humanoid
+
+-- // Turning Chosen Rig Invisible
+local invisrig = _G.ShowReal and Character or originalrig
+for i,v in pairs(invisrig:GetDescendants()) do
+	cr(cc(function()
+		if v:IsA("BasePart") or v:IsA("Decal") then
+			v.Transparency = 1
+			if v:IsA("BasePart") then
+				local selectionbox = Instance.new("SelectionBox",v)
+				selectionbox.Transparency = 1; selectionbox.Adornee = v;
+			end
+		elseif v:IsA("Accessory") or v:IsA("Tool") then
+			v.Handle.Transparency = 1
+		end
+	end))
+end
 
 -- // Animating the fake rig
 if _G.AutoAnimate then
