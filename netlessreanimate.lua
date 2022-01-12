@@ -181,10 +181,6 @@ end
 
 wait(0.1) -- adding a wait as extra safety
 
--- // God Mode
-local keepinplace = true
-if _G.GodMode and originalrig:FindFirstChild("Neck",true) then cr(cc(function() repeat task.wait() until plr.Character == Character; wait(game.Players.RespawnTime + 1) originalrig:FindFirstChild("Neck",true).Parent = nil keepinplace = false end)) end
-
 -- // Claim 2 Bring back
 local keepingparts = true
 if _G.Claim2 then
@@ -195,13 +191,13 @@ if _G.Claim2 then
 		while keepingparts and task.wait() do
 			for i,v in pairs(originalrig:GetDescendants()) do
 				if v:IsA("BasePart") and v.Name ~= "Head" and v.Name ~= "HumanoidRootPart" then
-					v.CFrame = Character.HumanoidRootPart.CFrame
+					v.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
 				end
 			end
 		end
 	end))
 	wait(0.5)
-	local animat = game:GetService("TweenService"):Create(Character.HumanoidRootPart, TweenInfo.new(5), {CFrame = origpos})
+	local animat = game:GetService("TweenService"):Create(game.Players.LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(5), {CFrame = origpos})
 	animat:Play()
 	animat.Completed:wait()
 else
