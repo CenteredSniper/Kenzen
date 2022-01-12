@@ -18,6 +18,7 @@ if _G.CheckForDeath == nil then _G.CheckForDeath = true end
 if _G.Netless2 == nil then _G.Netless2 = false end
 if _G.Claim2 == nil then _G.Claim2 = false end
 if _G.ExtremeNetless == nil then _G.ExtremeNetless = false end
+if _G.Notification == nil then _G.Notification = false end
 
 settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
 settings().Physics.AllowSleep = false
@@ -59,6 +60,17 @@ local offsets = {
 	},
 	["Head"] = {["Head"] = CFrame.new(0,0,0)},
 }
+
+-- // Notification Function
+local function createnotification(title,desc,duration)
+	if _G.Notification then
+		game:GetService("StarterGui"):SetCore("SendNotification", {
+			Title = title;
+			Text = desc;
+			Duration = duration;
+		})
+	end
+end
 
 -- // Collisions
 local check; pcall(function() check = PhysicsService:GetCollisionGroupId("NoCollide") end)
@@ -154,6 +166,7 @@ if _G.Claim2 then
 		end)
 	until actualpos
 	plr.Character.HumanoidRootPart.CFrame = CFrame.new(actualpos)
+	createnotification("Claim2","Found Position outside of other's net sims",6)
 end
 
 -- // Netless claiming
@@ -180,6 +193,7 @@ for i,v in pairs(originalrig:GetDescendants()) do
 		end
 	end))
 end
+createnotification("Net Claimed","Claimed parts using netless",6)
 
 local tools = {}
 for i,v in pairs(originalrig:GetChildren()) do
@@ -189,8 +203,22 @@ for i,v in pairs(originalrig:GetChildren()) do
 	end
 end
 
-
 wait(0.1) -- adding a wait as extra safety
+
+-- // Noclip Rigs; forgot why i have this but im keeping it
+local Noclip = RunService.Stepped:Connect(function(delta)
+	local Collisionrig = _G.Collisions and originalrig or Character
+	for i,v in pairs(Collisionrig:GetDescendants()) do
+		cr(cc(function()
+			if v:IsA("BasePart") then
+				v.CanCollide = false
+				if v:IsDescendantOf(originalrig) and _G.ExtremeNetless then
+					v.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
+				end
+			end
+		end))
+	end
+end)
 
 -- // Claim 2 Bring back
 local keepingparts = true
@@ -286,6 +314,7 @@ end
 task.wait()
 plr.Character.Parent = Character; plr.Character = Character
 workspace.CurrentCamera.CameraSubject = Character.Humanoid
+createnotification("Fake Body","Set Character to Fake Rig",6)
 
 -- // Turning Chosen Rig Invisible
 local invisrig = _G.ShowReal and Character or originalrig
@@ -324,21 +353,6 @@ for i,v in pairs(Character:GetDescendants()) do
 		end
 	end))
 end
-
--- // Noclip Rigs; forgot why i have this but im keeping it
-local Noclip = RunService.Stepped:Connect(function(delta)
-	local Collisionrig = _G.Collisions and originalrig or Character
-	for i,v in pairs(Collisionrig:GetDescendants()) do
-		cr(cc(function()
-			if v:IsA("BasePart") then
-				v.CanCollide = false
-				if v:IsDescendantOf(originalrig) and _G.ExtremeNetless then
-					v.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
-				end
-			end
-		end))
-	end
-end)
 
 -- You're probably wondering, why have two runservices? stepped is the only way to have cancollide off permananetly, but heartbeat is better for physics based things like cframing and velocity.
 
@@ -443,10 +457,10 @@ if _G.ExtremeNetless then
 end
 
 -- // Check for death
-if _G.CheckForDeath then
-	Character.Humanoid.Died:Connect(function() pcall(function() Noclip:Disconnect(); Conversion:Disconnect(); plr.Character = originalrig; originalrig:ClearAllChildren(); originalrig.Parent = workspace; Character:Destroy() end) end) -- checking for resetting
+if _G.CheckForDeath then -- changed originalrig:ClearAllChildren because some games have a ac against it
+	Character.Humanoid.Died:Connect(function() pcall(function() Noclip:Disconnect(); Conversion:Disconnect(); plr.Character = originalrig; originalrig.Parent = workspace; Character:Destroy() end) end) -- checking for resetting
 	plr.CharacterAdded:Connect(function() Noclip:Disconnect(); Conversion:Disconnect(); Character:Destroy() end) -- checking to see if server respawned you
 end
 
 -- // God Mode
-if _G.GodMode and originalrig:FindFirstChild("Neck",true) then wait(game.Players.RespawnTime + 1); originalrig:FindFirstChild("Neck",true).Parent = nil keepinplace = false end
+if _G.GodMode and originalrig:FindFirstChild("Neck",true) then wait(game.Players.RespawnTime + 1); originalrig:FindFirstChild("Neck",true).Parent = nil keepinplace = false createnotification("Permadeath","God Mode Enabled",6) end
