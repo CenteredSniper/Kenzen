@@ -138,7 +138,7 @@ if _G.Claim2 then
 	origpos = plr.Character.HumanoidRootPart.CFrame
 	local actualpos
 	repeat wait() 
-		local pos = plr.Character.HumanoidRootPart.Position + Vector3.new(math.random(-1500,1500),0,math.random(-1500,1500))
+		local pos = plr.Character.HumanoidRootPart.Position + Vector3.new(math.random(-1500,1500),100,math.random(-1500,1500))
 		local check = true
 		for i,v in pairs(game.Players:GetPlayers()) do
 			if v~= plr then
@@ -181,21 +181,42 @@ end
 
 wait(0.1) -- adding a wait as extra safety
 
+-- // God Mode
+local keepinplace = true
+if _G.GodMode and originalrig:FindFirstChild("Neck",true) then cr(cc(function() repeat task.wait() until plr.Character == Character; wait(game.Players.RespawnTime + 1) originalrig:FindFirstChild("Neck",true).Parent = nil keepinplace = false end)) end
+
 -- // Claim 2 Bring back
+local keepingparts = true
 if _G.Claim2 then
+	for i,v in pairs(originalrig:GetDescendants()) do
+		cr(cc(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end))
+	end
+	cr(cc(function()
+		while keepingparts and task.wait() do
+			for i,v in pairs(originalrig:GetDescendants()) do
+				if v:IsA("BasePart") and v.Name ~= "Head" and v.Name ~= "HumanoidRootPart" then
+					v.CFrame = Character.HumanoidRootPart.CFrame
+				end
+			end
+		end
+	end))
 	wait(0.5)
-	local animat = game:GetService("TweenService"):Create(game.Players.LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(5), {CFrame = origpos})
+	local animat = game:GetService("TweenService"):Create(Character.HumanoidRootPart, TweenInfo.new(5), {CFrame = origpos})
 	animat:Play()
 	animat.Completed:wait()
+else
+	for i,v in pairs(originalrig:GetDescendants()) do
+		cr(cc(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end))
+	end
 end
 
+--[[
 -- // Weld Removing
 for i,v in pairs(originalrig:GetDescendants()) do
 	cr(cc(function() if v:IsA("Motor6D") and v.Name ~= "Neck" then v:Destroy() end end))
-end
+end]]
 
 -- // Godmode Keep Humroot in place during fling
-local keepinplace = true
 if _G.GodMode and originalrig:FindFirstChild("Neck",true) then
 	if _G.Fling then
 		local savepos = originalrig.HumanoidRootPart.CFrame
@@ -213,7 +234,7 @@ if _G.GodMode and originalrig:FindFirstChild("Neck",true) then
 				else
 					originalrig["LowerTorso"].CFrame = savepos
 				end
-				
+
 			end
 		end))
 	end
@@ -310,6 +331,7 @@ end)
 
 -- // Conversion
 local Conversion = RunService.Heartbeat:Connect(function(delta)
+	keepingparts = false
 	if _G.Network then 
 		plr.MaximumSimulationRadius=1000
 		sethiddenproperty(plr,"SimulationRadius",1000)
