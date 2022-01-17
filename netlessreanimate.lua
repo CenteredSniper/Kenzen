@@ -146,6 +146,8 @@ end
 
 local origpos
 
+plr.Character.Humanoid.PlatformStand = true
+
 if _G.Claim2 then
 	origpos = plr.Character.HumanoidRootPart.CFrame
 	local actualpos
