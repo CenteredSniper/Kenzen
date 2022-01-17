@@ -154,7 +154,7 @@ if _G.Claim2 then
 			local pos = plr.Character.HumanoidRootPart.Position + Vector3.new(math.random(-1500,1500),100,math.random(-1500,1500))
 			local check = true
 			for i,v in pairs(game.Players:GetPlayers()) do
-				if v~= plr then
+				if v~= plr and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 					if (v.Character.HumanoidRootPart.Position-pos).magnitude <= gethiddenproperty(v, "SimulationRadius") then
 						check = false
 					end
