@@ -318,7 +318,7 @@ createnotification("Fake Body","Set Character to Fake Rig",6)
 
 -- // Turning Chosen Rig Invisible
 local invisrig = _G.ShowReal and Character or originalrig
-for i,v in pairs(invisrig:GetDescendants()) do
+for i,v in pairs(invisrig:GetChildren()) do
 	cr(cc(function()
 		if v:IsA("BasePart") or v:IsA("Decal") then
 			v.Transparency = 1
