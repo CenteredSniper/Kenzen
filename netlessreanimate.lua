@@ -20,9 +20,17 @@ if _G.Claim2 == nil then _G.Claim2 = false end
 if _G.ExtremeNetless == nil then _G.ExtremeNetless = false end
 if _G.Notification == nil then _G.Notification = false end
 
+settings().Rendering.EagerBulkExecution = true
 settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
 settings().Physics.AllowSleep = false
+settings().Physics.ForceCSGv2 = false
+settings().Physics.DisableCSGv2 = true
+settings().Physics.UseCSGv2 = false
+settings().Physics.ThrottleAdjustTime = math.huge
+settings().Network.TrackPhysicsDetails = true
+settings().Network.TrackDataTypes = true
 game.Players.LocalPlayer.MaximumSimulationRadius=1000
+workspace.InterpolationThrottling = "Disabled"
 sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",1000)
 
 -- // Variables
@@ -215,6 +223,19 @@ wait(0.1) -- adding a wait as extra safety
 
 -- // Noclip Rigs; forgot why i have this but im keeping it
 local Noclip = RunService.Stepped:Connect(function(delta)
+	if _G.Network then 
+		plr.MaximumSimulationRadius=1000
+		sethiddenproperty(plr,"SimulationRadius",1000)
+	end
+	settings().Rendering.EagerBulkExecution = true
+	settings().Physics.AllowSleep = false
+	settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
+	settings().Physics.ForceCSGv2 = false
+	settings().Physics.DisableCSGv2 = true
+	settings().Physics.UseCSGv2 = false
+	settings().Physics.ThrottleAdjustTime = math.huge
+	settings().Network.TrackPhysicsDetails = true
+	settings().Network.TrackDataTypes = true
 	local Collisionrig = _G.Collisions and originalrig or Character
 	for i,v in pairs(Collisionrig:GetDescendants()) do
 		cr(cc(function()
@@ -362,10 +383,6 @@ end
 -- // Conversion
 local Conversion = RunService.Heartbeat:Connect(function(delta)
 	keepingparts = false
-	if _G.Network then 
-		plr.MaximumSimulationRadius=1000
-		sethiddenproperty(plr,"SimulationRadius",1000)
-	end
 	velocityoffset = 0
 	if _G.Netless2 then velocityoffset = 0 end
 	if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
