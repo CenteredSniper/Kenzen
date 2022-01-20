@@ -306,11 +306,6 @@ if _G.FakeGod then
 		Character["MediHood"].Handle.Transparency = 1
 	end
 	FakeTorso.Mesh:Destroy();
-	for i,v in pairs(originalrig:GetChildren()) do
-		if v:IsA("Accessory") then
-			v.Handle.AccessoryWeld:Destroy()
-		end
-	end
 end
 
 -- // Setting player onto the fake rig
