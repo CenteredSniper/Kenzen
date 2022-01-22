@@ -223,14 +223,18 @@ input.InputChanged:connect(function(key)
 		end
 	elseif key.KeyCode == Enum.KeyCode.ButtonR2 then
 		if key.Position.Z > 0.9 then
+			warn("activating fling on " ..rarm)
 			rarm.BodyAngularVelocity.AngularVelocity = Vector3.new(69000000,69000000,69000000)
 		else
+			warn("deactivating fling on " ..rarm)
 			rarm.BodyAngularVelocity.AngularVelocity = Vector3.new(0,0,0)
 		end
 	elseif key.KeyCode == Enum.KeyCode.ButtonL2 then
 		if key.Position.Z > 0.9 then
+			warn("activating fling on " ..larm)
 			larm.BodyAngularVelocity.AngularVelocity = Vector3.new(69000000,69000000,69000000)
 		else
+			warn("deactivating fling on " ..larm)
 			larm.BodyAngularVelocity.AngularVelocity = Vector3.new(0,0,0)
 		end
 	end
