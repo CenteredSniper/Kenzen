@@ -99,11 +99,11 @@ local KeyboardActive = false
 keyboardDB = false
 
 input.InputBegan:Connect(function(key)
-	if key.KeyCode == Enum.KeyCode.ButtonL1 then
+	if key.KeyCode == Enum.KeyCode.ButtonX then
 		if cam.HeadScale > 2 then
 			cam.HeadScale = cam.HeadScale - 1
 		end
-	elseif key.KeyCode == Enum.KeyCode.ButtonL2 then
+	elseif key.KeyCode == Enum.KeyCode.ButtonY then
 		if cam.HeadScale < 7 then
 			cam.HeadScale = cam.HeadScale + 1
 		end
@@ -221,11 +221,23 @@ input.InputChanged:connect(function(key)
 		else
 			r1down = false
 		end
+	elseif key.KeyCode == Enum.KeyCode.ButtonR2 then
+		if key.Position.Z > 0.9 then
+			rarm.BodyAngularVelocity.AngularVelocity = Vector3.new(69000000,69000000,69000000)
+		else
+			rarm.BodyAngularVelocity.AngularVelocity = Vector3.new(0,0,0)
+		end
+	elseif key.KeyCode == Enum.KeyCode.ButtonL2 then
+		if key.Position.Z > 0.9 then
+			larm.BodyAngularVelocity.AngularVelocity = Vector3.new(69000000,69000000,69000000)
+		else
+			larm.BodyAngularVelocity.AngularVelocity = Vector3.new(0,0,0)
+		end
 	end
 end)
 
 input.InputBegan:Connect(function(Input, Processed)
-	print(Input)
+	print(Input.KeyCode)
 		if Input.KeyCode == Enum.KeyCode.ButtonA and not keyboardDB then
 			keyboardDB = true
 			Keyboard:SetPrimaryPartCFrame((workspace.CurrentCamera.CFrame + Vector3.new(0,1,0)) * CFrame.new(0,0,-3))
