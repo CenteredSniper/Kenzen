@@ -222,7 +222,8 @@ input.InputChanged:connect(function(key)
 			r1down = false
 		end
 	elseif key.KeyCode == Enum.KeyCode.ButtonR2 then
-		if key.Position.Z > 0.9 then
+		print(key.Position.Z)
+		if key.Position.Z > 0.5 then
 			warn("activating fling on " ..rarm)
 			rarm.BodyAngularVelocity.AngularVelocity = Vector3.new(69000000,69000000,69000000)
 		else
@@ -230,7 +231,8 @@ input.InputChanged:connect(function(key)
 			rarm.BodyAngularVelocity.AngularVelocity = Vector3.new(0,0,0)
 		end
 	elseif key.KeyCode == Enum.KeyCode.ButtonL2 then
-		if key.Position.Z > 0.9 then
+		print(key.Position.Z)
+		if key.Position.Z > 0.5 then
 			warn("activating fling on " ..larm)
 			larm.BodyAngularVelocity.AngularVelocity = Vector3.new(69000000,69000000,69000000)
 		else
@@ -241,7 +243,6 @@ input.InputChanged:connect(function(key)
 end)
 
 input.InputBegan:Connect(function(Input, Processed)
-	print(Input.KeyCode)
 		if Input.KeyCode == Enum.KeyCode.ButtonA and not keyboardDB then
 			keyboardDB = true
 			Keyboard:SetPrimaryPartCFrame((workspace.CurrentCamera.CFrame + Vector3.new(0,1,0)) * CFrame.new(0,0,-3))
