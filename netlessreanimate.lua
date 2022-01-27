@@ -1,19 +1,17 @@
 -- https://discord.gg/8EZcyvtDcq // ProductionTakeOne#3330
 
 -- // Modules/Setup
-loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
 
 if _G.Fling == nil then _G.Fling = false end
 if _G.TorsoFling == nil then _G.TorsoFling = false end
 if _G.ShowReal == nil then _G.ShowReal = false end
 if _G.FakeGod == nil then _G.FakeGod = false end
 if _G.GodMode == nil then _G.GodMode = true end
-if _G.R15toR6 == nil then _G.R15toR6 = true end
 if _G.AutoAnimate == nil then _G.AutoAnimate = true end
 if _G.Tools == nil then _G.Tools = true end
 if _G.Velocity == nil then _G.Velocity = -25.05 end
 if _G.Collisions == nil then _G.Collisions = true end
-if _G.Network == nil then _G.Network = true end
 if _G.CheckForDeath == nil then _G.CheckForDeath = true end
 if _G.Netless2 == nil then _G.Netless2 = false end
 if _G.Claim2 == nil then _G.Claim2 = false end
@@ -31,25 +29,26 @@ settings().Network.TrackPhysicsDetails = true
 settings().Network.TrackDataTypes = true
 game.Players.LocalPlayer.MaximumSimulationRadius=1000
 workspace.InterpolationThrottling = "Disabled"
-sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",1000)
 
 -- // Variables
-local PhysicsService = game:GetService("PhysicsService")
+--local PhysicsService = game:GetService("PhysicsService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 
-local velocityoffset = 0.0167664670659*_G.Velocity
 local plr = Players.LocalPlayer
 local Character,originalrig
 local FakeTorso,FakeTorso1,FakeHead
 local cr,cc = coroutine.resume,coroutine.create
 local rigtype = plr.Character.Humanoid.RigType
+
+
+
 local function networkownership(obj)
-    if isnetworkowner then
-        return isnetworkowner(obj)
-    else
-        return true
-    end
+	if isnetworkowner then
+		return isnetworkowner(obj)
+	else
+		return true
+	end
 end
 
 local offsets = {
@@ -85,17 +84,18 @@ local function createnotification(title,desc,duration)
 		})
 	end
 end
-
+--[[
 -- // Collisions
 local check; pcall(function() check = PhysicsService:GetCollisionGroupId("NoCollide") end)
 if not check then PhysicsService:CreateCollisionGroup("NoCollide") end
 PhysicsService:CollisionGroupSetCollidable("NoCollide", "NoCollide", false)
+]]
 
 if _G.FakeGod and rigtype == Enum.HumanoidRigType.R6 then _G.GodMode = false end
 if _G.TorsoFling then _G.Fling = false end
 
 -- // RigType
-if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
+if rigtype == Enum.HumanoidRigType.R15 then
 	originalrig = plr.Character
 	Character = game:GetObjects("rbxassetid://8232772380")[1]:Clone()
 	Character.Parent = workspace
@@ -118,7 +118,7 @@ if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
 			--clonehats.Handle.AccessoryWeld.Part1 = Character[v.Handle.AccessoryWeld.Part1.Name]
 		end
 	end
-	Character.Name = "Clone " .. originalrig.Name
+	Character.Name = "Clone " .. originalrig.Name 
 	Character.HumanoidRootPart.CFrame = originalrig.HumanoidRootPart.CFrame
 	task.wait()
 	for i,v in pairs(originalrig:GetChildren()) do
@@ -158,7 +158,7 @@ end
 
 -- // Claim 2
 
-local origpos
+local origpos,claim2velocity
 
 plr.Character.Humanoid.PlatformStand = true
 
@@ -171,7 +171,7 @@ if _G.Claim2 then
 			local check = true
 			for i,v in pairs(game.Players:GetPlayers()) do
 				if v~= plr and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-					if (v.Character.HumanoidRootPart.Position-pos).magnitude <= gethiddenproperty(v, "SimulationRadius") then
+					if (v.Character.HumanoidRootPart.Position-pos).magnitude <= 1000 then
 						check = false
 					end
 				end
@@ -182,6 +182,15 @@ if _G.Claim2 then
 		end)
 	until actualpos
 	plr.Character.HumanoidRootPart.CFrame = CFrame.new(actualpos)
+	claim2velocity = game["Run Service"].Heartbeat:Connect(function()
+		for i,v in pairs(originalrig:GetDescendants()) do
+			cr(cc(function()
+				if v:IsA("BasePart") then
+					v.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
+				end
+			end))
+		end
+	end)
 	createnotification("Claim2","Found Position outside of other's net sims",6)
 end
 
@@ -223,10 +232,6 @@ wait(0.1) -- adding a wait as extra safety
 
 -- // Noclip Rigs; forgot why i have this but im keeping it
 local Noclip = RunService.Stepped:Connect(function(delta)
-	if _G.Network then 
-		plr.MaximumSimulationRadius=1000
-		sethiddenproperty(plr,"SimulationRadius",1000)
-	end
 	settings().Rendering.EagerBulkExecution = true
 	settings().Physics.AllowSleep = false
 	settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
@@ -268,6 +273,7 @@ if _G.Claim2 then
 	local animat = game:GetService("TweenService"):Create(game.Players.LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(5), {CFrame = origpos})
 	animat:Play()
 	animat.Completed:wait()
+	claim2velocity:Disconnect()
 else
 	for i,v in pairs(originalrig:GetDescendants()) do
 		cr(cc(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end))
@@ -368,7 +374,7 @@ if _G.AutoAnimate then
 	end
 end
 
-
+--[[
 -- // Making Characters not collide
 for i,v in pairs(Character:GetDescendants()) do
 	cr(cc(function()
@@ -377,14 +383,19 @@ for i,v in pairs(Character:GetDescendants()) do
 		end
 	end))
 end
-
+]]
 -- You're probably wondering, why have two runservices? stepped is the only way to have cancollide off permananetly, but heartbeat is better for physics based things like cframing and velocity.
 
 -- // Conversion
 local Conversion = RunService.Heartbeat:Connect(function(delta)
 	keepingparts = false
-	velocityoffset = 0
-	if _G.Netless2 then velocityoffset = 0 end
+	for i,v in pairs(originalrig:GetDescendants()) do
+		cr(cc(function()
+			if v:IsA("BasePart") then
+				v.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
+			end
+		end))
+	end
 	if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
 		for R6PartName,R15PartNames in pairs(offsets) do
 			for i,R15PartNameOffset in pairs(R15PartNames) do
@@ -394,7 +405,7 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 						elseif i == "Torso" and _G.TorsoFling then
 						else
 							local ExpectedPosition = Character[R6PartName].CFrame * R15PartNameOffset
-							originalrig[i].CFrame = ExpectedPosition - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
+							originalrig[i].CFrame = ExpectedPosition 
 						end
 					end
 				end))
@@ -402,39 +413,34 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 		end
 		for i,v in pairs(originalrig:GetChildren()) do
 			cr(cc(function()
-				if v:IsA("BasePart") then
-					v.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
-				elseif v:IsA("Accessory") and networkownership(v.Handle) then
-					v.Handle.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
-					v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
+				if v:IsA("Accessory") and networkownership(v.Handle) then
+					v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
 				end
 			end))
 		end
 		if originalrig:FindFirstChild("HumanoidRootPart") and networkownership(originalrig["HumanoidRootPart"]) and not _G.Fling then
-			originalrig["HumanoidRootPart"].CFrame = Character["HumanoidRootPart"].CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
+			originalrig["HumanoidRootPart"].CFrame = Character["HumanoidRootPart"].CFrame 
 		end
 	else
 		for i,v in pairs(originalrig:GetChildren()) do
 			cr(cc(function()
 				if v:IsA("BasePart") then
-					v.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
 					if v.Name == "HumanoidRootPart" and _G.Fling and networkownership(v) then
 					elseif _G.TorsoFling and v.Name == "Torso" or v.Name == "LowerTorso" and networkownership(FakeHead)  then	
 					elseif _G.FakeGod and v.Name == "Head" and networkownership(FakeHead)  then
 						FakeHead.CFrame = Character["Head"].CFrame
 					elseif _G.FakeGod and v.Name == "Torso" and networkownership(FakeTorso)  then
 						if FakeTorso1 then
-							FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(0.5,0,0) - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
-							FakeTorso1.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(-0.5,0,0) - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
+							FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(0.5,0,0) 
+							FakeTorso1.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(-0.5,0,0) 
 						else
-							FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
+							FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) 
 						end
 					elseif networkownership(v) then
-						v.CFrame = Character[v.Name].CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
+						v.CFrame = Character[v.Name].CFrame 
 					end
 				elseif v:IsA("Accessory") and v.Handle ~= FakeTorso and v.Handle ~= FakeTorso1 and v.Handle ~= FakeHead and networkownership(v.Handle) then
-					v.Handle.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
-					v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
+					v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
 				end
 			end))
 		end
@@ -443,11 +449,9 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 		for i,v in pairs(originalrig:GetChildren()) do
 			cr(cc(function()
 				if v:IsA("Tool") and Character:FindFirstChild(v.Name) then
-					v.Handle.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
-					v.Handle.CFrame = 	Character[v.Name].Handle.CFrame - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
+					v.Handle.CFrame = 	Character[v.Name].Handle.CFrame 
 				elseif v:IsA("Tool") then
-					v.Handle.CFrame = Character["Left Leg"].CFrame * CFrame.new(0,-5,0) - Vector3.new(velocityoffset,velocityoffset,velocityoffset)
-					v.Handle.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
+					v.Handle.CFrame = Character["Left Leg"].CFrame * CFrame.new(0,-5,0) 
 				end
 			end))
 		end
