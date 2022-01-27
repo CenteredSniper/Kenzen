@@ -1,18 +1,18 @@
 -- https://discord.gg/8EZcyvtDcq // ProductionTakeOne#3330
 
-if getgenv().Fling == nil then getgenv().Fling = _G.Fling or false end
-if getgenv().TorsoFling == nil then getgenv().TorsoFling = _G.TorsoFling or false end
-if getgenv().ShowReal == nil then getgenv().ShowReal = _G.ShowReal or false end
-if getgenv().FakeGod == nil then getgenv().FakeGod = _G.FakeGod or false end
-if getgenv().GodMode == nil then getgenv().GodMode = _G.GodMode or true end
-if getgenv().AutoAnimate == nil then getgenv().AutoAnimate = _G.AutoAnimate or true end
-if getgenv().Tools == nil then getgenv().Tools = _G.Tools or true end
-if getgenv().Velocity == nil then getgenv().Velocity = _G.Velocity or -25.05 end
-if getgenv().Collisions == nil then getgenv().Collisions = _G.Collisions or true end
-if getgenv().CheckForDeath == nil then getgenv().CheckForDeath = _G.CheckForDeath or true end
-if getgenv().Netless2 == nil then getgenv().Netless2 = _G.Netless2 or false end
-if getgenv().Claim2 == nil then getgenv().Claim2 = _G.Claim2 or false end
-if getgenv().ExtremeNetless == nil then getgenv().ExtremeNetless = _G.ExtremeNetless or false end
-if getgenv().Notification == nil then getgenv().Notification = _G.Notification or false end
+getgenv().Fling = _G.Fling or getgenv().Fling or false
+getgenv().TorsoFling = _G.TorsoFling or getgenv().TorsoFling or false
+getgenv().ShowReal = _G.ShowReal or getgenv().ShowReal or false
+getgenv().FakeGod = _G.FakeGod or getgenv().FakeGod or false
+getgenv().GodMode = _G.GodMode or getgenv().GodMode or true
+getgenv().AutoAnimate = _G.AutoAnimate or getgenv().AutoAnimate or true
+getgenv().Tools = _G.Tools or getgenv().Tools or true
+getgenv().Velocity = _G.Velocity or getgenv().Velocity or -25.05
+getgenv().Collisions = _G.Collisions or getgenv().Collisions or true
+getgenv().CheckForDeath = _G.CheckForDeath or getgenv().CheckForDeath or true
+getgenv().Netless2 = _G.Netless2 or getgenv().Netless2 or false
+getgenv().Claim2 = _G.Claim2 or getgenv().Claim2 or false
+getgenv().ExtremeNetless = _G.ExtremeNetless or getgenv().ExtremeNetless or false
+getgenv().Notification = _G.Notification or getgenv().Notification or false
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/newnetlessreanimate.lua"))()
