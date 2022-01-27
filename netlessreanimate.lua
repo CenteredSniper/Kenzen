@@ -212,6 +212,8 @@ for i,v in pairs(originalrig:GetDescendants()) do
 			end
 			v.Massless = true
 			v.CustomPhysicalProperties = PhysicalProperties.new(0,0,0,0,0)
+			local selectionbox = Instance.new("SelectionBox",v)
+			selectionbox.Transparency = 1; selectionbox.Adornee = v;
 			if v.Parent:IsA("Accessory") then
 				findmatchingaccessory(v)
 			end
@@ -352,10 +354,6 @@ for i,v in pairs(invisrig:GetChildren()) do
 	cr(cc(function()
 		if v:IsA("BasePart") or v:IsA("Decal") then
 			v.Transparency = 1
-			if v:IsA("BasePart") then
-				local selectionbox = Instance.new("SelectionBox",v)
-				selectionbox.Transparency = 1; selectionbox.Adornee = v;
-			end
 		elseif v:IsA("Accessory") or v:IsA("Tool") then
 			v.Handle.Transparency = 1
 		end
@@ -393,6 +391,11 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 		cr(cc(function()
 			if v:IsA("BasePart") then
 				v.Velocity = Vector3.new(_G.Velocity, _G.Velocity, _G.Velocity)
+				if not networkownership(v) then
+					v.SelectionBox.Transparency = 0
+				else
+					v.SelectionBox.Transparency = 1
+				end
 			end
 		end))
 	end
