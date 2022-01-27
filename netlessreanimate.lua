@@ -139,7 +139,7 @@ end
 local function findmatchingaccessory(hat)
 	for i,v in pairs(Character:GetChildren()) do
 		if v:IsA("Accessory") then
-			if rigtype == Enum.HumanoidRigType.R15 and _G.R15toR6 then
+			if rigtype == Enum.HumanoidRigType.R15 then
 				if v.Handle.MeshId == hat.MeshId and v.Handle.TextureID == hat.TextureID then
 					local origweld = Instance.new("ObjectValue",hat)
 					origweld.Value = v.Handle
