@@ -1377,13 +1377,13 @@ Player.Chatted:Connect(function(msg)
 	end
 end)
 
-game["Run Service"].Heartbeat:Connect(function(delta)
-	game.Players.LocalPlayer.MaximumSimulationRadius=math.pow(math.huge,math.huge)
-	sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",math.huge*math.huge)
-	for i,v in pairs(scarfs) do
-		v.CFrame = Char["Torso"].CFrame * CFrame.new(0,-5,0)
+coroutine.resume(coroutine.create(function()
+	while task.wait() do
+		for i,v in pairs(scarfs) do
+			v.CFrame = Char["Torso"].CFrame * CFrame.new(0,-5,0)
+		end
 	end
-end)
+end))
 
 local boombox = Char:FindFirstChild("Remote",true)
 if boombox then
