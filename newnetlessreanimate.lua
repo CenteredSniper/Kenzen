@@ -29,13 +29,13 @@ settings().Physics.ThrottleAdjustTime = math.huge
 settings().Network.TrackPhysicsDetails = true
 settings().Network.TrackDataTypes = true
 if getgenv().Network then
-	game.Players.LocalPlayer.MaximumSimulationRadius=1000
-	sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",1000)
+	game.Players.LocalPlayer.MaximumSimulationRadius=6969
+	sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",6969)
 end
 workspace.InterpolationThrottling = "Disabled"
 
 -- // Variables
---local PhysicsService = game:GetService("PhysicsService")
+local PhysicsService = game:GetService("PhysicsService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 
@@ -88,12 +88,12 @@ local function createnotification(title,desc,duration)
 		})
 	end
 end
---[[
+
 -- // Collisions
 local check; pcall(function() check = PhysicsService:GetCollisionGroupId("NoCollide") end)
 if not check then PhysicsService:CreateCollisionGroup("NoCollide") end
 PhysicsService:CollisionGroupSetCollidable("NoCollide", "NoCollide", false)
-]]
+
 
 if getgenv().FakeGod and rigtype == Enum.HumanoidRigType.R6 then getgenv().GodMode = false end
 if getgenv().TorsoFling then getgenv().Fling = false end
@@ -248,8 +248,8 @@ local Noclip = RunService.Stepped:Connect(function(delta)
 	settings().Network.TrackPhysicsDetails = true
 	settings().Network.TrackDataTypes = true
 	if getgenv().Network then
-		game.Players.LocalPlayer.MaximumSimulationRadius=1000
-		sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",1000)
+		game.Players.LocalPlayer.MaximumSimulationRadius=6969
+		sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",6969)
 	end
 	local Collisionrig = getgenv().Collisions and originalrig or Character
 	for i,v in pairs(Collisionrig:GetDescendants()) do
@@ -380,7 +380,7 @@ if getgenv().AutoAnimate then
 	end
 end
 
---[[
+
 -- // Making Characters not collide
 for i,v in pairs(Character:GetDescendants()) do
 	cr(cc(function()
@@ -389,7 +389,7 @@ for i,v in pairs(Character:GetDescendants()) do
 		end
 	end))
 end
-]]
+
 -- You're probably wondering, why have two runservices? stepped is the only way to have cancollide off permananetly, but heartbeat is better for physics based things like cframing and velocity.
 
 -- // Conversion
