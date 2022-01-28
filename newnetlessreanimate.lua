@@ -1,7 +1,7 @@
 -- https://discord.gg/8EZcyvtDcq // ProductionTakeOne#3330
 
 -- // Modules/Setup
---loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
 
 if getgenv().Fling == nil then getgenv().Fling = false end
 if getgenv().TorsoFling == nil then getgenv().TorsoFling = false end
@@ -138,6 +138,9 @@ else
 	Character.Parent = workspace
 	Character.Name = "FakeBody"
 end
+
+getgenv().RealRig = originalrig
+getgenv().CloneRig = Character
 
 -- // Hat Matching Value
 local function findmatchingaccessory(hat)
