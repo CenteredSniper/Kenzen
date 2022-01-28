@@ -13,6 +13,7 @@ if getgenv().Tools == nil then getgenv().Tools = true end
 if getgenv().Velocity == nil then getgenv().Velocity = -25.05 end
 if getgenv().Collisions == nil then getgenv().Collisions = true end
 if getgenv().CheckForDeath == nil then getgenv().CheckForDeath = true end
+if getgenv().Network == nil then getgenv().Network = true end
 if getgenv().Netless2 == nil then getgenv().Netless2 = false end
 if getgenv().Claim2 == nil then getgenv().Claim2 = false end
 if getgenv().ExtremeNetless == nil then getgenv().ExtremeNetless = false end
@@ -27,7 +28,10 @@ settings().Physics.UseCSGv2 = false
 settings().Physics.ThrottleAdjustTime = math.huge
 settings().Network.TrackPhysicsDetails = true
 settings().Network.TrackDataTypes = true
-game.Players.LocalPlayer.MaximumSimulationRadius=1000
+if getgenv().Network then
+	game.Players.LocalPlayer.MaximumSimulationRadius=1000
+	sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",1000)
+end
 workspace.InterpolationThrottling = "Disabled"
 
 -- // Variables
@@ -243,6 +247,10 @@ local Noclip = RunService.Stepped:Connect(function(delta)
 	settings().Physics.ThrottleAdjustTime = math.huge
 	settings().Network.TrackPhysicsDetails = true
 	settings().Network.TrackDataTypes = true
+	if getgenv().Network then
+		game.Players.LocalPlayer.MaximumSimulationRadius=1000
+		sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",1000)
+	end
 	local Collisionrig = getgenv().Collisions and originalrig or Character
 	for i,v in pairs(Collisionrig:GetDescendants()) do
 		cr(cc(function()
