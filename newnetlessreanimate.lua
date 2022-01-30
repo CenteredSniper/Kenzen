@@ -18,6 +18,7 @@ if getgenv().Netless2 == nil then getgenv().Netless2 = false end
 if getgenv().Claim2 == nil then getgenv().Claim2 = false end
 if getgenv().ExtremeNetless == nil then getgenv().ExtremeNetless = false end
 if getgenv().Notification == nil then getgenv().Notification = false end
+if getgenv().DynamicVelocity == nil then getgenv().DynamicVelocity = false end
 
 settings().Rendering.EagerBulkExecution = true
 settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
@@ -239,8 +240,33 @@ end
 
 wait(0.1) -- adding a wait as extra safety
 
+local function dynvelocity()
+	local humrootpos = Character.HumanoidRootPart.Position
+	local smallestmag = 22.5
+	for i,v in pairs(game.Players:GetPlayers()) do
+		if v ~= game.Players.LocalPlayer and v.Character then
+			local humroot = v.Character:FindFirstChild("HumanoidRootPart") or v.Character:FindFirstChild("Head")
+			if humroot then
+				local mag = (humroot.Position-humrootpos).magnitude
+				if mag <= smallestmag then
+					smallestmag = mag
+				end
+			end
+		end
+	end
+	getgenv().Velocity = 45-smallestmag*2
+	for i,v in pairs(originalrig:GetDescendants()) do
+		if v:IsA("BodyVelocity") then
+			v.Velocity = Vector3.new(45-smallestmag*2,45-smallestmag*2,45-smallestmag*2)
+		end
+	end
+end
+
 -- // Noclip Rigs; forgot why i have this but im keeping it
 local Noclip = RunService.Stepped:Connect(function(delta)
+	if getgenv().DynamicVelocity then
+		coroutine.wrap(dynvelocity)()
+	end
 	settings().Rendering.EagerBulkExecution = true
 	settings().Physics.AllowSleep = false
 	settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
