@@ -399,7 +399,7 @@ end
 
 -- // Animating the fake rig
 if getgenv().AutoAnimate then
-	if rigtype == Enum.HumanoidRigType.R15 and getgenv().R15toR6 then
+	if rigtype == Enum.HumanoidRigType.R15 then
 		cr(cc(function()
 			getgenv().ForHonor = Character.Animate
 			loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/Animate"))()
@@ -436,7 +436,7 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 			end
 		end))
 	end
-	if rigtype == Enum.HumanoidRigType.R15 and getgenv().R15toR6 then
+	if rigtype == Enum.HumanoidRigType.R15 then
 		for R6PartName,R15PartNames in pairs(offsets) do
 			for i,R15PartNameOffset in pairs(R15PartNames) do
 				cr(cc(function()
