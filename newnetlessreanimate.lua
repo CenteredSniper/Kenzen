@@ -30,8 +30,8 @@ settings().Physics.ThrottleAdjustTime = math.huge
 settings().Network.TrackPhysicsDetails = true
 settings().Network.TrackDataTypes = true
 if getgenv().Network then
-	game.Players.LocalPlayer.MaximumSimulationRadius=6969
-	sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",6969)
+	game:GetService("Players").LocalPlayer.MaximumSimulationRadius=6969
+	sethiddenproperty(game:GetService("Players").LocalPlayer,"SimulationRadius",6969)
 end
 workspace.InterpolationThrottling = "Disabled"
 
@@ -173,11 +173,11 @@ plr.Character.Humanoid.PlatformStand = true
 if getgenv().Claim2 then
 	origpos = plr.Character.HumanoidRootPart.CFrame
 	local actualpos
-	repeat wait() 
+	repeat task.wait() 
 		pcall(function()
 			local pos = plr.Character.HumanoidRootPart.Position + Vector3.new(math.random(-1500,1500),100,math.random(-1500,1500))
 			local check = true
-			for i,v in pairs(game.Players:GetPlayers()) do
+			for i,v in pairs(game:GetService("Players"):GetPlayers()) do
 				if v~= plr and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 					if (v.Character.HumanoidRootPart.Position-pos).magnitude <= 1000 then
 						check = false
@@ -190,7 +190,7 @@ if getgenv().Claim2 then
 		end)
 	until actualpos
 	plr.Character.HumanoidRootPart.CFrame = CFrame.new(actualpos)
-	claim2velocity = game["Run Service"].Heartbeat:Connect(function()
+	claim2velocity = game:GetService("RunService").Heartbeat:Connect(function()
 		for i,v in pairs(originalrig:GetDescendants()) do
 			cr(cc(function()
 				if v:IsA("BasePart") then
@@ -238,13 +238,13 @@ for i,v in pairs(originalrig:GetChildren()) do
 	end
 end
 
-wait(0.1) -- adding a wait as extra safety
+task.wait(0.1) -- adding a wait as extra safety
 
 local function dynvelocity()
 	local humrootpos = Character.HumanoidRootPart.Position
 	local smallestmag = 22.5
-	for i,v in pairs(game.Players:GetPlayers()) do
-		if v ~= game.Players.LocalPlayer and v.Character then
+	for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+		if v ~= game:GetService("Players").LocalPlayer and v.Character then
 			local humroot = v.Character:FindFirstChild("HumanoidRootPart") or v.Character:FindFirstChild("Head")
 			if humroot then
 				local mag = (humroot.Position-humrootpos).magnitude
@@ -277,8 +277,8 @@ local Noclip = RunService.Stepped:Connect(function(delta)
 	settings().Network.TrackPhysicsDetails = true
 	settings().Network.TrackDataTypes = true
 	if getgenv().Network then
-		game.Players.LocalPlayer.MaximumSimulationRadius=6969
-		sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",6969)
+		game:GetService("Players").LocalPlayer.MaximumSimulationRadius=6969
+		sethiddenproperty(game:GetService("Players").LocalPlayer,"SimulationRadius",6969)
 	end
 	local Collisionrig = getgenv().Collisions and originalrig or Character
 	for i,v in pairs(Collisionrig:GetDescendants()) do
@@ -303,12 +303,12 @@ if getgenv().Claim2 then
 		while keepingparts and task.wait() do
 			for i,v in pairs(originalrig:GetDescendants()) do
 				if v:IsA("BasePart") and v.Name ~= "Head" and v.Name ~= "HumanoidRootPart" then
-					v.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+					v.CFrame = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame
 				end
 			end
 		end
 	end))
-	wait(0.5)
+	task.wait(0.5)
 	local animat = game:GetService("TweenService"):Create(game.Players.LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(5), {CFrame = origpos})
 	animat:Play()
 	animat.Completed:wait()
@@ -405,7 +405,7 @@ if getgenv().AutoAnimate then
 			loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/Animate"))()
 		end))
 	else
-		Character.Animate.Disabled = true; wait() Character.Animate.Disabled = false
+		Character.Animate.Disabled = true; task.wait() Character.Animate.Disabled = false
 	end
 end
 
@@ -510,7 +510,7 @@ if getgenv().ExtremeNetless then
 		end
 	end))
 	cr(cc(function()
-		while wait() and Character do
+		while task.wait() and Character do
 			for i,v in pairs(originalrig:GetDescendants()) do
 				if v:IsA("BasePart") then
 					v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
