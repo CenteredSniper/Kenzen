@@ -110,6 +110,7 @@ if rigtype == Enum.HumanoidRigType.R15 then
 		if v:IsA("Accessory") then
 			v:Destroy()
 		end
+            task.wait()
 	end
 	for i,v in pairs(originalrig:GetChildren()) do
 		if v:IsA("Accessory") then
@@ -119,9 +120,11 @@ if rigtype == Enum.HumanoidRigType.R15 then
 				if g[v.Handle.AccessoryWeld.Part1.Name] then
 					clonehats.Handle.AccessoryWeld.Part1 = Character[_]
 				end
+                            task.wait()
 			end
 			--clonehats.Handle.AccessoryWeld.Part1 = Character[v.Handle.AccessoryWeld.Part1.Name]
 		end
+             task.wait()
 	end
 	Character.Name = "Clone " .. originalrig.Name 
 	Character.HumanoidRootPart.CFrame = originalrig.HumanoidRootPart.CFrame
@@ -130,6 +133,7 @@ if rigtype == Enum.HumanoidRigType.R15 then
 		if v:IsA("Tool") then
 			v:Clone().Parent = Character
 		end
+             task.wait()
 	end
 else
 	plr.Character.Archivable = true
@@ -138,6 +142,7 @@ else
 	originalrig = plr.Character
 	Character.Parent = workspace
 	Character.Name = "FakeBody"
+    task.wait()
 end
 
 getgenv().RealRig = originalrig
