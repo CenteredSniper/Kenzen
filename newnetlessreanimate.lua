@@ -140,8 +140,8 @@ else
 	Character = plr.Character:Clone()
 	plr.Character.Archivable = false
 	originalrig = plr.Character
-	Character.Parent = workspace
 	Character.Name = "FakeBody"
+	Character.Parent = workspace
     task.wait()
 end
 
