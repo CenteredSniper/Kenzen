@@ -19,7 +19,7 @@ if getgenv().Claim2 == nil then getgenv().Claim2 = false end
 if getgenv().ExtremeNetless == nil then getgenv().ExtremeNetless = false end
 if getgenv().Notification == nil then getgenv().Notification = false end
 if getgenv().DynamicVelocity == nil then getgenv().DynamicVelocity = false end
-if getgenv().AntiSleep == nil then getgenv().DynamicVelocity = false end
+if getgenv().AntiSleep == nil then getgenv().AntiSleep = false end
 
 
 settings().Rendering.EagerBulkExecution = true
