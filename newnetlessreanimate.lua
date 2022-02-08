@@ -31,10 +31,6 @@ settings().Physics.UseCSGv2 = false
 settings().Physics.ThrottleAdjustTime = math.huge
 settings().Network.TrackPhysicsDetails = true
 settings().Network.TrackDataTypes = true
-if getgenv().Network then
-	game:GetService("Players").LocalPlayer.MaximumSimulationRadius=6969
-	sethiddenproperty(game:GetService("Players").LocalPlayer,"SimulationRadius",6969)
-end
 workspace.InterpolationThrottling = "Disabled"
 
 -- // Variables
@@ -47,26 +43,12 @@ local Character,originalrig
 local FakeTorso,FakeTorso1,FakeHead
 local cr,cc = coroutine.resume,coroutine.create
 local rigtype = plr.Character.Humanoid.RigType
-
-local LPlr = game:GetService("Players").LocalPlayer
-local LChar = LPlr.Character or LPlr.CharacterAdded:Wait()
 local set_hidden_property = sethiddenproperty or sethiddenprop
 
-local function WakeUp()
-for i,v in pairs(LChar:GetDescendants()) do
-   if v:IsA("BasePart") then
-      set_hidden_property(v, "NetworkIsSleeping", false)
-   end
+if getgenv().Network then
+	game:GetService("Players").LocalPlayer.MaximumSimulationRadius=6969
+	set_hidden_property(game:GetService("Players").LocalPlayer,"SimulationRadius",6969)
 end
-end
-
-
-if getgenv().AntiSleep then
-   if set_hidden_property then
-      RunService.Stepped:Connect(WakeUp)
-   end
-end
-
 
 local function networkownership(obj)
 	if isnetworkowner then
@@ -287,10 +269,46 @@ local function dynvelocity()
 	end
 end
 
+local velocitych = getgenv().Velocity
+local function dynvelocity2()
+	local humrootpos = Character.HumanoidRootPart.Position
+	local smallestmag = 22.5
+	local boolthing = false
+	for i,v in pairs(game:GetService("Players"):GetPlayers()) do
+		if v ~= game:GetService("Players").LocalPlayer and v.Character then
+			local humroot = v.Character:FindFirstChild("HumanoidRootPart") or v.Character:FindFirstChild("Head")
+			if humroot then
+				local mag = (humroot.Position-humrootpos).magnitude
+				if mag <= smallestmag then
+					--smallestmag = mag
+					--getgenv().Velocity = velocitych
+					boolthing = true
+				end
+			end
+		end
+	end
+	if boolthing then
+		getgenv().Velocity = velocitych
+		for i,v in pairs(originalrig:GetDescendants()) do
+		if v:IsA("BodyVelocity") then
+			v.Velocity = Vector3.new(velocitych,velocitych,velocitych)
+		end
+	end
+	else
+		getgenv().Velocity = 0.01
+		for i,v in pairs(originalrig:GetDescendants()) do
+		if v:IsA("BodyVelocity") then
+			v.Velocity = Vector3.new(0.01,0.01,0.01)
+		end
+	end
+	end
+	
+end
+
 -- // Noclip Rigs; forgot why i have this but im keeping it
 local Noclip = RunService.Stepped:Connect(function(delta)
 	if getgenv().DynamicVelocity then
-		coroutine.wrap(dynvelocity)()
+		coroutine.wrap(dynvelocity2)()
 	end
 	settings().Rendering.EagerBulkExecution = true
 	settings().Physics.AllowSleep = false
@@ -303,13 +321,14 @@ local Noclip = RunService.Stepped:Connect(function(delta)
 	settings().Network.TrackDataTypes = true
 	if getgenv().Network then
 		game:GetService("Players").LocalPlayer.MaximumSimulationRadius=6969
-		sethiddenproperty(game:GetService("Players").LocalPlayer,"SimulationRadius",6969)
+		set_hidden_property(game:GetService("Players").LocalPlayer,"SimulationRadius",6969)
 	end
 	local Collisionrig = getgenv().Collisions and originalrig or Character
 	for i,v in pairs(Collisionrig:GetDescendants()) do
 		cr(cc(function()
 			if v:IsA("BasePart") then
 				v.CanCollide = false
+				if getgenv().AllowSleep and set_hidden_property then set_hidden_property(v, "NetworkIsSleeping", false) end
 				if v:IsDescendantOf(originalrig) and getgenv().ExtremeNetless then
 					v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
 				end
