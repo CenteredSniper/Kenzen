@@ -1,4 +1,4 @@
--- https://discord.gg/8EZcyvtDcq // ProductionTakeOne#3330
+-- https://discord.gg/8EZcyvtDcq // ProductionTakeOne#3330 & nul#3174
 
 -- // Modules/Setup
 loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
@@ -19,6 +19,8 @@ if getgenv().Claim2 == nil then getgenv().Claim2 = false end
 if getgenv().ExtremeNetless == nil then getgenv().ExtremeNetless = false end
 if getgenv().Notification == nil then getgenv().Notification = false end
 if getgenv().DynamicVelocity == nil then getgenv().DynamicVelocity = false end
+if getgenv().AntiSleep == nil then getgenv().DynamicVelocity = false end
+
 
 settings().Rendering.EagerBulkExecution = true
 settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
@@ -46,6 +48,24 @@ local FakeTorso,FakeTorso1,FakeHead
 local cr,cc = coroutine.resume,coroutine.create
 local rigtype = plr.Character.Humanoid.RigType
 
+local LPlr = game:GetService("Players").LocalPlayer
+local LChar = LPlr.Character or LPlr.CharacterAdded:Wait()
+local set_hidden_property = sethiddenproperty or sethiddenprop
+
+local function WakeUp()
+for i,v in pairs(LChar:GetDescendants()) do
+   if v:IsA("BasePart") then
+      set_hidden_property(v, "NetworkIsSleeping", false)
+   end
+end
+end
+
+
+if getgenv().AntiSleep then
+   if set_hidden_property then
+      RunService.Stepped:Connect(WakeUp)
+   end
+end
 
 
 local function networkownership(obj)
