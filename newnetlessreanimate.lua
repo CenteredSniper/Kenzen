@@ -29,8 +29,6 @@ settings().Physics.ForceCSGv2 = false
 settings().Physics.DisableCSGv2 = true
 settings().Physics.UseCSGv2 = false
 settings().Physics.ThrottleAdjustTime = math.huge
-settings().Network.TrackPhysicsDetails = true
-settings().Network.TrackDataTypes = true
 workspace.InterpolationThrottling = "Disabled"
 
 -- // Variables
@@ -317,8 +315,6 @@ local Noclip = RunService.Stepped:Connect(function(delta)
 	settings().Physics.DisableCSGv2 = true
 	settings().Physics.UseCSGv2 = false
 	settings().Physics.ThrottleAdjustTime = math.huge
-	settings().Network.TrackPhysicsDetails = true
-	settings().Network.TrackDataTypes = true
 	if getgenv().Network then
 		game:GetService("Players").LocalPlayer.MaximumSimulationRadius=6969
 		set_hidden_property(game:GetService("Players").LocalPlayer,"SimulationRadius",6969)
