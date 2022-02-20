@@ -468,6 +468,7 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 		cr(cc(function()
 			if v:IsA("BasePart") then
 				v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
+				v:ApplyImpulse(Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity))
 				if not networkownership(v) then
 					v.SelectionBox.Transparency = 0
 				else
