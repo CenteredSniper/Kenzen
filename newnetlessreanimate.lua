@@ -199,7 +199,8 @@ if getgenv().Claim2 then
 		for i,v in pairs(originalrig:GetDescendants()) do
 			cr(cc(function()
 				if v:IsA("BasePart") then
-					v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
+					--v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
+					v:ApplyImpulse(Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity))
 				end
 			end))
 		end
@@ -211,7 +212,8 @@ end
 for i,v in pairs(originalrig:GetDescendants()) do
 	cr(cc(function()
 		if v:IsA("BasePart") then
-			v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
+			--v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
+			v:ApplyImpulse(Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity))
 			if getgenv().Netless2 then
 				local a = Instance.new("BodyVelocity",v)
 				a.MaxForce = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.Velocity = Vector3.new(0,0,0)
@@ -326,7 +328,8 @@ local Noclip = RunService.Stepped:Connect(function(delta)
 				v.CanCollide = false
 				if getgenv().AllowSleep and set_hidden_property then set_hidden_property(v, "NetworkIsSleeping", false) end
 				if v:IsDescendantOf(originalrig) and getgenv().ExtremeNetless then
-					v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
+					v:ApplyImpulse(Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity))
+					--v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
 				end
 			end
 		end))
@@ -545,7 +548,8 @@ if getgenv().ExtremeNetless then
 		while RunService.RenderStepped:Wait() and Character do
 			for i,v in pairs(originalrig:GetDescendants()) do
 				if v:IsA("BasePart") then
-					v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
+					v:ApplyImpulse(Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity))
+					--v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
 				end
 			end
 		end
@@ -554,7 +558,8 @@ if getgenv().ExtremeNetless then
 		while task.wait() and Character do
 			for i,v in pairs(originalrig:GetDescendants()) do
 				if v:IsA("BasePart") then
-					v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
+					v:ApplyImpulse(Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity))
+					--v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
 				end
 			end
 		end
