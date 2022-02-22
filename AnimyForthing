@@ -9,7 +9,8 @@ local tween_service = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
 local run_service = game:GetService("RunService")
 local player = game:GetService("Players").LocalPlayer
-local dancing,dancingplay,can_collide,cframetoggle,fakehead,godmode = false,false,true,false,true,false
+_G.dancing = false
+local dancingplay,can_collide,cframetoggle,fakehead,godmode = false,true,false,true,false
 local play_the_animation, joints, anims, connections, character, dragToggle, dragInput, dragStart, selected, sound, boombox
 
 -- Functions //
@@ -99,9 +100,9 @@ local PreloadAnimation = function(AssetId)
 	Class['Complete'] = Instance.new('BindableEvent')
 	Class['Play'] = function()
 		Class['Stopped'] = false
-		if boombox and dancing then
+		if boombox and _G.dancing then
 			repeat task.wait() until boombox.Handle.Sound.Playing and boombox.Handle.Sound.TimeLength ~= 0
-		elseif sound and dancing then
+		elseif sound and _G.dancing then
 			--print(sound) print(sound.SoundId)
 			repeat task.wait() until sound.Playing
 		end
@@ -252,22 +253,22 @@ local function AnimationLoader()
 	task.wait()
 	warn(1)
 	connections = {};
-	anims['Idle']:Play(); dancing = false; anims['Walk'].Stopped = true; anims['Run'].Stopped = true
+	anims['Idle']:Play(); _G.dancing = false; anims['Walk'].Stopped = true; anims['Run'].Stopped = true
 
 	connections['Run'] = humanoid['Running']:Connect(function(Speed)
-		if Speed > 6 and dancing ~= true and anims['Walk'].Stopped ~= false then
+		if Speed > 6 and _G.dancing ~= true and anims['Walk'].Stopped ~= false then
 			anims['Idle']:Stop()
 			anims['Jump']:Stop()
 			anims['Fall']:Stop()
 			anims['Run']:Stop()
 			anims['Walk']:Play()
-		elseif Speed < 5 and dancing ~= true and anims['Walk'].Stopped ~= true then
+		elseif Speed < 5 and _G.dancing ~= true and anims['Walk'].Stopped ~= true then
 			anims['Walk']:Stop()
 			anims['Jump']:Stop()
 			anims['Fall']:Stop()
 			anims['Run']:Stop()
 			anims['Idle']:Play()
-		elseif Speed < 5 and dancing ~= true and anims['Jump'].Stopped ~= true or anims['Fall'].Stopped ~= true then
+		elseif Speed < 5 and _G.dancing ~= true and anims['Jump'].Stopped ~= true or anims['Fall'].Stopped ~= true then
 			anims['Walk']:Stop()
 			anims['Jump']:Stop()
 			anims['Fall']:Stop()
@@ -277,7 +278,7 @@ local function AnimationLoader()
 	end)
 
 	connections['Jumping'] = humanoid['Jumping']:Connect(function(active)
-		if active and dancing ~= true and anims['Jump'].Stopped ~= false then
+		if active and _G.dancing ~= true and anims['Jump'].Stopped ~= false then
 			anims['Idle']:Stop()
 			anims['Walk']:Stop()
 			anims['Fall']:Stop()
@@ -286,7 +287,7 @@ local function AnimationLoader()
 		end
 	end)
 	connections['FreeFalling'] = humanoid['FreeFalling']:Connect(function(active)
-		if active and dancing ~= true and anims['Jump'].Stopped ~= false then
+		if active and _G.dancing ~= true and anims['Jump'].Stopped ~= false then
 			anims['Idle']:Stop()
 			anims['Walk']:Stop()
 			anims['Jump']:Stop()
@@ -304,18 +305,18 @@ local function AnimationLoader()
 			sound.Volume = 1; sound.RollOffMaxDistance = 100; sound.Looped = true
 		end
 		local Animation = PreloadAnimation(animationid,character)
-		if dancing then dancing = false end
+		if _G.dancing then _G.dancing = false end
 		repeat task.wait() until dancingplay == false
 		wait(0.1) 
 		StopAll(); wait(.1); Animation:Play() Animation['Speed'] = 1
-		dancing = true
+		_G.dancing = true
 		--warn(boombox)
 		if boombox == nil and sound then
 			sound:Play()
 		else
 			character[game.Players.LocalPlayer.Name]:FindFirstChild("Remote",true):FireServer("PlaySong", soundid)
 		end
-		repeat task.wait() until dancing == false Animation:Stop()
+		repeat task.wait() until _G.dancing == false Animation:Stop()
 		dancingplay = false
 	end
 	warn(1)
