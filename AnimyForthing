@@ -10,6 +10,7 @@ local UIS = game:GetService("UserInputService")
 local run_service = game:GetService("RunService")
 local player = game:GetService("Players").LocalPlayer
 _G.dancing = false
+_G.AnimationSpeed = 1
 local dancingplay,can_collide,cframetoggle,fakehead,godmode = false,true,false,true,false
 local play_the_animation, joints, anims, connections, character, dragToggle, dragInput, dragStart, selected, sound, boombox
 
