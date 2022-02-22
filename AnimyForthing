@@ -55,6 +55,8 @@ local checkstyle = function(dastyle)
 		tostring(dastyle):split('.')[3] ~= "Circular" and
 		tostring(dastyle):split('.')[3] ~= "Cubic" then
 		return true
+	else
+	return false
 	end
 end
 
