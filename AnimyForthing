@@ -59,7 +59,7 @@ local checkstyle = function(dastyle)
 end
 
 local Edit = function(Part,Value,Duration,Style,Direction)
-	if checkstyle(Style) then Style = 'Enum.EasingStyle.Linear' end
+	if checkstyle(Style) then cframetoggle = true else cframetoggle = false end
 	Style = Style or 'Enum.EasingStyle.Linear'; Direction = Direction or 'Enum.EasingDirection.In'
 	local Attachment = Part--:FindFirstChild('CFAttachment0')
 	if Attachment ~= nil then
