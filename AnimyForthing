@@ -43,21 +43,8 @@ local Contains = function(Table,KV)
 end
 
 local checkstyle = function(dastyle)
-	if tostring(dastyle):split('.')[3] ~= "Linear" or
-		tostring(dastyle):split('.')[3] ~= "Sine" and
-		tostring(dastyle):split('.')[3] ~= "Back" and
-		tostring(dastyle):split('.')[3] ~= "Quad" and
-		tostring(dastyle):split('.')[3] ~= "Quart" and
-		tostring(dastyle):split('.')[3] ~= "Quint" and
-		tostring(dastyle):split('.')[3] ~= "Bounce" and
-		tostring(dastyle):split('.')[3] ~= "Elastic" and
-		tostring(dastyle):split('.')[3] ~= "Exponential" and
-		tostring(dastyle):split('.')[3] ~= "Circular" and
-		tostring(dastyle):split('.')[3] ~= "Cubic" then
-		return true
-	else
-	return false
-	end
+	local test,test2 = pcall(function() local testvar = Enum['EasingStyle'][tostring(dastyle):split('.')[3]] end)
+	return test
 end
 
 local Edit = function(Part,Value,Duration,Style,Direction)
