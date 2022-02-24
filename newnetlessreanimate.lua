@@ -57,11 +57,11 @@ local function networkownership(obj)
 end
 
 local offsets = {
-	["Left Arm"] = {["LeftUpperArm"] = CFrame.new(0,0.39,0),
+	["Left Arm"] = {["LeftUpperArm"] = CFrame.new(0,0.3,0),
 		["LeftLowerArm"] = CFrame.new(0,-0.15,0),
 		["LeftHand"] = CFrame.new(0,-0.85,0)
 	},
-	["Right Arm"] = {["RightUpperArm"] = CFrame.new(0,0.39,0),
+	["Right Arm"] = {["RightUpperArm"] = CFrame.new(0,0.3,0),
 		["RightLowerArm"] = CFrame.new(0,-0.15,0),
 		["RightHand"] = CFrame.new(0,-0.85,0)
 	},
