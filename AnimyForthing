@@ -11,7 +11,7 @@ local run_service = game:GetService("RunService")
 local player = game:GetService("Players").LocalPlayer
 _G.dancing = false
 _G.AnimationSpeed = 1
-local dancingplay,can_collide,cframetoggle,fakehead,godmode = false,true,false,true,false
+local dancingplay,can_collide,cframetoggle = false,true,false
 local play_the_animation, joints, anims, connections, character, dragToggle, dragInput, dragStart, selected, sound, boombox
 
 -- Functions //
@@ -83,7 +83,8 @@ local PreloadAnimation = function(AssetId)
 	local Yield = function(Seconds)
 		local Time = Seconds * (60.8) --+ Keyframes[#Keyframes].Time)
 		for I = 1,Time,_G.AnimationSpeed do 
-			run_service.Delta['Event']:Wait()
+			--run_service.Delta['Event']:Wait()
+			task.wait(1/60)
 		end
 	end
 	Class['Stopped'] = false;
@@ -158,14 +159,11 @@ local function fakeheadfun()
 end
 
 local function AnimationLoader()
-	if fakehead then fakeheadfun() end
-	settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
-	settings().Physics.AllowSleep = false
 	boombox = game:GetService("Players").LocalPlayer.Character:FindFirstChild("Remote",true)
 	if boombox then
 		repeat 
 			boombox = boombox.Parent
-			task.wait()
+			--task.wait()
 		until boombox:IsA("Tool")
 		game:GetService("Players").LocalPlayer.Character:FindFirstChild("RightGrip",true):Destroy()
 	end
@@ -177,7 +175,6 @@ local function AnimationLoader()
 			boombox.Handle.CFrame = player.Character:WaitForChild("Torso").CFrame*CFrame.new(Vector3.new(0,0,1))*CFrame.Angles(0,math.rad(180),math.rad(45))
 		end
 	end)
-	warn(1)
 	character = player['Character']
 	local torso, root, humanoid = character['Torso'], character['HumanoidRootPart'], character['Humanoid']
 	joints = {
@@ -186,20 +183,15 @@ local function AnimationLoader()
 		['Right Arm'] = torso['Right Shoulder'];
 		['Left Leg'] = torso['Left Hip'];
 		['Right Leg'] = torso['Right Hip'];
+		['Head'] = torso['Neck']
 	}
-	warn(1)
-	if fakehead then joints['Head'] = torso['FakeNeck'] end
+	root['Anchored'] = true;
+	--[[
 	coroutine.wrap(function()
 		root['Anchored'] = true;
 		wait(.8)
 		root['Anchored'] = false;
-	end)()
-	if godmode then joints['Head'] = torso['Neck']; root['Anchored'] = true; 
-		game.StarterGui:SetCore("SendNotification",{Title = "Please wait " .. tostring(game.Players.RespawnTime + 2) .. " seconds",Text = "godmode method is cringe Lol."})
-		--wait(4); root['Anchored'] = false
-		wait(game.Players.RespawnTime + 2); root['Anchored'] = false
-	end
-	warn(1)
+	end)()]]
 	--[[
 	for K,V in next, joints do 
 		local AP, AO, A0, A1 = Create('AlignPosition',V['Part1']), Create('AlignOrientation',V['Part1']), Create('Attachment',V['Part1']), Create('Attachment',V['Part0'])
@@ -213,22 +205,6 @@ local function AnimationLoader()
 	for i, track in pairs (humanoid:GetPlayingAnimationTracks()) do
 		track:Stop()
 	end
-	warn(1)
-	if not run_service:FindFirstChild('Delta') then
-		local Delta = Create('BindableEvent',run_service); Delta['Name'] = 'Delta'
-		local A, B = 0, tick()
-		run_service.Delta:Fire(); run_service.Heartbeat:Connect(function(C, D)
-			A = A + C
-			if A >= (1/60) then
-				for I = 1, math.floor(A / (1/60)) do
-					run_service.Delta:Fire()
-				end
-				B = tick()
-				A = A - (1/60) * math.floor(A / (1/60))
-			end
-		end)
-	end
-	warn(1)
 	local randomidle = {180435571,7840378308}
 	randomidle = randomidle[math.random(1,2)]
 	anims = {
@@ -241,7 +217,6 @@ local function AnimationLoader()
 
 	--wait(1)
 	task.wait()
-	warn(1)
 	connections = {};
 	anims['Idle']:Play(); _G.dancing = false; anims['Walk'].Stopped = true; anims['Run'].Stopped = true
 
@@ -285,7 +260,7 @@ local function AnimationLoader()
 			anims['Fall']:Play()
 		end
 	end)
-	warn(1)
+	root['Anchored'] = false;
 	wait(0.5)
 	_G.runanimation = function(animationid,soundid)
 		if boombox == nil and soundid then
@@ -309,26 +284,12 @@ local function AnimationLoader()
 		repeat task.wait() until _G.dancing == false Animation:Stop()
 		dancingplay = false
 	end
-	warn(1)
-	coroutine.wrap(function()
-		repeat
-			torso.CanCollide = false
-			if character:FindFirstChild("Head") then character.Head.CanCollide = false end
-			game.Players.LocalPlayer.MaximumSimulationRadius=math.pow(math.huge,math.huge)
-			sethiddenproperty(game.Players.LocalPlayer,"SimulationRadius",math.huge*math.huge)
-			run_service.Stepped:Wait()
-		until humanoid.Health < 1
-		if sound then sound:Destroy() end
-		if boombox then boombox = nil end
-		if _G.runanimation then _G.runanimation = nil end
-		if renderstp then renderstp:Disconnect() end
-		for K,V in next, character:GetDescendants() do 
-			if V['Name']:match('Align') then 
-				V:Destroy()
-			end
-		end
-	end)()
+	humanoid.Died:Wait()
+	if sound then sound:Destroy() end
+	if boombox then boombox = nil end
+	if _G.runanimation then _G.runanimation = nil end
+	if renderstp then renderstp:Disconnect() end
 end
 
-wait()
+task.wait()
 coroutine.wrap(AnimationLoader)()
