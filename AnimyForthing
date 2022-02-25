@@ -84,7 +84,7 @@ local PreloadAnimation = function(AssetId)
 		local Time = Seconds * (60.8) --+ Keyframes[#Keyframes].Time)
 		for I = 1,Time,_G.AnimationSpeed do 
 			--run_service.Delta['Event']:Wait()
-			task.wait(1/60)
+			task.wait(1/60.8)
 		end
 	end
 	Class['Stopped'] = false;
