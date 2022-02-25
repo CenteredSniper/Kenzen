@@ -21,7 +21,6 @@ if getgenv().Notification == nil then getgenv().Notification = false end
 if getgenv().DynamicVelocity == nil then getgenv().DynamicVelocity = false end
 if getgenv().AntiSleep == nil then getgenv().AntiSleep = false end
 
-
 settings().Rendering.EagerBulkExecution = true
 settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
 settings().Physics.AllowSleep = false
@@ -57,23 +56,23 @@ local function networkownership(obj)
 end
 
 local offsets = {
-	["Left Arm"] = {["LeftUpperArm"] = CFrame.new(0,0.3,0),
-		["LeftLowerArm"] = CFrame.new(0,-0.15,0),
+	["Left Arm"] = {["LeftUpperArm"] = CFrame.new(0,0.369,0),
+		["LeftLowerArm"] = CFrame.new(0,-0.224,0),
 		["LeftHand"] = CFrame.new(0,-0.85,0)
 	},
-	["Right Arm"] = {["RightUpperArm"] = CFrame.new(0,0.3,0),
-		["RightLowerArm"] = CFrame.new(0,-0.15,0),
+	["Right Arm"] = {["RightUpperArm"] = CFrame.new(0,0.369,0),
+		["RightLowerArm"] = CFrame.new(0,-0.224,0),
 		["RightHand"] = CFrame.new(0,-0.85,0)
 	},
 	["Torso"] = {["UpperTorso"] = CFrame.new(0,0.2,0),
 		["LowerTorso"] = CFrame.new(0,-0.8,0),
 	},
-	["Left Leg"] = {["LeftUpperLeg"] = CFrame.new(0,0.5,0),
-		["LeftLowerLeg"] = CFrame.new(0,-0.05,0),
+	["Left Leg"] = {["LeftUpperLeg"] = CFrame.new(0,0.579,0),
+		["LeftLowerLeg"] = CFrame.new(0,-0.201,0),
 		["LeftFoot"] = CFrame.new(0,-0.85,0)
 	},
-	["Right Leg"] = {["RightUpperLeg"] = CFrame.new(0,0.5,0),
-		["RightLowerLeg"] = CFrame.new(0,-0.05,0),
+	["Right Leg"] = {["RightUpperLeg"] = CFrame.new(0,0.579,0),
+		["RightLowerLeg"] = CFrame.new(0,-0.201,0),
 		["RightFoot"] = CFrame.new(0,-0.85,0)
 	},
 	["Head"] = {["Head"] = CFrame.new(0,0,0)},
@@ -176,6 +175,7 @@ local origpos,claim2velocity
 plr.Character.Humanoid.PlatformStand = true
 
 if getgenv().Claim2 then
+    Character.HumanoidRootPart.Anchored = true
 	origpos = plr.Character.HumanoidRootPart.CFrame
 	local actualpos
 	repeat task.wait() 
@@ -339,6 +339,11 @@ end)
 -- // Claim 2 Bring back
 local keepingparts = true
 if getgenv().Claim2 then
+    local temppos = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame
+    for i=1,10 do
+        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = temppos
+        task.wait(0.1)
+    end
 	for i,v in pairs(originalrig:GetDescendants()) do
 		cr(cc(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end))
 	end
@@ -356,6 +361,7 @@ if getgenv().Claim2 then
 	animat:Play()
 	animat.Completed:wait()
 	claim2velocity:Disconnect()
+	Character.HumanoidRootPart.Anchored = false
 else
 	for i,v in pairs(originalrig:GetDescendants()) do
 		cr(cc(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end))
