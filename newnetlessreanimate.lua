@@ -125,7 +125,6 @@ if rigtype == Enum.HumanoidRigType.R15 then
 		end
              task.wait()
 	end
-	Character.Name = "Clone " .. originalrig.Name 
 	Character.HumanoidRootPart.CFrame = originalrig.HumanoidRootPart.CFrame
 	task.wait()
 	for i,v in pairs(originalrig:GetChildren()) do
@@ -139,10 +138,10 @@ else
 	Character = plr.Character:Clone()
 	plr.Character.Archivable = false
 	originalrig = plr.Character
-	Character.Name = "FakeBody"
 	Character.Parent = workspace
     task.wait()
 end
+Character.Name = "FakeBody"
 
 getgenv().RealRig = originalrig
 getgenv().CloneRig = Character
