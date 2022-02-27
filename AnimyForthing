@@ -17,7 +17,7 @@ local play_the_animation, joints, anims, connections, character, dragToggle, dra
 -- Functions //
 
 if not run_service:FindFirstChild('Delta') then
-		local Delta = Create('BindableEvent',run_service); Delta['Name'] = 'Delta'
+		local Delta = Instance.new('BindableEvent',run_service); Delta['Name'] = 'Delta'
 		local A, B = 0, tick()
 		run_service.Delta:Fire(); run_service.Heartbeat:Connect(function(C, D)
 			A = A + C
