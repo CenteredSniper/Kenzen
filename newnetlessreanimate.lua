@@ -65,13 +65,19 @@ local function networkownership(obj)
 	end
 end
 
+local notify = loadstring(game:HttpGet("https://gist.githubusercontent.com/CenteredSniper/606bc00799e2e643b8d62a0b756c48a3/raw/851f8a74ed83560f4d718ac7a652f61f60755688/Notification.lua"))()
 -- // Notification Function
-local function createnotification(title,desc,duration)
+local function createnotification(title,duration)
 	if getgenv().Notification then
+		--[[
 		game:GetService("StarterGui"):SetCore("SendNotification", {
 			Title = title;
 			Text = desc;
 			Duration = duration;
+		})]]
+		notify({
+			Text = title,
+			Duration = duration
 		})
 	end
 end
@@ -213,7 +219,7 @@ if getgenv().Claim2 then
 			end))
 		end
 	end)
-	createnotification("Claim2","Found Position outside of other's net sims",6)
+	createnotification("Claim2; Found Pos",6)
 end
 
 -- // Netless claiming
@@ -243,7 +249,7 @@ for i,v in pairs(OriginalRig:GetDescendants()) do
 		end
 	end))
 end
-createnotification("Net Claimed","Claimed parts using netless",6)
+createnotification("Netless Claimed",6)
 
 -- keeping the tools so they dont lose ownership
 local tools = {}
@@ -459,7 +465,7 @@ end
 task.wait()
 Player.Character.Parent = Character; Player.Character = Character
 workspace.CurrentCamera.CameraSubject = Character.Humanoid
-createnotification("Fake Body","Set Character to Fake Rig",6)
+createnotification("Set Character to Fake Rig",6)
 
 -- // Turning Chosen Rig Invisible
 local invisrig = getgenv().ShowReal and Character or OriginalRig
@@ -613,4 +619,4 @@ if getgenv().CheckForDeath then -- changed OriginalRig:ClearAllChildren because 
 end
 
 -- // God Mode
-if getgenv().GodMode and OriginalRig:FindFirstChild("Neck",true) then wait(game.Players.RespawnTime + 1); OriginalRig:FindFirstChild("Neck",true).Parent = nil keepinplace = false createnotification("Permadeath","God Mode Enabled",6) end
+if getgenv().GodMode and OriginalRig:FindFirstChild("Neck",true) then wait(game.Players.RespawnTime + 1); OriginalRig:FindFirstChild("Neck",true).Parent = nil keepinplace = false createnotification("Permadeath On",6) end
