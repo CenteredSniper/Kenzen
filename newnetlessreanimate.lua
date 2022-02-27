@@ -349,7 +349,7 @@ local Noclip = RunService.Stepped:Connect(function(delta)
 		for i,v in pairs(Collisionrig:GetDescendants()) do
 			cr(cc(function()
 				if v:IsA("BasePart") then
-					v.CanCollide = false
+					if networkownership(v) then v.CanCollide = false end
 					if getgenv().AllowSleep and SetHiddenProperty then SetHiddenProperty(v, "NetworkIsSleeping", false) end
 					if v:IsDescendantOf(OriginalRig) and getgenv().ExtremeNetless then
 						v:ApplyImpulse(Velocity)
@@ -570,14 +570,12 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 		end
 	end
 	if getgenv().Tools then
-		for i,v in pairs(OriginalRig:GetChildren()) do
-			cr(cc(function()
-				if v:IsA("Tool") and Character:FindFirstChild(v.Name) then
-					v.Handle.CFrame = 	Character[v.Name].Handle.CFrame 
-				elseif v:IsA("Tool") then
-					v.Handle.CFrame = Character["Left Leg"].CFrame * CFrame.new(0,-5,0) 
-				end
-			end))
+		for i,v in pairs(tools) do
+			if Character:FindFirstChild(v.Name) and networkownership(v.Handle) then
+				v.Handle.CFrame = Character[v.Name].Handle.CFrame 
+			elseif networkownership(v.Handle) then
+				v.Handle.CFrame = Character["Head"].CFrame + Vector3.new(0,-5,0) 
+			end
 		end
 	end
 end)
