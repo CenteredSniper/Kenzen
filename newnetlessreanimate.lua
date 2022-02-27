@@ -317,7 +317,7 @@ if getgenv().MovementVelocity then
 	Character.Humanoid:GetPropertyChangedSignal("MoveDirection"):Connect(function()
 		local x,y,z = Character.Humanoid.MoveDirection.X,Character.Humanoid.MoveDirection.Y,Character.Humanoid.MoveDirection.Z
 		local vector = Vector3.new(x*OriginalVelocity,y*OriginalVelocity,z*OriginalVelocity)
-		if vector.X == 0 and vector.Y == 0 and vector.Z == 0 then vector = Vector3.new(-10,-10,-10) end
+		if vector.X == 0 and vector.Y == 0 and vector.Z == 0 then vector = Vector3.new(getgenv().Velocity,getgenv().Velocity,getgenv().Velocity) end
 		Velocity = vector
 		for i,v in pairs(OriginalRig:GetDescendants()) do
 			if v:IsA("BodyVelocity") then
