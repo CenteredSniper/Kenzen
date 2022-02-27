@@ -43,11 +43,11 @@ if getgenv().preloadanimations then
 end
 if getgenv().reanimate then
   getgenv().AutoAnimate = false
-  loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/newnetlessreanimate.lua"))()
+  loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/newnetlessreanimate.lua",true))()
   wait()
 end
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/AnimyForthing"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/AnimyForthing",true))()
 
 for i,v in pairs(files.Folder:GetChildren()) do
     spawn(function()
