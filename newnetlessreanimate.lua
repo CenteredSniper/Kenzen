@@ -311,10 +311,10 @@ local function dynvelocity2()
 end
 
 if getgenv().MovementVelocity then
-	local savedvel = getgenv().Velocity
+	--local savedvel = getgenv().Velocity
 	Character.Humanoid:GetPropertyChangedSignal("MoveDirection"):Connect(function()
 		local x,y,z = Character.Humanoid.MoveDirection.X,Character.Humanoid.MoveDirection.Y,Character.Humanoid.MoveDirection.Z
-		local vector = Vector3.new(x*savedvel,y*savedvel,z*savedvel)
+		local vector = Vector3.new(x*velocitych,y*velocitych,z*velocitych)
 		if vector.X == 0 and vector.Y == 0 and vector.Z == 0 then vector = Vector3.new(-10,-10,-10) end
 		velvector = vector
 		for i,v in pairs(originalrig:GetDescendants()) do
