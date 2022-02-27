@@ -16,6 +16,21 @@ local play_the_animation, joints, anims, connections, character, dragToggle, dra
 
 -- Functions //
 
+if not run_service:FindFirstChild('Delta') then
+		local Delta = Create('BindableEvent',run_service); Delta['Name'] = 'Delta'
+		local A, B = 0, tick()
+		run_service.Delta:Fire(); run_service.Heartbeat:Connect(function(C, D)
+			A = A + C
+			if A >= (1/60) then
+				for I = 1, math.floor(A / (1/60)) do
+					run_service.Delta:Fire()
+				end
+				B = tick()
+				A = A - (1/60) * math.floor(A / (1/60))
+			end
+		end)
+	end
+
 --[[
 _G.runanimation = function(button)
 	if play_the_animation ~= nil then
@@ -83,8 +98,8 @@ local PreloadAnimation = function(AssetId)
 	local Yield = function(Seconds)
 		local Time = Seconds * (60.8) --+ Keyframes[#Keyframes].Time)
 		for I = 1,Time,_G.AnimationSpeed do 
-			--run_service.Delta['Event']:Wait()
-			task.wait(1/60.8)
+			run_service.Delta['Event']:Wait()
+			--task.wait(1/60.8)
 		end
 	end
 	Class['Stopped'] = false;
