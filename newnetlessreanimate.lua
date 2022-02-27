@@ -22,6 +22,8 @@ if getgenv().DynamicVelocity == nil then getgenv().DynamicVelocity = false end
 if getgenv().AntiSleep == nil then getgenv().AntiSleep = false end
 if getgenv().MovementVelocity == nil then getgenv().MovementVelocity = false end
 
+
+-- Preformance Values
 settings().Rendering.EagerBulkExecution = true
 settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
 settings().Physics.AllowSleep = false
@@ -36,20 +38,25 @@ local PhysicsService = game:GetService("PhysicsService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 
-local plr = Players.LocalPlayer
-local Character,originalrig
+local Player = Players.LocalPlayer
 local FakeTorso,FakeTorso1,FakeHead
 local cr,cc = coroutine.resume,coroutine.create
-local rigtype = plr.Character.Humanoid.RigType
-local set_hidden_property = sethiddenproperty or sethiddenprop
+local RigType = Player.Character.Humanoid.RigType
+local SetHiddenProperty = sethiddenproperty or sethiddenprop
+local OriginalRig = Player.Character
 
-local velvector = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
+local Character,R15Offsets,Claim2Heartbeat
 
+-- Storing the Velocity Variable for netless, needed because dynamic velocity and movement velocity
+local Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
+
+-- Setting Sim Radius, useful for claiming parts
 if getgenv().Network then
-	game:GetService("Players").LocalPlayer.MaximumSimulationRadius=6969
-	set_hidden_property(game:GetService("Players").LocalPlayer,"SimulationRadius",6969)
+	game:GetService("Players").LocalPlayer.MaximumSimulationRadius=1000
+	SetHiddenProperty(game:GetService("Players").LocalPlayer,"SimulationRadius",1000)
 end
 
+-- Not all exploits have isnetworkowner
 local function networkownership(obj)
 	if isnetworkowner then
 		return isnetworkowner(obj)
@@ -57,9 +64,6 @@ local function networkownership(obj)
 		return true
 	end
 end
-
-local offsets
-originalrig = plr.Character
 
 -- // Notification Function
 local function createnotification(title,desc,duration)
@@ -78,32 +82,32 @@ if not check then PhysicsService:CreateCollisionGroup("NoCollide") end
 PhysicsService:CollisionGroupSetCollidable("NoCollide", "NoCollide", false)
 
 
-if getgenv().FakeGod and rigtype == Enum.HumanoidRigType.R6 then getgenv().GodMode = false end
+if getgenv().FakeGod and RigType == Enum.HumanoidRigType.R6 then getgenv().GodMode = false end
 if getgenv().TorsoFling then getgenv().Fling = false end
 if getgenv().MovementVelocity then getgenv().DynamicVelocity = false end
 
 -- // RigType
-if rigtype == Enum.HumanoidRigType.R15 then
-
-	offsets = {
-		["Left Arm"] = {["LeftUpperArm"] = CFrame.new((1-originalrig.LeftUpperArm.Size.X)*2,0.369*(originalrig.LeftUpperArm.Size.Y/1.169),0),
-			["LeftLowerArm"] = CFrame.new((1-originalrig.LeftLowerArm.Size.X)*2,-0.224*(originalrig.LeftLowerArm.Size.Y/1.052),0),
-			["LeftHand"] = CFrame.new((1-originalrig.LeftHand.Size.X)*2,-0.85*(originalrig.LeftHand.Size.Y/0.3),0),
+if RigType == Enum.HumanoidRigType.R15 then
+	-- R15Offsets for the r15 to r6, now scale-accessible!
+	R15Offsets = {
+		["Left Arm"] = {["LeftUpperArm"] = CFrame.new((1-OriginalRig.LeftUpperArm.Size.X)*2,0.369*(OriginalRig.LeftUpperArm.Size.Y/1.169),0),
+			["LeftLowerArm"] = CFrame.new((1-OriginalRig.LeftLowerArm.Size.X)*2,-0.224*(OriginalRig.LeftLowerArm.Size.Y/1.052),0),
+			["LeftHand"] = CFrame.new((1-OriginalRig.LeftHand.Size.X)*2,-0.85*(OriginalRig.LeftHand.Size.Y/0.3),0),
 		},
-		["Right Arm"] = {["RightUpperArm"] = CFrame.new(-(1-originalrig.RightUpperArm.Size.X)*2,0.369*(originalrig.RightUpperArm.Size.Y/1.169),0),
-			["RightLowerArm"] = CFrame.new(-(1-originalrig.RightLowerArm.Size.X)*2,-0.224*(originalrig.RightLowerArm.Size.Y/1.052),0),
-			["RightHand"] = CFrame.new(-(1-originalrig.RightHand.Size.X)*2,-0.85*(originalrig.RightHand.Size.Y/0.3),0),
+		["Right Arm"] = {["RightUpperArm"] = CFrame.new(-(1-OriginalRig.RightUpperArm.Size.X)*2,0.369*(OriginalRig.RightUpperArm.Size.Y/1.169),0),
+			["RightLowerArm"] = CFrame.new(-(1-OriginalRig.RightLowerArm.Size.X)*2,-0.224*(OriginalRig.RightLowerArm.Size.Y/1.052),0),
+			["RightHand"] = CFrame.new(-(1-OriginalRig.RightHand.Size.X)*2,-0.85*(OriginalRig.RightHand.Size.Y/0.3),0),
 		},
-		["Torso"] = {["UpperTorso"] = CFrame.new(0,0.2*(originalrig.UpperTorso.Size.Y/1.6),0),
-			["LowerTorso"] = CFrame.new(0,-0.8*(originalrig.LowerTorso.Size.Y/0.4),0),
+		["Torso"] = {["UpperTorso"] = CFrame.new(0,0.2*(OriginalRig.UpperTorso.Size.Y/1.6),0),
+			["LowerTorso"] = CFrame.new(0,-0.8*(OriginalRig.LowerTorso.Size.Y/0.4),0),
 		},
-		["Left Leg"] = {["LeftUpperLeg"] = CFrame.new((1-originalrig.LeftUpperLeg.Size.X)/2,0.579*(originalrig.LeftUpperLeg.Size.Y/1.217),0),
-			["LeftLowerLeg"] = CFrame.new((1-originalrig.LeftLowerLeg.Size.X)/2,-0.201*(originalrig.LeftLowerLeg.Size.Y/1.193),0),
-			["LeftFoot"] = CFrame.new((1-originalrig.LeftFoot.Size.X)/2,-0.85*(originalrig.LeftFoot.Size.Y/0.3),0),
+		["Left Leg"] = {["LeftUpperLeg"] = CFrame.new((1-OriginalRig.LeftUpperLeg.Size.X)/2,0.579*(OriginalRig.LeftUpperLeg.Size.Y/1.217),0),
+			["LeftLowerLeg"] = CFrame.new((1-OriginalRig.LeftLowerLeg.Size.X)/2,-0.201*(OriginalRig.LeftLowerLeg.Size.Y/1.193),0),
+			["LeftFoot"] = CFrame.new((1-OriginalRig.LeftFoot.Size.X)/2,-0.85*(OriginalRig.LeftFoot.Size.Y/0.3),0),
 		},
-		["Right Leg"] = {["RightUpperLeg"] = CFrame.new(-(1-originalrig.RightUpperLeg.Size.X)/2,0.579*(originalrig.RightUpperLeg.Size.Y/1.217),0),
-			["RightLowerLeg"] = CFrame.new(-(1-originalrig.RightLowerLeg.Size.X)/2,-0.201*(originalrig.RightLowerLeg.Size.Y/1.193),0),
-			["RightFoot"] = CFrame.new(-(1-originalrig.RightFoot.Size.X)/2,-0.85*(originalrig.RightFoot.Size.Y/0.3),0),
+		["Right Leg"] = {["RightUpperLeg"] = CFrame.new(-(1-OriginalRig.RightUpperLeg.Size.X)/2,0.579*(OriginalRig.RightUpperLeg.Size.Y/1.217),0),
+			["RightLowerLeg"] = CFrame.new(-(1-OriginalRig.RightLowerLeg.Size.X)/2,-0.201*(OriginalRig.RightLowerLeg.Size.Y/1.193),0),
+			["RightFoot"] = CFrame.new(-(1-OriginalRig.RightFoot.Size.X)/2,-0.85*(OriginalRig.RightFoot.Size.Y/0.3),0),
 		},
 		["Head"] = {["Head"] = CFrame.new(0,0,0)
 		},
@@ -111,63 +115,63 @@ if rigtype == Enum.HumanoidRigType.R15 then
 
 	Character = game:GetObjects("rbxassetid://8232772380")[1]:Clone()
 	Character.Parent = workspace
-	Character.Humanoid:ApplyDescription(Players:GetHumanoidDescriptionFromUserId(plr.UserId))
-	task.wait()
+	Character.Humanoid:ApplyDescription(Players:GetHumanoidDescriptionFromUserId(Player.UserId))
+	--task.wait()
 	for i,v in pairs(Character:GetChildren()) do
 		if v:IsA("Accessory") then
 			v:Destroy()
 		end
-		task.wait()
 	end
-	for i,v in pairs(originalrig:GetChildren()) do
+	for i,v in pairs(OriginalRig:GetChildren()) do
 		if v:IsA("Accessory") then
 			local clonehats = v:Clone()
 			clonehats.Parent = Character
-			for _,g in pairs(offsets) do
+			for _,g in pairs(R15Offsets) do
 				if g[v.Handle.AccessoryWeld.Part1.Name] then
 					clonehats.Handle.AccessoryWeld.Part1 = Character[_]
 				end
-				task.wait()
+				--task.wait()
 			end
 			--clonehats.Handle.AccessoryWeld.Part1 = Character[v.Handle.AccessoryWeld.Part1.Name]
 		end
-		task.wait()
+		--task.wait()
 	end
-	Character.HumanoidRootPart.CFrame = originalrig.HumanoidRootPart.CFrame
-	task.wait()
-	for i,v in pairs(originalrig:GetChildren()) do
+	Character.HumanoidRootPart.CFrame = OriginalRig.HumanoidRootPart.CFrame
+	--task.wait()
+	for i,v in pairs(OriginalRig:GetChildren()) do
 		if v:IsA("Tool") then
 			v:Clone().Parent = Character
 		end
-		task.wait()
+		--task.wait()
 	end
+	task.wait()
 else
-	plr.Character.Archivable = true
-	Character = plr.Character:Clone()
-	plr.Character.Archivable = false
+	Player.Character.Archivable = true
+	Character = Player.Character:Clone()
+	Player.Character.Archivable = false
 	Character.Parent = workspace
 	task.wait()
 end
 Character.Name = "FakeBody"
 
-getgenv().RealRig = originalrig
+getgenv().RealRig = OriginalRig
 getgenv().CloneRig = Character
 
 -- // Hat Matching Value
 local function findmatchingaccessory(hat)
 	for i,v in pairs(Character:GetChildren()) do
 		if v:IsA("Accessory") then
-			if rigtype == Enum.HumanoidRigType.R15 then
+			if RigType == Enum.HumanoidRigType.R15 then
 				if v.Handle.MeshId == hat.MeshId and v.Handle.TextureID == hat.TextureID then
-					local origweld = Instance.new("ObjectValue",hat)
-					origweld.Value = v.Handle
-					origweld.Name = "CloneHat"
+					local CloneHat = Instance.new("ObjectValue",hat)
+					CloneHat.Value = v.Handle
+					CloneHat.Name = "CloneHat"
 				end
 			else
 				if v.Handle:FindFirstChildOfClass("SpecialMesh").MeshId == hat:FindFirstChildOfClass("SpecialMesh").MeshId and v.Handle:FindFirstChildOfClass("SpecialMesh").TextureId == hat:FindFirstChildOfClass("SpecialMesh").TextureId then
-					local origweld = Instance.new("ObjectValue",hat)
-					origweld.Value = v.Handle
-					origweld.Name = "CloneHat"
+					local CloneHat = Instance.new("ObjectValue",hat)
+					CloneHat.Value = v.Handle
+					CloneHat.Name = "CloneHat"
 				end
 			end
 		end
@@ -176,20 +180,18 @@ end
 
 -- // Claim 2
 
-local origpos,claim2velocity
-
-plr.Character.Humanoid.PlatformStand = true
+Player.Character.Humanoid.PlatformStand = true
 
 if getgenv().Claim2 then
 	Character.HumanoidRootPart.Anchored = true
-	origpos = plr.Character.HumanoidRootPart.CFrame
+	--OriginalPosition = Player.Character.HumanoidRootPart.CFrame
 	local actualpos
 	repeat task.wait() 
 		pcall(function()
-			local pos = plr.Character.HumanoidRootPart.Position + Vector3.new(math.random(-1500,1500),100,math.random(-1500,1500))
+			local pos = Player.Character.HumanoidRootPart.Position + Vector3.new(math.random(-1500,1500),100,math.random(-1500,1500))
 			local check = true
 			for i,v in pairs(game:GetService("Players"):GetPlayers()) do
-				if v~= plr and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+				if v~= Player and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 					if (v.Character.HumanoidRootPart.Position-pos).magnitude <= 1000 then
 						check = false
 					end
@@ -200,13 +202,13 @@ if getgenv().Claim2 then
 			end
 		end)
 	until actualpos
-	plr.Character.HumanoidRootPart.CFrame = CFrame.new(actualpos)
-	claim2velocity = game:GetService("RunService").Heartbeat:Connect(function()
-		for i,v in pairs(originalrig:GetDescendants()) do
+	Player.Character.HumanoidRootPart.CFrame = CFrame.new(actualpos)
+	Claim2Heartbeat = game:GetService("RunService").Heartbeat:Connect(function()
+		for i,v in pairs(OriginalRig:GetDescendants()) do
 			cr(cc(function()
 				if v:IsA("BasePart") then
-					--v.Velocity = velvector
-					v:ApplyImpulse(velvector)
+					--v.Velocity = Velocity
+					v:ApplyImpulse(Velocity)
 				end
 			end))
 		end
@@ -215,11 +217,11 @@ if getgenv().Claim2 then
 end
 
 -- // Netless claiming
-for i,v in pairs(originalrig:GetDescendants()) do
+for i,v in pairs(OriginalRig:GetDescendants()) do
 	cr(cc(function()
 		if v:IsA("BasePart") then
-			--v.Velocity = velvector
-			v:ApplyImpulse(velvector)
+			--v.Velocity = Velocity
+			v:ApplyImpulse(Velocity)
 			if getgenv().Netless2 then
 				local a = Instance.new("BodyVelocity",v)
 				a.MaxForce = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.Velocity = Vector3.new(0,0,0)
@@ -243,16 +245,18 @@ for i,v in pairs(originalrig:GetDescendants()) do
 end
 createnotification("Net Claimed","Claimed parts using netless",6)
 
+-- keeping the tools so they dont lose ownership
 local tools = {}
-for i,v in pairs(originalrig:GetChildren()) do
+for i,v in pairs(OriginalRig:GetChildren()) do
 	if v:IsA("Tool") then
-		v.Parent = plr.Backpack
+		v.Parent = Player.Backpack
 		table.insert(tools,v)
 	end
 end
 
 task.wait(0.1) -- adding a wait as extra safety
 
+-- old dynvelocity, feel free to edit and use this if u want
 local function dynvelocity()
 	local humrootpos = Character.HumanoidRootPart.Position
 	local smallestmag = 22.5
@@ -268,65 +272,63 @@ local function dynvelocity()
 		end
 	end
 	getgenv().Velocity = 45-smallestmag*2
-	for i,v in pairs(originalrig:GetDescendants()) do
+	for i,v in pairs(OriginalRig:GetDescendants()) do
 		if v:IsA("BodyVelocity") then
 			v.Velocity = Vector3.new(45-smallestmag*2,45-smallestmag*2,45-smallestmag*2)
 		end
 	end
 end
 
-local velocitych = getgenv().Velocity
+-- changes velocity based on other players position to the player
+local OriginalVelocity = getgenv().Velocity
 local function dynvelocity2()
 	local humrootpos = Character.HumanoidRootPart.Position
-	local smallestmag = 22.5
 	local boolthing = false
 	for i,v in pairs(game:GetService("Players"):GetPlayers()) do
 		if v ~= game:GetService("Players").LocalPlayer and v.Character then
 			local humroot = v.Character:FindFirstChild("HumanoidRootPart") or v.Character:FindFirstChild("Head")
 			if humroot then
 				local mag = (humroot.Position-humrootpos).magnitude
-				if mag <= smallestmag then
+				if mag <= 22.5 then
 					--smallestmag = mag
-					--getgenv().Velocity = velocitych
-					boolthing = true
+					--getgenv().Velocity = OriginalVelocity
+					Velocity = OriginalVelocity
+					for i,v in pairs(OriginalRig:GetDescendants()) do
+						if v:IsA("BodyVelocity") then
+							v.Velocity = Vector3.new(OriginalVelocity,OriginalVelocity,OriginalVelocity)
+						end
+					end
+				else
+					Velocity = Vector3.new(0.01,0.01,0.01)
+					for i,v in pairs(OriginalRig:GetDescendants()) do
+						if v:IsA("BodyVelocity") then
+							v.Velocity = Vector3.new(0.01,0.01,0.01)
+						end
+					end
 				end
 			end
 		end
 	end
-	if boolthing then
-		velvector = velocitych
-		for i,v in pairs(originalrig:GetDescendants()) do
-			if v:IsA("BodyVelocity") then
-				v.Velocity = Vector3.new(velocitych,velocitych,velocitych)
-			end
-		end
-	else
-		velvector = Vector3.new(0.01,0.01,0.01)
-		for i,v in pairs(originalrig:GetDescendants()) do
-			if v:IsA("BodyVelocity") then
-				v.Velocity = Vector3.new(0.01,0.01,0.01)
-			end
-		end
-	end
 end
 
+-- changes velocity based on player movement
 if getgenv().MovementVelocity then
 	--local savedvel = getgenv().Velocity
 	Character.Humanoid:GetPropertyChangedSignal("MoveDirection"):Connect(function()
 		local x,y,z = Character.Humanoid.MoveDirection.X,Character.Humanoid.MoveDirection.Y,Character.Humanoid.MoveDirection.Z
-		local vector = Vector3.new(x*velocitych,y*velocitych,z*velocitych)
+		local vector = Vector3.new(x*OriginalVelocity,y*OriginalVelocity,z*OriginalVelocity)
 		if vector.X == 0 and vector.Y == 0 and vector.Z == 0 then vector = Vector3.new(-10,-10,-10) end
-		velvector = vector
-		for i,v in pairs(originalrig:GetDescendants()) do
+		Velocity = vector
+		for i,v in pairs(OriginalRig:GetDescendants()) do
 			if v:IsA("BodyVelocity") then
 				v.Velocity = vector
 			end
 		end
-		--print(velvector)
+		--print(Velocity)
 	end)
 end
 
--- // Noclip Rigs; forgot why i have this but im keeping it
+-- // Master Stepped; Handles collisions, simradius, etc.
 local Noclip = RunService.Stepped:Connect(function(delta)
 	if getgenv().DynamicVelocity then
 		coroutine.wrap(dynvelocity2)()
@@ -340,37 +342,41 @@ local Noclip = RunService.Stepped:Connect(function(delta)
 	settings().Physics.ThrottleAdjustTime = math.huge
 	if getgenv().Network then
 		game:GetService("Players").LocalPlayer.MaximumSimulationRadius=6969
-		set_hidden_property(game:GetService("Players").LocalPlayer,"SimulationRadius",6969)
+		SetHiddenProperty(game:GetService("Players").LocalPlayer,"SimulationRadius",6969)
 	end
-	local Collisionrig = getgenv().Collisions and originalrig or Character
-	for i,v in pairs(Collisionrig:GetDescendants()) do
-		cr(cc(function()
-			if v:IsA("BasePart") then
-				v.CanCollide = false
-				if getgenv().AllowSleep and set_hidden_property then set_hidden_property(v, "NetworkIsSleeping", false) end
-				if v:IsDescendantOf(originalrig) and getgenv().ExtremeNetless then
-					v:ApplyImpulse(velvector)
-					--v.Velocity = velvector
+	if typeof(getgenv().Collisions) == "boolean" then
+		local Collisionrig = getgenv().Collisions and OriginalRig or Character
+		for i,v in pairs(Collisionrig:GetDescendants()) do
+			cr(cc(function()
+				if v:IsA("BasePart") then
+					v.CanCollide = false
+					if getgenv().AllowSleep and SetHiddenProperty then SetHiddenProperty(v, "NetworkIsSleeping", false) end
+					if v:IsDescendantOf(OriginalRig) and getgenv().ExtremeNetless then
+						v:ApplyImpulse(Velocity)
+						--v.Velocity = Velocity
+					end
 				end
-			end
-		end))
+			end))
+		end
 	end
 end)
 
 -- // Claim 2 Bring back
 local keepingparts = true
 if getgenv().Claim2 then
-	local temppos = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame
-	for i=1,10 do
-		game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = temppos
-		task.wait(0.1)
+	local KeepInPlace = OriginalRig.HumanoidRootPart.CFrame
+	local frametime = tick() task.wait() frametime = tick() - frametime 
+	for i=1,1/(frametime/1) do
+		game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = KeepInPlace
+		task.wait(frametime)
 	end
-	for i,v in pairs(originalrig:GetDescendants()) do
+	-- :BreakJoints breaks the neck, not good for non-godmode
+	for i,v in pairs(OriginalRig:GetDescendants()) do
 		cr(cc(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end))
 	end
 	cr(cc(function()
 		while keepingparts and task.wait() do
-			for i,v in pairs(originalrig:GetDescendants()) do
+			for i,v in pairs(OriginalRig:GetDescendants()) do
 				if v:IsA("BasePart") and v.Name ~= "Head" and v.Name ~= "HumanoidRootPart" then
 					v.CFrame = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame
 				end
@@ -378,40 +384,40 @@ if getgenv().Claim2 then
 		end
 	end))
 	task.wait(0.5)
-	local animat = game:GetService("TweenService"):Create(game.Players.LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(5), {CFrame = origpos})
+	local animat = game:GetService("TweenService"):Create(game.Players.LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(5), {CFrame = Character.HumanoidRootPart.CFrame})
 	animat:Play()
 	animat.Completed:wait()
-	claim2velocity:Disconnect()
+	Claim2Heartbeat:Disconnect()
 	Character.HumanoidRootPart.Anchored = false
 else
-	for i,v in pairs(originalrig:GetDescendants()) do
+	for i,v in pairs(OriginalRig:GetDescendants()) do
 		cr(cc(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end))
 	end
 end
 
 --[[
 -- // Weld Removing
-for i,v in pairs(originalrig:GetDescendants()) do
+for i,v in pairs(OriginalRig:GetDescendants()) do
 	cr(cc(function() if v:IsA("Motor6D") and v.Name ~= "Neck" then v:Destroy() end end))
 end]]
 
--- // Godmode Keep Humroot in place during fling
-if getgenv().GodMode and originalrig:FindFirstChild("Neck",true) then
+-- // Godmode Keep Fling Part in place
+if getgenv().GodMode and OriginalRig:FindFirstChild("Neck",true) then
 	if getgenv().Fling then
-		local savepos = originalrig.HumanoidRootPart.CFrame
+		local savepos = OriginalRig.HumanoidRootPart.CFrame
 		cr(cc(function()
-			while keepinplace and task.wait() do
-				originalrig.HumanoidRootPart.CFrame = savepos
+			while keepingparts and task.wait() do
+				OriginalRig.HumanoidRootPart.CFrame = savepos
 			end
 		end))
 	elseif getgenv().TorsoFling then
-		local savepos = originalrig.HumanoidRootPart.CFrame
+		local savepos = OriginalRig.HumanoidRootPart.CFrame
 		cr(cc(function()
-			while keepinplace and task.wait() do
-				if rigtype == Enum.HumanoidRigType.R6 then
-					originalrig.Torso.CFrame = savepos
+			while keepingparts and task.wait() do
+				if RigType == Enum.HumanoidRigType.R6 then
+					OriginalRig.Torso.CFrame = savepos
 				else
-					originalrig["LowerTorso"].CFrame = savepos
+					OriginalRig["LowerTorso"].CFrame = savepos
 				end
 
 			end
@@ -421,24 +427,24 @@ end
 
 -- // FakeGod
 if getgenv().FakeGod then
-	if originalrig:FindFirstChild("SeeMonkey") then
-		FakeTorso = originalrig.SeeMonkey.Handle
+	if OriginalRig:FindFirstChild("SeeMonkey") then
+		FakeTorso = OriginalRig.SeeMonkey.Handle
 		Character.SeeMonkey.Handle.Transparency = 1
 	else
-		FakeTorso1 = originalrig["Kate Hair"].Handle
+		FakeTorso1 = OriginalRig["Kate Hair"].Handle
 		FakeTorso1.Mesh:Destroy();
-		FakeTorso = originalrig.Robloxclassicred.Handle
+		FakeTorso = OriginalRig.Robloxclassicred.Handle
 		Character["Kate Hair"].Handle.Transparency = 1
 		Character["Robloxclassicred"].Handle.Transparency = 1
 	end
-	if originalrig:FindFirstChild("Void Head") then
-		FakeHead = originalrig["Void Head"].Handle
+	if OriginalRig:FindFirstChild("Void Head") then
+		FakeHead = OriginalRig["Void Head"].Handle
 		Character["Void Head"].Handle.Transparency = 1
-	elseif originalrig:FindFirstChild("Dummy_Head") then
-		FakeHead = originalrig["Dummy_Head"].Handle
+	elseif OriginalRig:FindFirstChild("Dummy_Head") then
+		FakeHead = OriginalRig["Dummy_Head"].Handle
 		Character["Dummy_Head"].Handle.Transparency = 1
 	else
-		FakeHead = originalrig.MediHood.Handle
+		FakeHead = OriginalRig.MediHood.Handle
 		Character["MediHood"].Handle.Transparency = 1
 	end
 	FakeTorso.Mesh:Destroy();
@@ -447,16 +453,16 @@ end
 -- // Setting player onto the fake rig
 for i,v in pairs(tools) do
 	if v:IsA("Tool") then
-		v.Parent = originalrig
+		v.Parent = OriginalRig
 	end
 end
 task.wait()
-plr.Character.Parent = Character; plr.Character = Character
+Player.Character.Parent = Character; Player.Character = Character
 workspace.CurrentCamera.CameraSubject = Character.Humanoid
 createnotification("Fake Body","Set Character to Fake Rig",6)
 
 -- // Turning Chosen Rig Invisible
-local invisrig = getgenv().ShowReal and Character or originalrig
+local invisrig = getgenv().ShowReal and Character or OriginalRig
 for i,v in pairs(invisrig:GetChildren()) do
 	cr(cc(function()
 		if v:IsA("BasePart") or v:IsA("Decal") then
@@ -469,10 +475,15 @@ end
 
 -- // Animating the fake rig
 if getgenv().AutoAnimate then
-	if rigtype == Enum.HumanoidRigType.R15 then
+	if RigType == Enum.HumanoidRigType.R15 then
 		cr(cc(function()
-			getgenv().ForHonor = Character.Animate
-			loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/Animate"))()
+			--getgenv().ForHonor = Character.Animate
+			--loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/Animate"))()
+			local Animate = Instance.new("LocalScript",Character)
+			Animate.Disabled = true
+			Animate.Source = game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/Animate")
+			task.wait()
+			Animate.Disabled = false
 		end))
 	else
 		Character.Animate.Disabled = true; task.wait() Character.Animate.Disabled = false
@@ -489,16 +500,18 @@ for i,v in pairs(Character:GetDescendants()) do
 	end))
 end
 
--- You're probably wondering, why have two runservices? stepped is the only way to have cancollide off permananetly, but heartbeat is better for physics based things like cframing and velocity.
+--[[
+	if you're confused about the differences between runservice events
+	refer to; https://doy2mn9upadnk.cloudfront.net/uploads/default/original/3X/2/d/2d8a74483027f44c4f05080bc9437408f461737a.png
+]]
 
 -- // Conversion
 local Conversion = RunService.Heartbeat:Connect(function(delta)
-	keepingparts = false
-	for i,v in pairs(originalrig:GetDescendants()) do
+	for i,v in pairs(OriginalRig:GetDescendants()) do
 		cr(cc(function()
 			if v:IsA("BasePart") then
-				v:ApplyImpulse(velvector)
-				--v.Velocity = velvector
+				v:ApplyImpulse(Velocity)
+				--v.Velocity = Velocity
 				if not networkownership(v) then
 					v.SelectionBox.Transparency = 0
 				else
@@ -507,33 +520,33 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 			end
 		end))
 	end
-	if rigtype == Enum.HumanoidRigType.R15 then
-		for R6PartName,R15PartNames in pairs(offsets) do
+	if RigType == Enum.HumanoidRigType.R15 then
+		for R6PartName,R15PartNames in pairs(R15Offsets) do
 			for i,R15PartNameOffset in pairs(R15PartNames) do
 				cr(cc(function()
-					if originalrig:FindFirstChild(i) and networkownership(originalrig[i]) then
+					if OriginalRig:FindFirstChild(i) and networkownership(OriginalRig[i]) then
 						if i == "LowerTorso" and getgenv().TorsoFling then
 						elseif i == "Torso" and getgenv().TorsoFling then
 						else
 							local ExpectedPosition = Character[R6PartName].CFrame * R15PartNameOffset
-							originalrig[i].CFrame = ExpectedPosition 
+							OriginalRig[i].CFrame = ExpectedPosition 
 						end
 					end
 				end))
 			end
 		end
-		for i,v in pairs(originalrig:GetChildren()) do
+		for i,v in pairs(OriginalRig:GetChildren()) do
 			cr(cc(function()
 				if v:IsA("Accessory") and networkownership(v.Handle) then
 					v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
 				end
 			end))
 		end
-		if originalrig:FindFirstChild("HumanoidRootPart") and networkownership(originalrig["HumanoidRootPart"]) and not getgenv().Fling then
-			originalrig["HumanoidRootPart"].CFrame = Character["HumanoidRootPart"].CFrame 
+		if OriginalRig:FindFirstChild("HumanoidRootPart") and networkownership(OriginalRig["HumanoidRootPart"]) and not getgenv().Fling then
+			OriginalRig["HumanoidRootPart"].CFrame = Character["HumanoidRootPart"].CFrame 
 		end
 	else
-		for i,v in pairs(originalrig:GetChildren()) do
+		for i,v in pairs(OriginalRig:GetChildren()) do
 			cr(cc(function()
 				if v:IsA("BasePart") then
 					if v.Name == "HumanoidRootPart" and getgenv().Fling and networkownership(v) then
@@ -557,7 +570,7 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 		end
 	end
 	if getgenv().Tools then
-		for i,v in pairs(originalrig:GetChildren()) do
+		for i,v in pairs(OriginalRig:GetChildren()) do
 			cr(cc(function()
 				if v:IsA("Tool") and Character:FindFirstChild(v.Name) then
 					v.Handle.CFrame = 	Character[v.Name].Handle.CFrame 
@@ -569,24 +582,26 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 	end
 end)
 
+keepingparts = false
+
 -- // Extreme Claiming
 if getgenv().ExtremeNetless then
 	cr(cc(function()
 		while RunService.RenderStepped:Wait() and Character do
-			for i,v in pairs(originalrig:GetDescendants()) do
+			for i,v in pairs(OriginalRig:GetDescendants()) do
 				if v:IsA("BasePart") then
-					v:ApplyImpulse(velvector)
-					--v.Velocity = velvector
+					v:ApplyImpulse(Velocity)
+					--v.Velocity = Velocity
 				end
 			end
 		end
 	end))
 	cr(cc(function()
 		while task.wait() and Character do
-			for i,v in pairs(originalrig:GetDescendants()) do
+			for i,v in pairs(OriginalRig:GetDescendants()) do
 				if v:IsA("BasePart") then
-					v:ApplyImpulse(velvector)
-					--v.Velocity = velvector
+					v:ApplyImpulse(Velocity)
+					--v.Velocity = Velocity
 				end
 			end
 		end
@@ -594,10 +609,10 @@ if getgenv().ExtremeNetless then
 end
 
 -- // Check for death
-if getgenv().CheckForDeath then -- changed originalrig:ClearAllChildren because some games have a ac against it
-	Character.Humanoid.Died:Connect(function() pcall(function() Noclip:Disconnect(); Conversion:Disconnect(); plr.Character = originalrig; originalrig.Parent = workspace; Character:Destroy() end) end) -- checking for resetting
-	plr.CharacterAdded:Connect(function() Noclip:Disconnect(); Conversion:Disconnect(); Character:Destroy() end) -- checking to see if server respawned you
+if getgenv().CheckForDeath then -- changed OriginalRig:ClearAllChildren because some games have a ac against it
+	Character.Humanoid.Died:Connect(function() pcall(function() Noclip:Disconnect(); Conversion:Disconnect(); Player.Character = OriginalRig; OriginalRig.Parent = workspace; Character:Destroy() end) end) -- checking for resetting
+	Player.CharacterAdded:Connect(function() Noclip:Disconnect(); Conversion:Disconnect(); Character:Destroy() end) -- checking to see if server respawned you
 end
 
 -- // God Mode
-if getgenv().GodMode and originalrig:FindFirstChild("Neck",true) then wait(game.Players.RespawnTime + 1); originalrig:FindFirstChild("Neck",true).Parent = nil keepinplace = false createnotification("Permadeath","God Mode Enabled",6) end
+if getgenv().GodMode and OriginalRig:FindFirstChild("Neck",true) then wait(game.Players.RespawnTime + 1); OriginalRig:FindFirstChild("Neck",true).Parent = nil keepinplace = false createnotification("Permadeath","God Mode Enabled",6) end
