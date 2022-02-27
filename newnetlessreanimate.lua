@@ -484,12 +484,7 @@ if getgenv().AutoAnimate then
 	if RigType == Enum.HumanoidRigType.R15 then
 		cr(cc(function()
 			--getgenv().ForHonor = Character.Animate
-			--loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/Animate"))()
-			local Animate = Instance.new("LocalScript",Character)
-			Animate.Disabled = true
-			Animate.Source = game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/Animate")
-			task.wait()
-			Animate.Disabled = false
+			loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/Animate"))()
 		end))
 	else
 		Character.Animate.Disabled = true; task.wait() Character.Animate.Disabled = false
