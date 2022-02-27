@@ -1,4 +1,4 @@
-local Figure = script.Parent
+local Figure = getgenv().CloneRig
 local Animatee = Figure.Animate
 local Torso = Figure:WaitForChild("Torso")
 local RightShoulder = Torso:WaitForChild("Right Shoulder")
