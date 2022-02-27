@@ -15,7 +15,7 @@ if getgenv().preloadanimations then
     local gui = files.ScreenGui:Clone()
     gui.Parent = game.CoreGui
     local loadamount,amounttoload = 1,0
-    amounttoload = #files.Folder:GetChildren()+1--amounttoload + 1
+    amounttoload = #files.Folder:GetChildren()--amounttoload + 1
     for i,v in pairs(files.Folder:GetChildren()) do
         wait(getgenv().loadtime)
         spawn(function()
@@ -23,14 +23,17 @@ if getgenv().preloadanimations then
             if soundid then
                 local soundwait = Instance.new("Sound",game.Players.LocalPlayer)
                 soundwait.SoundId = soundid
-                soundwait.Loaded:Wait()
-                soundwait:Destroy()
+                spawn(function()
+                        soundwait.Loaded:Wait()
+                        soundwait:Destroy()    
+                end)
             end
             if animid then
                 pcall(function()
                     game:GetObjects('rbxassetid://'..animid)
                 end)
             end
+            
             loadamount = loadamount + 1
             print(loadamount,amounttoload)
         end)
