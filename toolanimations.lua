@@ -14,7 +14,7 @@ local files = game:GetObjects("rbxassetid://8900767329")[1]
 if getgenv().preloadanimations then
     local gui = files.ScreenGui:Clone()
     gui.Parent = game.CoreGui
-    local loadamount,amounttoload = 1,0
+    local loadamount,amounttoload = 0,0
     amounttoload = #files.Folder:GetChildren()--amounttoload + 1
     for i,v in pairs(files.Folder:GetChildren()) do
         wait(getgenv().loadtime)
