@@ -17,9 +17,10 @@ if getgenv().Network == nil then getgenv().Network = true end
 if getgenv().Netless2 == nil then getgenv().Netless2 = false end
 if getgenv().Claim2 == nil then getgenv().Claim2 = false end
 if getgenv().ExtremeNetless == nil then getgenv().ExtremeNetless = false end
-if getgenv().Notification == nil then getgenv().Notification = false end
+if getgenv().Notification == nil then getgenv().Notification = true end
 if getgenv().DynamicVelocity == nil then getgenv().DynamicVelocity = false end
 if getgenv().AntiSleep == nil then getgenv().AntiSleep = false end
+if getgenv().MovementVelocity == nil then getgenv().MovementVelocity = false end
 
 settings().Rendering.EagerBulkExecution = true
 settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
@@ -41,6 +42,8 @@ local FakeTorso,FakeTorso1,FakeHead
 local cr,cc = coroutine.resume,coroutine.create
 local rigtype = plr.Character.Humanoid.RigType
 local set_hidden_property = sethiddenproperty or sethiddenprop
+
+local velvector = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
 
 if getgenv().Network then
 	game:GetService("Players").LocalPlayer.MaximumSimulationRadius=6969
@@ -77,10 +80,11 @@ PhysicsService:CollisionGroupSetCollidable("NoCollide", "NoCollide", false)
 
 if getgenv().FakeGod and rigtype == Enum.HumanoidRigType.R6 then getgenv().GodMode = false end
 if getgenv().TorsoFling then getgenv().Fling = false end
+if getgenv().MovementVelocity then getgenv().DynamicVelocity = false end
 
 -- // RigType
 if rigtype == Enum.HumanoidRigType.R15 then
-	
+
 	offsets = {
 		["Left Arm"] = {["LeftUpperArm"] = CFrame.new((1-originalrig.LeftUpperArm.Size.X)*2,0.369*(originalrig.LeftUpperArm.Size.Y/1.169),0),
 			["LeftLowerArm"] = CFrame.new((1-originalrig.LeftLowerArm.Size.X)*2,-0.224*(originalrig.LeftLowerArm.Size.Y/1.052),0),
@@ -88,7 +92,7 @@ if rigtype == Enum.HumanoidRigType.R15 then
 		},
 		["Right Arm"] = {["RightUpperArm"] = CFrame.new(-(1-originalrig.RightUpperArm.Size.X)*2,0.369*(originalrig.RightUpperArm.Size.Y/1.169),0),
 			["RightLowerArm"] = CFrame.new(-(1-originalrig.RightLowerArm.Size.X)*2,-0.224*(originalrig.RightLowerArm.Size.Y/1.052),0),
-				["RightHand"] = CFrame.new(-(1-originalrig.RightHand.Size.X)*2,-0.85*(originalrig.RightHand.Size.Y/0.3),0),
+			["RightHand"] = CFrame.new(-(1-originalrig.RightHand.Size.X)*2,-0.85*(originalrig.RightHand.Size.Y/0.3),0),
 		},
 		["Torso"] = {["UpperTorso"] = CFrame.new(0,0.2*(originalrig.UpperTorso.Size.Y/1.6),0),
 			["LowerTorso"] = CFrame.new(0,-0.8*(originalrig.LowerTorso.Size.Y/0.4),0),
@@ -104,7 +108,7 @@ if rigtype == Enum.HumanoidRigType.R15 then
 		["Head"] = {["Head"] = CFrame.new(0,0,0)
 		},
 	}
-	
+
 	Character = game:GetObjects("rbxassetid://8232772380")[1]:Clone()
 	Character.Parent = workspace
 	Character.Humanoid:ApplyDescription(Players:GetHumanoidDescriptionFromUserId(plr.UserId))
@@ -201,8 +205,8 @@ if getgenv().Claim2 then
 		for i,v in pairs(originalrig:GetDescendants()) do
 			cr(cc(function()
 				if v:IsA("BasePart") then
-					--v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
-					v:ApplyImpulse(Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity))
+					--v.Velocity = velvector
+					v:ApplyImpulse(velvector)
 				end
 			end))
 		end
@@ -214,8 +218,8 @@ end
 for i,v in pairs(originalrig:GetDescendants()) do
 	cr(cc(function()
 		if v:IsA("BasePart") then
-			--v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
-			v:ApplyImpulse(Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity))
+			--v.Velocity = velvector
+			v:ApplyImpulse(velvector)
 			if getgenv().Netless2 then
 				local a = Instance.new("BodyVelocity",v)
 				a.MaxForce = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.Velocity = Vector3.new(0,0,0)
@@ -290,21 +294,35 @@ local function dynvelocity2()
 		end
 	end
 	if boolthing then
-		getgenv().Velocity = velocitych
+		velvector = velocitych
 		for i,v in pairs(originalrig:GetDescendants()) do
 			if v:IsA("BodyVelocity") then
 				v.Velocity = Vector3.new(velocitych,velocitych,velocitych)
 			end
 		end
 	else
-		getgenv().Velocity = 0.01
+		velvector = Vector3.new(0.01,0.01,0.01)
 		for i,v in pairs(originalrig:GetDescendants()) do
 			if v:IsA("BodyVelocity") then
 				v.Velocity = Vector3.new(0.01,0.01,0.01)
 			end
 		end
 	end
+end
 
+if getgenv().MovementVelocity then
+	Character.Humanoid:GetPropertyChangedSignal("MoveDirection"):Connect(function()
+		local x,y,z = Character.Humanoid.MoveDirection.X,Character.Humanoid.MoveDirection.Y,Character.Humanoid.MoveDirection.Z
+		local vector = Vector3.new(x*-25.05,y*-25.05,z*-25.05)
+		if vector.X == 0 and vector.Y == 0 and vector.Z == 0 then vector = Vector3.new(-10,-10,-10) end
+		velvector = vector
+		for i,v in pairs(originalrig:GetDescendants()) do
+			if v:IsA("BodyVelocity") then
+				v.Velocity = vector
+			end
+		end
+		print(velvector)
+	end)
 end
 
 -- // Noclip Rigs; forgot why i have this but im keeping it
@@ -330,8 +348,8 @@ local Noclip = RunService.Stepped:Connect(function(delta)
 				v.CanCollide = false
 				if getgenv().AllowSleep and set_hidden_property then set_hidden_property(v, "NetworkIsSleeping", false) end
 				if v:IsDescendantOf(originalrig) and getgenv().ExtremeNetless then
-					v:ApplyImpulse(Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity))
-					--v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
+					v:ApplyImpulse(velvector)
+					--v.Velocity = velvector
 				end
 			end
 		end))
@@ -478,8 +496,8 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 	for i,v in pairs(originalrig:GetDescendants()) do
 		cr(cc(function()
 			if v:IsA("BasePart") then
-				v:ApplyImpulse(Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity))
-				--v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
+				v:ApplyImpulse(velvector)
+				--v.Velocity = velvector
 				if not networkownership(v) then
 					v.SelectionBox.Transparency = 0
 				else
@@ -556,8 +574,8 @@ if getgenv().ExtremeNetless then
 		while RunService.RenderStepped:Wait() and Character do
 			for i,v in pairs(originalrig:GetDescendants()) do
 				if v:IsA("BasePart") then
-					v:ApplyImpulse(Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity))
-					--v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
+					v:ApplyImpulse(velvector)
+					--v.Velocity = velvector
 				end
 			end
 		end
@@ -566,8 +584,8 @@ if getgenv().ExtremeNetless then
 		while task.wait() and Character do
 			for i,v in pairs(originalrig:GetDescendants()) do
 				if v:IsA("BasePart") then
-					v:ApplyImpulse(Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity))
-					--v.Velocity = Vector3.new(getgenv().Velocity, getgenv().Velocity, getgenv().Velocity)
+					v:ApplyImpulse(velvector)
+					--v.Velocity = velvector
 				end
 			end
 		end
