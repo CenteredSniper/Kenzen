@@ -55,28 +55,8 @@ local function networkownership(obj)
 	end
 end
 
-local offsets = {
-	["Left Arm"] = {["LeftUpperArm"] = CFrame.new(0,0.369,0),
-		["LeftLowerArm"] = CFrame.new(0,-0.224,0),
-		["LeftHand"] = CFrame.new(0,-0.85,0)
-	},
-	["Right Arm"] = {["RightUpperArm"] = CFrame.new(0,0.369,0),
-		["RightLowerArm"] = CFrame.new(0,-0.224,0),
-		["RightHand"] = CFrame.new(0,-0.85,0)
-	},
-	["Torso"] = {["UpperTorso"] = CFrame.new(0,0.2,0),
-		["LowerTorso"] = CFrame.new(0,-0.8,0),
-	},
-	["Left Leg"] = {["LeftUpperLeg"] = CFrame.new(0,0.579,0),
-		["LeftLowerLeg"] = CFrame.new(0,-0.201,0),
-		["LeftFoot"] = CFrame.new(0,-0.85,0)
-	},
-	["Right Leg"] = {["RightUpperLeg"] = CFrame.new(0,0.579,0),
-		["RightLowerLeg"] = CFrame.new(0,-0.201,0),
-		["RightFoot"] = CFrame.new(0,-0.85,0)
-	},
-	["Head"] = {["Head"] = CFrame.new(0,0,0)},
-}
+local offsets
+originalrig = plr.Character
 
 -- // Notification Function
 local function createnotification(title,desc,duration)
@@ -100,7 +80,31 @@ if getgenv().TorsoFling then getgenv().Fling = false end
 
 -- // RigType
 if rigtype == Enum.HumanoidRigType.R15 then
-	originalrig = plr.Character
+	
+	offsets = {
+		["Left Arm"] = {["LeftUpperArm"] = CFrame.new((1-originalrig.LeftUpperArm.Size.X)*2,0.369*(originalrig.LeftUpperArm.Size.Y/1.169),0),
+			["LeftLowerArm"] = CFrame.new((1-originalrig.LeftLowerArm.Size.X)*2,-0.224*(originalrig.LeftLowerArm.Size.Y/1.052),0),
+			["LeftHand"] = CFrame.new((1-originalrig.LeftHand.Size.X)*2,-0.85*(originalrig.LeftHand.Size.Y/0.3),0),
+		},
+		["Right Arm"] = {["RightUpperArm"] = CFrame.new(-(1-originalrig.RightUpperArm.Size.X)*2,0.369*(originalrig.RightUpperArm.Size.Y/1.169),0),
+			["RightLowerArm"] = CFrame.new(-(1-originalrig.RightLowerArm.Size.X)*2,-0.224*(originalrig.RightLowerArm.Size.Y/1.052),0),
+				["RightHand"] = CFrame.new(-(1-originalrig.RightHand.Size.X)*2,-0.85*(originalrig.RightHand.Size.Y/0.3),0),
+		},
+		["Torso"] = {["UpperTorso"] = CFrame.new(0,0.2*(originalrig.UpperTorso.Size.Y/1.6),0),
+			["LowerTorso"] = CFrame.new(0,-0.8*(originalrig.LowerTorso.Size.Y/0.4),0),
+		},
+		["Left Leg"] = {["LeftUpperLeg"] = CFrame.new((1-originalrig.LeftUpperLeg.Size.X)/2,0.579*(originalrig.LeftUpperLeg.Size.Y/1.217),0),
+			["LeftLowerLeg"] = CFrame.new((1-originalrig.LeftLowerLeg.Size.X)/2,-0.201*(originalrig.LeftLowerLeg.Size.Y/1.193),0),
+			["LeftFoot"] = CFrame.new((1-originalrig.LeftFoot.Size.X)/2,-0.85*(originalrig.LeftFoot.Size.Y/0.3),0),
+		},
+		["Right Leg"] = {["RightUpperLeg"] = CFrame.new(-(1-originalrig.RightUpperLeg.Size.X)/2,0.579*(originalrig.RightUpperLeg.Size.Y/1.217),0),
+			["RightLowerLeg"] = CFrame.new(-(1-originalrig.RightLowerLeg.Size.X)/2,-0.201*(originalrig.RightLowerLeg.Size.Y/1.193),0),
+			["RightFoot"] = CFrame.new(-(1-originalrig.RightFoot.Size.X)/2,-0.85*(originalrig.RightFoot.Size.Y/0.3),0),
+		},
+		["Head"] = {["Head"] = CFrame.new(0,0,0)
+		},
+	}
+	
 	Character = game:GetObjects("rbxassetid://8232772380")[1]:Clone()
 	Character.Parent = workspace
 	Character.Humanoid:ApplyDescription(Players:GetHumanoidDescriptionFromUserId(plr.UserId))
@@ -109,7 +113,7 @@ if rigtype == Enum.HumanoidRigType.R15 then
 		if v:IsA("Accessory") then
 			v:Destroy()
 		end
-            task.wait()
+		task.wait()
 	end
 	for i,v in pairs(originalrig:GetChildren()) do
 		if v:IsA("Accessory") then
@@ -119,11 +123,11 @@ if rigtype == Enum.HumanoidRigType.R15 then
 				if g[v.Handle.AccessoryWeld.Part1.Name] then
 					clonehats.Handle.AccessoryWeld.Part1 = Character[_]
 				end
-                            task.wait()
+				task.wait()
 			end
 			--clonehats.Handle.AccessoryWeld.Part1 = Character[v.Handle.AccessoryWeld.Part1.Name]
 		end
-             task.wait()
+		task.wait()
 	end
 	Character.HumanoidRootPart.CFrame = originalrig.HumanoidRootPart.CFrame
 	task.wait()
@@ -131,15 +135,14 @@ if rigtype == Enum.HumanoidRigType.R15 then
 		if v:IsA("Tool") then
 			v:Clone().Parent = Character
 		end
-             task.wait()
+		task.wait()
 	end
 else
 	plr.Character.Archivable = true
 	Character = plr.Character:Clone()
 	plr.Character.Archivable = false
-	originalrig = plr.Character
 	Character.Parent = workspace
-    task.wait()
+	task.wait()
 end
 Character.Name = "FakeBody"
 
@@ -174,7 +177,7 @@ local origpos,claim2velocity
 plr.Character.Humanoid.PlatformStand = true
 
 if getgenv().Claim2 then
-    Character.HumanoidRootPart.Anchored = true
+	Character.HumanoidRootPart.Anchored = true
 	origpos = plr.Character.HumanoidRootPart.CFrame
 	local actualpos
 	repeat task.wait() 
@@ -289,19 +292,19 @@ local function dynvelocity2()
 	if boolthing then
 		getgenv().Velocity = velocitych
 		for i,v in pairs(originalrig:GetDescendants()) do
-		if v:IsA("BodyVelocity") then
-			v.Velocity = Vector3.new(velocitych,velocitych,velocitych)
+			if v:IsA("BodyVelocity") then
+				v.Velocity = Vector3.new(velocitych,velocitych,velocitych)
+			end
 		end
-	end
 	else
 		getgenv().Velocity = 0.01
 		for i,v in pairs(originalrig:GetDescendants()) do
-		if v:IsA("BodyVelocity") then
-			v.Velocity = Vector3.new(0.01,0.01,0.01)
+			if v:IsA("BodyVelocity") then
+				v.Velocity = Vector3.new(0.01,0.01,0.01)
+			end
 		end
 	end
-	end
-	
+
 end
 
 -- // Noclip Rigs; forgot why i have this but im keeping it
@@ -338,11 +341,11 @@ end)
 -- // Claim 2 Bring back
 local keepingparts = true
 if getgenv().Claim2 then
-    local temppos = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame
-    for i=1,10 do
-        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = temppos
-        task.wait(0.1)
-    end
+	local temppos = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame
+	for i=1,10 do
+		game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = temppos
+		task.wait(0.1)
+	end
 	for i,v in pairs(originalrig:GetDescendants()) do
 		cr(cc(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end))
 	end
