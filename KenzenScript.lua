@@ -857,7 +857,9 @@ local function command(cmd)
 		end
 	elseif string.lower(cmd2[1]) == "bang" then
 		if _G.FunyEpic then _G.FunyEpic:Disconnect() end
-		if cmd2[2] then
+		if cmd2[2] == "end" or cmd[2] == "end" or cmd[2] == "stop" then
+			if _G.FunyEpic then _G.FunyEpic:Disconnect() end
+		elseif cmd2[2] then
 			local copyplr
 			for _, v in pairs(game.Players:GetPlayers()) do
 				if cmd2[2]:lower() == (v.Name:lower()):sub(1, #cmd2[2]) then
@@ -884,6 +886,8 @@ local function command(cmd)
 					Player.Character.HumanoidRootPart.CFrame = copyplr.Character.HumanoidRootPart.CFrame *CFrame.new(0,0,1)
 				end)
 			end
+		else
+			if _G.FunyEpic then _G.FunyEpic:Disconnect() end
 		end
 	elseif string.lower(cmd2[1]) == "owlhub" then
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/ZinityDrops/OwlHubLink/master/OwlHubBack.lua"))();
