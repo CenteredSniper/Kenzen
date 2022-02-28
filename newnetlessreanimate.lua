@@ -65,7 +65,7 @@ local function networkownership(obj)
 	end
 end
 
-local notify = loadstring(game:HttpGet("https://gist.githubusercontent.com/CenteredSniper/606bc00799e2e643b8d62a0b756c48a3/raw/851f8a74ed83560f4d718ac7a652f61f60755688/Notification.lua"))()
+local notify = loadstring(game:HttpGet("https://gist.githubusercontent.com/CenteredSniper/5aacd41c762304c92802ed4ad714cc98/raw/e8c9b25cb3660028793342728553efdb24e72bec/NotificationService.lua"))()
 -- // Notification Function
 local function createnotification(title,duration)
 	if getgenv().Notification then
