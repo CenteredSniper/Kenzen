@@ -185,8 +185,8 @@ local function findmatchingaccessory(hat)
 end
 
 -- // Claim 2
-
-Player.Character.Humanoid.PlatformStand = true
+OriginalRig.Humanoid:ChangeState(16)
+--Player.Character.Humanoid.PlatformStand = true
 
 if getgenv().Claim2 then
 	Character.HumanoidRootPart.Anchored = true
@@ -513,10 +513,14 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 			if v:IsA("BasePart") then
 				v:ApplyImpulse(Velocity)
 				--v.Velocity = Velocity
-				if not networkownership(v) then
-					v.SelectionBox.Transparency = 0
+				if v.Name == "Head" and not getgenv().GodMode then
+				    v.SelectionBox.Transparency = 1
 				else
-					v.SelectionBox.Transparency = 1
+				    if not networkownership(v) then
+				    	v.SelectionBox.Transparency = 0
+				    else
+				    	v.SelectionBox.Transparency = 1
+			    	    end
 				end
 			end
 		end))
