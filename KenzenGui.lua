@@ -85,7 +85,7 @@ end)
 
 -- Reanimate
 script.Parent.Parent.Reanimate.Frame.TextButton.Activated:Connect(function()
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/netlessreanimate.lua",true))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/newnetlessreanimate.lua",true))()
 end)
 
 for i,v in pairs(script.Parent.Parent.Reanimate.Frame.ScrollingFrame:GetChildren()) do
