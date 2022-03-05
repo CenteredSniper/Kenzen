@@ -1,4 +1,7 @@
+if getgenv().GuiLoaded then printconsole("Already loaded?") error("Already loaded?") return end
 local gui = game:GetObjects("rbxassetid://9013635661")[1]
+getgenv().GuiLoaded = true
+if not game:IsLoaded() then game.Loaded:Wait() end
 gui.Parent = game.CoreGui
 local script = gui.Frame.LocalScript
 local wait = task.wait
