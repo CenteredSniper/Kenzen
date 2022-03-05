@@ -121,6 +121,7 @@ if RigType == Enum.HumanoidRigType.R15 then
 
 	Character = game:GetObjects("rbxassetid://8232772380")[1]:Clone()
 	Character.Parent = workspace
+	task.wait() -- applydescription has a small chance of not fucking working
 	Character.Humanoid:ApplyDescription(Players:GetHumanoidDescriptionFromUserId(Player.UserId))
 	--task.wait()
 	for i,v in pairs(Character:GetChildren()) do
