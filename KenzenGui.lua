@@ -95,9 +95,7 @@ for i,v in pairs(script.Parent.Parent.Reanimate.Frame.ScrollingFrame:GetChildren
 		v.ImageButton.Activated:Connect(function()
 			v.Activated.Value = not v.Activated.Value
 			v.ImageButton.Image = v.Activated.Value and "rbxassetid://4458804262" or "rbxassetid://4458801905"
-			--getgenv()[v.Name] = v.Activated.Value
-			_G[v.Name] = v.Activated.Value
-			print(_G[v.Name])
+			getgenv()[v.Name] = v.Activated.Value
 		end)
 	end
 end
