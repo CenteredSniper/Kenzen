@@ -17,7 +17,9 @@ if getgenv().preloadanimations then
     local loadamount,amounttoload = 0,0
     amounttoload = #files.Folder:GetChildren()--amounttoload + 1
     for i,v in pairs(files.Folder:GetChildren()) do
-        wait(getgenv().loadtime)
+        if getgenv().loadtime ~= 0 then
+            wait(getgenv().loadtime)
+        end
         spawn(function()
             local animid,soundid = v.ToolTip,v.AnimationID.SoundID.SoundId
             if soundid then
