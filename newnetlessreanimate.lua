@@ -657,4 +657,4 @@ if getgenv.CheckForDeath then -- changed OriginalRig:ClearAllChildren because so
 end
 
 -- // God Mode
-if getgenv.GodMode and OriginalRig:FindFirstChild("Neck",true) then wait(game.Players.RespawnTime + 1); if OriginalRig then OriginalRig:FindFirstChild("Neck",true).Parent = nil keepinplace = false notify("Permadeath On",6) end end
+if getgenv.GodMode and OriginalRig:FindFirstChild("Neck",true) then wait(game.Players.RespawnTime + 1); OriginalRig:FindFirstChild("Neck",true).Parent = nil keepinplace = false notify("Permadeath On",6) end
