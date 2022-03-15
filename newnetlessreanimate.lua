@@ -19,7 +19,6 @@ if getgenv.CheckForDeath == nil then getgenv.CheckForDeath = true end
 if getgenv.Network == nil then getgenv.Network = true end
 if getgenv.Netless2 == nil then getgenv.Netless2 = false end
 if getgenv.Claim2 == nil then getgenv.Claim2 = false end
-if getgenv.ExtremeNetless == nil then getgenv.ExtremeNetless = false end
 if getgenv.Notification == nil then getgenv.Notification = true end
 if getgenv.DynamicVelocity == nil then getgenv.DynamicVelocity = false end
 if getgenv.AntiSleep == nil then getgenv.AntiSleep = false end
@@ -38,7 +37,10 @@ local function notify(title,duration)
 end
 
 -- Checking if reanimated or not
-if workspace:FindFirstChild("ExProReanimate") then notify("Already Reanimated?") error("Already Reanimated?") end
+if workspace:FindFirstChild("ExProReanimate") then 
+	notify("Already Reanimated?") 
+	error("Already Reanimated?") 
+end
 
 -- Preloading PhysicsService enabler
 loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
@@ -87,14 +89,25 @@ local function networkownership(obj)
 end
 
 -- // Collisions
-local check; pcall(function() check = PhysicsService:GetCollisionGroupId("NoCollide") end)
-if not check then PhysicsService:CreateCollisionGroup("NoCollide") end
+local check; 
+pcall(function() 
+	check = PhysicsService:GetCollisionGroupId("NoCollide")
+end)
+if not check then 
+	PhysicsService:CreateCollisionGroup("NoCollide")
+end
 PhysicsService:CollisionGroupSetCollidable("NoCollide", "NoCollide", false)
 
 
-if getgenv.FakeGod and RigType == Enum.HumanoidRigType.R6 then getgenv.GodMode = false end
-if getgenv.TorsoFling then getgenv.Fling = false end
-if getgenv.MovementVelocity then getgenv.DynamicVelocity = false end
+if getgenv.FakeGod and RigType == Enum.HumanoidRigType.R6 then 
+	getgenv.GodMode = false 
+end
+if getgenv.TorsoFling then 
+	getgenv.Fling = false 
+end
+if getgenv.MovementVelocity then 
+	getgenv.DynamicVelocity = false 
+end
 
 -- // RigType
 if RigType == Enum.HumanoidRigType.R15 then
@@ -223,16 +236,6 @@ if getgenv.Claim2 then
 		end)
 	until actualpos
 	Player.Character.HumanoidRootPart.CFrame = CFrame.new(actualpos)
-	Claim2Heartbeat = game:GetService("RunService").Heartbeat:Connect(function()
-		for i,v in pairs(OriginalRig:GetDescendants()) do
-			cr(cc(function()
-				if v:IsA("BasePart") then
-					--v.Velocity = Velocity
-					v:ApplyImpulse(Velocity)
-				end
-			end))
-		end
-	end)
 	notify("Claim2; Found Pos",6)
 end
 
@@ -241,22 +244,32 @@ for i,v in pairs(OriginalRig:GetDescendants()) do
 	cr(cc(function()
 		if v:IsA("BasePart") then
 			--v.Velocity = Velocity
-			v:ApplyImpulse(Velocity)
-			if getgenv.Netless2 then
-				local a = Instance.new("BodyVelocity",v)
-				a.MaxForce = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.Velocity = Vector3.new(0,0,0)
-				local a = Instance.new("BodyAngularVelocity",v)
-				a.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.AngularVelocity = Vector3.new(0,0,0)
-			else
-				local a = Instance.new("BodyVelocity",v)
-				a.MaxForce = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.Velocity = Vector3.new(getgenv.Velocity,getgenv.Velocity,getgenv.Velocity)
-				local a = Instance.new("BodyAngularVelocity",v)
-				a.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.AngularVelocity = Vector3.new(0,0,0)
-			end
+			--v:ApplyImpulse(Velocity)
+			local netlessbeat
+			local a = Instance.new("BodyVelocity",v)
+			a.MaxForce = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.Velocity = getgenv.Netless2 and Vector3.new(0,0,0) or Vector3.new(getgenv.Velocity,getgenv.Velocity,getgenv.Velocity)
+			local a = Instance.new("BodyAngularVelocity",v)
+			a.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); a.P = math.huge; a.AngularVelocity = Vector3.new(0,0,0)
 			v.Massless = true
 			v.CustomPhysicalProperties = PhysicalProperties.new(0,0,0,0,0)
 			local selectionbox = Instance.new("SelectionBox",v)
 			selectionbox.Transparency = 1; selectionbox.Adornee = v;
+			netlessbeat = RunService.Heartbeat:Connect(function()
+				if v and v.Parent then
+					v:ApplyImpulse(Velocity)
+					if v.Name == "Head" and not getgenv.GodMode then
+						v.SelectionBox.Transparency = 1
+					else
+						if not networkownership(v) then
+							v.SelectionBox.Transparency = 0
+						else
+							v.SelectionBox.Transparency = 1
+						end
+					end
+				else
+					netlessbeat:Disconnect()
+				end
+			end)
 			if v.Parent:IsA("Accessory") then
 				findmatchingaccessory(v)
 			end
@@ -348,38 +361,34 @@ if getgenv.MovementVelocity then
 	end)
 end
 
--- // Master Stepped; Handles collisions, simradius, etc.
-local Noclip = RunService.Stepped:Connect(function(delta)
-	if getgenv.DynamicVelocity then
-		coroutine.wrap(dynvelocity2)()
-	end
-	settings().Rendering.EagerBulkExecution = true
-	settings().Physics.AllowSleep = false
-	settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
-	settings().Physics.ForceCSGv2 = false
-	settings().Physics.DisableCSGv2 = true
-	settings().Physics.UseCSGv2 = false
-	settings().Physics.ThrottleAdjustTime = math.huge
-	if getgenv.Network then
+if getgenv.DynamicVelocity then
+	RunService.Stepped:Connect(dynvelocity2)
+end
+if getgenv.Network then
+	RunService.Stepped:Connect(function()
 		game:GetService("Players").LocalPlayer.MaximumSimulationRadius=6969
 		SetHiddenProperty(game:GetService("Players").LocalPlayer,"SimulationRadius",6969)
-	end
-	if typeof(getgenv.Collisions) == "boolean" then
-		local Collisionrig = getgenv.Collisions and OriginalRig or Character
-		for i,v in pairs(Collisionrig:GetDescendants()) do
-			cr(cc(function()
-				if v:IsA("BasePart") then
-					if networkownership(v) then v.CanCollide = false end
-					if getgenv.AllowSleep and SetHiddenProperty then SetHiddenProperty(v, "NetworkIsSleeping", false) end
-					if v:IsDescendantOf(OriginalRig) and getgenv.ExtremeNetless then
-						v:ApplyImpulse(Velocity)
-						--v.Velocity = Velocity
+	end)
+end
+
+if typeof(getgenv.Collisions) == "boolean" then
+	local Collisionrig = getgenv.Collisions and OriginalRig or Character
+	for i,v in pairs(Collisionrig:GetDescendants()) do
+		if v:IsA("BasePart") then
+			local collisionstep
+			collisionstep = RunService.Stepped:Connect(function()
+				if v and v.Parent then
+					v.CanCollide = false
+					if getgenv.AllowSleep then 
+						SetHiddenProperty(v, "NetworkIsSleeping", false) 
 					end
+				else
+					collisionstep:Disconnect()
 				end
-			end))
+			end)
 		end
 	end
-end)
+end
 
 -- // Claim 2 Bring back
 local keepingparts = true
@@ -407,7 +416,6 @@ if getgenv.Claim2 then
 	local animat = game:GetService("TweenService"):Create(game.Players.LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(5), {CFrame = Character.HumanoidRootPart.CFrame})
 	animat:Play()
 	animat.Completed:wait()
-	Claim2Heartbeat:Disconnect()
 	Character.HumanoidRootPart.Anchored = false
 else
 	for i,v in pairs(OriginalRig:GetDescendants()) do
@@ -439,7 +447,6 @@ if getgenv.GodMode and OriginalRig:FindFirstChild("Neck",true) then
 				else
 					OriginalRig["LowerTorso"].CFrame = savepos
 				end
-
 			end
 		end))
 	end
@@ -524,61 +531,74 @@ end
 	refer to; https://doy2mn9upadnk.cloudfront.net/uploads/default/original/3X/2/d/2d8a74483027f44c4f05080bc9437408f461737a.png
 ]]
 
--- // Conversion
-local Conversion = RunService.Heartbeat:Connect(function(delta)
-	for i,v in pairs(OriginalRig:GetDescendants()) do
-		cr(cc(function()
-			if v:IsA("BasePart") then
-				v:ApplyImpulse(Velocity)
-				--v.Velocity = Velocity
-				if v.Name == "Head" and not getgenv.GodMode then
-					v.SelectionBox.Transparency = 1
-				else
-					if not networkownership(v) then
-						v.SelectionBox.Transparency = 0
-					else
-						v.SelectionBox.Transparency = 1
-					end
-				end
-			end
-		end))
-	end
-	if RigType == Enum.HumanoidRigType.R15 then
-		for R6PartName,R15PartNames in pairs(R15Offsets) do
-			for i,R15PartNameOffset in pairs(R15PartNames) do
-				cr(cc(function()
-					if OriginalRig:FindFirstChild(i) and networkownership(OriginalRig[i]) then
-						if i == "LowerTorso" and getgenv.TorsoFling then
-						elseif i == "Torso" and getgenv.TorsoFling then
-						elseif i == "Head" and OriginalRig:FindFirstChild("Neck",true) then
-						else
-							local ExpectedPosition = Character[R6PartName].CFrame * R15PartNameOffset
-							OriginalRig[i].CFrame = ExpectedPosition 
+if RigType == Enum.HumanoidRigType.R15 then
+	for R6PartName,R15PartNames in pairs(R15Offsets) do
+		for i,R15PartNameOffset in pairs(R15PartNames) do
+			cr(cc(function()
+				local partbeat
+				partbeat = RunService.Heartbeat:Connect(function(delta)
+					if OriginalRig:FindFirstChild(i) then
+						if networkownership(OriginalRig[i]) then
+							if i == "LowerTorso" and getgenv.TorsoFling then
+							elseif i == "Torso" and getgenv.TorsoFling then
+							elseif i == "Head" and OriginalRig:FindFirstChild("Neck",true) then
+							else
+								local ExpectedPosition = Character[R6PartName].CFrame * R15PartNameOffset
+								OriginalRig[i].CFrame = ExpectedPosition 
+							end
 						end
+					else
+						partbeat:Disconnect()
 					end
-				end))
+				end)
+			end))
+		end
+	end
+	for i,v in pairs(OriginalRig:GetChildren()) do
+		if v:IsA("Accessory") then
+			local partbeat
+			partbeat = RunService.Heartbeat:Connect(function(delta)
+				if v and v.Parent and v:FindFirstChild("Handle") then
+					if networkownership(v.Handle) then
+						v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
+					end
+				else
+					partbeat:Disconnect()
+				end
+			end)
+		end
+	end
+	if not getgenv.Fling and OriginalRig:FindFirstChild("HumanoidRootPart") then
+		local partbeat
+		partbeat = RunService.Heartbeat:Connect(function(delta)
+			if OriginalRig:FindFirstChild("HumanoidRootPart") then
+				if networkownership(OriginalRig["HumanoidRootPart"]) then
+					OriginalRig["HumanoidRootPart"].CFrame = Character["HumanoidRootPart"].CFrame 
+				end
+			else
+				partbeat:Disconnect()
 			end
-		end
-		for i,v in pairs(OriginalRig:GetChildren()) do
-			cr(cc(function()
-				if v:IsA("Accessory") and networkownership(v.Handle) then
-					v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
+		end)
+	end
+elseif getgenv.R6toR15 then
+	for i,v in pairs(OriginalRig:GetChildren()) do
+		if v:IsA("Accessory") then
+			local partbeat
+			partbeat = RunService.Heartbeat:Connect(function(delta)
+				if v and v.Parent and v:FindFirstChild("Handle") then
+					if networkownership(v.Handle) then
+						v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
+					end
+				else
+					partbeat:Disconnect()
 				end
-			end))
+			end)
 		end
-		if OriginalRig:FindFirstChild("HumanoidRootPart") and networkownership(OriginalRig["HumanoidRootPart"]) and not getgenv.Fling then
-			OriginalRig["HumanoidRootPart"].CFrame = Character["HumanoidRootPart"].CFrame 
-		end
-	elseif getgenv.R6toR15 then
-		for i,v in pairs(OriginalRig:GetChildren()) do
-			cr(cc(function()
-				if v:IsA("Accessory") and networkownership(v.Handle) then
-					v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
-				end
-			end))
-		end
-		for i,v in pairs(R15Offsets) do
-			cr(cc(function()
+	end
+	for i,v in pairs(R15Offsets) do
+		cr(cc(function()
+			local partbeat
+			partbeat = RunService.Heartbeat:Connect(function(delta)
 				if OriginalRig:FindFirstChild(v[1]) and Character:FindFirstChild(v[2]) then
 					if networkownership(OriginalRig[v[1]]) then
 						if v[1] == "Head" and OriginalRig:FindFirstChild("Neck",true) then
@@ -586,75 +606,92 @@ local Conversion = RunService.Heartbeat:Connect(function(delta)
 							OriginalRig[v[1]].CFrame = Character[v[2]].CFrame * v[3]
 						end
 					end
+				else
+					partbeat:Disconnect()
 				end
-			end))
-		end
-	else
-		for i,v in pairs(OriginalRig:GetChildren()) do
-			cr(cc(function()
-				if v:IsA("BasePart") then
-					if v.Name == "HumanoidRootPart" and getgenv.Fling and networkownership(v) then
-					elseif getgenv.TorsoFling and v.Name == "Torso" or v.Name == "LowerTorso" and networkownership(FakeHead)  then	
-					elseif getgenv.FakeGod and v.Name == "Head" and networkownership(FakeHead)  then
-						FakeHead.CFrame = Character["Head"].CFrame
-					elseif getgenv.FakeGod and v.Name == "Torso" and networkownership(FakeTorso)  then
-						if FakeTorso1 then
-							FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(0.5,0,0) 
-							FakeTorso1.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(-0.5,0,0) 
-						else
-							FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) 
+			end)
+		end))
+	end
+else
+	for i,v in pairs(OriginalRig:GetChildren()) do
+		cr(cc(function()
+			if v:IsA("BasePart") then
+				local partbeat
+				partbeat = RunService.Heartbeat:Connect(function(delta)
+					if v and v.Parent then
+						if v.Name == "HumanoidRootPart" and getgenv.Fling and networkownership(v) then
+						elseif getgenv.TorsoFling and v.Name == "Torso" or v.Name == "LowerTorso" and networkownership(FakeHead)  then	
+						elseif getgenv.FakeGod and v.Name == "Head" and networkownership(FakeHead)  then
+							FakeHead.CFrame = Character["Head"].CFrame
+						elseif getgenv.FakeGod and v.Name == "Torso" and networkownership(FakeTorso)  then
+							if FakeTorso1 then
+								FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(0.5,0,0) 
+								FakeTorso1.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(-0.5,0,0) 
+							else
+								FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) 
+							end
+						elseif networkownership(v) then
+							v.CFrame = Character[v.Name].CFrame 
 						end
-					elseif networkownership(v) then
-						v.CFrame = Character[v.Name].CFrame 
+					else
+						partbeat:Disconnect()
 					end
-				elseif v:IsA("Accessory") and v.Handle ~= FakeTorso and v.Handle ~= FakeTorso1 and v.Handle ~= FakeHead and networkownership(v.Handle) then
-					v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
-				end
-			end))
-		end
-	end
-	if getgenv.Tools then
-		for i,v in pairs(tools) do
-			if Character:FindFirstChild(v.Name) and networkownership(v.Handle) then
-				v.Handle.CFrame = Character[v.Name].Handle.CFrame 
-			elseif networkownership(v.Handle) then
-				v.Handle.CFrame = Character["Head"].CFrame + Vector3.new(0,-5,0) 
+				end)
+			elseif v:IsA("Accessory") and v.Handle ~= FakeTorso and v.Handle ~= FakeTorso1 and v.Handle ~= FakeHead then
+				local partbeat
+				partbeat = RunService.Heartbeat:Connect(function(delta)
+					if v and v.Parent and v:FindFirstChild("Handle") then
+						if networkownership(v.Handle) then
+							v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
+						end
+					else
+						print(v)
+						partbeat:Disconnect()
+					end
+				end)
 			end
-		end
+		end))
 	end
-end)
+end
+if getgenv.Tools then
+	for i,v in pairs(tools) do
+		local partbeat
+		partbeat = RunService.Heartbeat:Connect(function(delta)
+			if v and v.Parent and v:FindFirstChild("Handle") then
+				if Character:FindFirstChild(v.Name) and networkownership(v.Handle) then
+					v.Handle.CFrame = Character[v.Name].Handle.CFrame 
+				elseif networkownership(v.Handle) then
+					v.Handle.CFrame = Character["Head"].CFrame + Vector3.new(0,-5,0) 
+				end
+			else
+				partbeat:Disconnect()
+			end
+		end)
+	end
+end
 
 keepingparts = false
 
--- // Extreme Claiming
-if getgenv.ExtremeNetless then
-	cr(cc(function()
-		while RunService.RenderStepped:Wait() and Character do
-			for i,v in pairs(OriginalRig:GetDescendants()) do
-				if v:IsA("BasePart") then
-					v:ApplyImpulse(Velocity)
-					--v.Velocity = Velocity
-				end
-			end
-		end
-	end))
-	cr(cc(function()
-		while task.wait() and Character do
-			for i,v in pairs(OriginalRig:GetDescendants()) do
-				if v:IsA("BasePart") then
-					v:ApplyImpulse(Velocity)
-					--v.Velocity = Velocity
-				end
-			end
-		end
-	end))
-end
-
 -- // Check for death
 if getgenv.CheckForDeath then -- changed OriginalRig:ClearAllChildren because some games have a ac against it
-	Character.Humanoid.Died:Connect(function() pcall(function() Noclip:Disconnect(); Conversion:Disconnect(); Player.Character = OriginalRig; OriginalRig.Parent = workspace; Character:Destroy() end) end) -- checking for resetting
-	Player.CharacterAdded:Connect(function() Noclip:Disconnect(); Conversion:Disconnect(); Character:Destroy() end) -- checking to see if server respawned you
+	Character.Humanoid.Died:Connect(function() 
+		pcall(function() 
+			Player.Character = OriginalRig; 
+			OriginalRig.Parent = workspace; 
+			Character:Destroy() 
+		end) 
+	end) -- checking for resetting
+	Player.CharacterAdded:Connect(function() 
+		Character:Destroy() 
+	end) -- checking to see if server respawned you
 end
 
 -- // God Mode
-if getgenv.GodMode and OriginalRig:FindFirstChild("Neck",true) then task.wait(game.Players.RespawnTime + game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()/750); if OriginalRig:FindFirstChild("Neck",true) then OriginalRig:FindFirstChild("Neck",true).Parent = nil keepinplace = false notify("Permadeath On",6) end end
+if getgenv.GodMode and OriginalRig:FindFirstChild("Neck",true) then 
+	task.wait(game.Players.RespawnTime + game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()/750); 
+	if OriginalRig:FindFirstChild("Neck",true) then 
+		OriginalRig:FindFirstChild("Neck",true).Parent = nil 
+		keepinplace = false 
+		notify("Permadeath On",6) 
+	end 
+end
