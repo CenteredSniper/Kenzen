@@ -1,5 +1,5 @@
 -- https://discord.gg/8EZcyvtDcq // ProductionTakeOne#3330 & nul#3174
-
+local speedtesttick = tick()
 -- // Modules/Setup
 
 -- incase someone doesn't have getgenv in their exploit for some odd reason
@@ -685,6 +685,8 @@ if getgenv.CheckForDeath then -- changed OriginalRig:ClearAllChildren because so
 		Character:Destroy() 
 	end) -- checking to see if server respawned you
 end
+
+notify("Script loaded in " .. tostring(tick() - speedtesttick) .. " Seconds",5)
 
 -- // God Mode
 if getgenv.GodMode and OriginalRig:FindFirstChild("Neck",true) then 
