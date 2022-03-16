@@ -1,5 +1,5 @@
 local loadtime = tick()
-local kenzengui = true
+local kenzengui = false
 task.spawn(coroutine.create(function()
 	local mt = getrawmetatable(game)
 	local backup = mt.__namecall
