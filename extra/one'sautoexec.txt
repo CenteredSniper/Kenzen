@@ -1,0 +1,147 @@
+local loadtime = tick()
+local kenzengui = true
+task.spawn(coroutine.create(function()
+	local mt = getrawmetatable(game)
+	local backup = mt.__namecall
+	setreadonly(mt, false)
+
+	mt.__namecall = newcclosure(function(self, ...)
+		local method = getnamecallmethod()
+		local args = {...}
+		if method == "Kick" then
+			printconsole('attempted kick')
+			return wait(9e9)
+		end
+		return backup(self,...)
+	end)
+
+	setreadonly(mt, true)
+end))
+task.spawn(coroutine.create(function()
+	if kenzengui then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/KenzenGui.lua",true))()
+	else
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/KenzenScript.lua",true))()
+	end
+end))
+task.spawn(coroutine.create(function()
+	if not game:IsLoaded() then game.Loaded:Wait() end
+	repeat wait() until game.CoreGui:FindFirstChild("PurchasePrompt")
+	repeat wait() until game.CoreGui.PurchasePrompt:FindFirstChild("ProductPurchaseContainer")
+	local vu = game:GetService("VirtualUser")
+	game.CoreGui.PurchasePrompt:FindFirstChild("ProductPurchaseContainer").Visible = false
+	game:GetService("Players").LocalPlayer.Idled:connect(function()
+		vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+		wait(1)
+		vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+	end)
+end))
+task.spawn(coroutine.create(function()
+	--websocket chat
+	if not game:IsLoaded() then game.Loaded:Wait() end
+	repeat wait() until game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+	repeat wait() until game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents"):FindFirstChild("SayMessageRequest")
+	local url = 'wss://webhookyeah.herokuapp.com'
+
+	local socket = syn.websocket.connect(url)
+	local player = game.Players.LocalPlayer
+
+	local connection = socket.OnMessage:Connect(function(MESSAGE)
+		local msg = game:GetService("HttpService"):JSONDecode(MESSAGE)
+		--if msg[1] ~= player.Name then
+		game.StarterGui:SetCore("ChatMakeSystemMessage", { 
+			Text = msg[1] .. ": " .. msg[2];
+			Font = Enum.Font.SourceSans;
+		})
+		--end
+	end)
+	socket.OnClose:Connect(function()
+		local bruh = false
+		print("Websocket was closed.")
+		while bruh == false do
+			local succ,err = pcall(function()
+				socket = syn.websocket.connect(url)
+				print("Websocket failed to restart, trying again.")
+			end)
+			if succ then
+				connection:Disconnect()
+				connection = socket.OnMessage:Connect(function(MESSAGE)
+					local msg = game:GetService("HttpService"):JSONDecode(MESSAGE)
+					--if msg[1] ~= player.Name then
+					game.StarterGui:SetCore("ChatMakeSystemMessage", { 
+						Text = msg[1] .. ": " .. msg[2];
+						Font = Enum.Font.SourceSans;
+					})
+					--end
+				end)
+				bruh = true
+				print("Websocket restarted successfully")
+			end
+			task.wait()
+		end
+	end)
+
+	local remote = game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest
+	local remote_hook = nil
+	remote_hook = replaceclosure(remote.FireServer, newcclosure(function(self, ...)
+		return remote_hook(self, ...);
+	end))
+
+	local namecall = nil
+	namecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+		local namecall_method, parameters = (getnamecallmethod or get_namecall_method)(), {...};
+
+		if namecall_method == "FireServer" and self == remote then
+			if parameters[1]:split(" ")[1] == "/msg" then
+				local data = game:GetService("HttpService"):JSONEncode({player.Name,string.sub(parameters[1],6)})
+				socket:Send(data)
+				return nil
+			else
+				return namecall(self, unpack(parameters));
+			end
+		else
+			return namecall(self, unpack(parameters));
+		end
+	end))
+end))
+
+local netlessvals = {}
+
+local function netless(part)
+	if part:IsA("BasePart") then
+		local BodyVelocity = Instance.new("BodyVelocity",part)
+		BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge); 
+		BodyVelocity.P = math.huge; 
+		BodyVelocity.Velocity = Vector3.new(-25.05,-25.05,-25.05)
+
+		local BodyAngularVelocity = Instance.new("BodyAngularVelocity",part)
+		BodyAngularVelocity.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); 
+		BodyAngularVelocity.P = math.huge;
+
+		table.insert(netlessvals,part)
+
+		local disconnect = game["Run Service"].Heartbeat:Connect(function()
+			part:ApplyImpulse(Vector3.new(-25.05,-25.05,-25.05))
+		end)
+		part.AncestryChanged:Connect(function()
+			if not part.Parent then 
+				disconnect:Disconnect()
+			end
+		end)
+	end
+	return part
+end
+
+local olddecompile = decompile
+local function advdecompile(script)
+	return "--  Advanced Decompiler by ProductionTakeOne#3330 \n" .. string.gsub(string.gsub(olddecompile(script),"l__",""),"__1","")
+end
+
+getgenv().decompile = advdecompile
+getgenv().netless = netless
+
+printconsole(tostring("Autoexec loaded in " .. tick() - loadtime))
+loadstring(game:HttpGet("https://gist.githubusercontent.com/CenteredSniper/5aacd41c762304c92802ed4ad714cc98/raw/e8c9b25cb3660028793342728553efdb24e72bec/NotificationService.lua",true))()({
+	Text = "Autoexec loaded in " .. tick() - loadtime,
+	Duration = 5
+})
