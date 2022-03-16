@@ -1,3 +1,4 @@
+
 if getgenv().GuiLoaded then printconsole("Already loaded?") error("Already loaded?") return end
 local gui = game:GetObjects("rbxassetid://9013635661")[1]
 getgenv().GuiLoaded = true
@@ -227,69 +228,7 @@ script.Parent.Frame.Autoexec.Activated:Connect(function()
 		if not isfolder("AutoexecFiles") then
 			makefolder("AutoexecFiles")
 		end
-		writefile("AutoexecFiles/autoexec.lua",[[if not game:IsLoaded() then game.Loaded:Wait() end
-local mt = getrawmetatable(game)
-local backup = mt.__namecall
-local vu = game:GetService("VirtualUser")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-repeat wait() until game.CoreGui:FindFirstChild("PurchasePrompt")
-repeat wait() until game.CoreGui.PurchasePrompt:FindFirstChild("ProductPurchaseContainer")
-game.CoreGui.PurchasePrompt:FindFirstChild("ProductPurchaseContainer").Visible = false
-setreadonly(mt, false)
-
-mt.__namecall = newcclosure(function(self, ...)
-   local method = getnamecallmethod()
-   local args = {...}
-   if method == "Kick" then
-        printconsole('attempted kick')
-       return wait(9e9)
-   end
-   return backup(self,...)
-end)
-
-setreadonly(mt, true)
-game:GetService("Players").LocalPlayer.Idled:connect(function()
-    vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-    wait(1)
-    vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-end)
-loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/KenzenScript.lua",true))()]])
-		
-		writefile("AutoexecFiles/decompilefix.lua",[[local netlessvals = {}
-
-local function netless(part)
-	if part:IsA("BasePart") then
-		local BodyVelocity = Instance.new("BodyVelocity",part)
-		BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge); 
-		BodyVelocity.P = math.huge; 
-		BodyVelocity.Velocity = Vector3.new(-25.05,-25.05,-25.05)
-
-		local BodyAngularVelocity = Instance.new("BodyAngularVelocity",part)
-		BodyAngularVelocity.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); 
-		BodyAngularVelocity.P = math.huge;
-
-		table.insert(netlessvals,part)
-
-		local disconnect = game["Run Service"].Heartbeat:Connect(function()
-			part:ApplyImpulse(Vector3.new(-25.05,-25.05,-25.05))
-		end)
-		part.AncestryChanged:Connect(function()
-			if not part.Parent then 
-				disconnect:Disconnect()
-			end
-		end)
-	end
-	return part
-end
-
-local olddecompile = decompile
-local function advdecompile(script)
-    return "--  Advanced Decompiler by ProductionTakeOne#3330 \n" .. string.gsub(string.gsub(olddecompile(script),"l__",""),"__1","")
-end
-
-getgenv().decompile = advdecompile
-getgenv().netless = netless]])
+		writefile("AutoexecFiles/one'sautoexec.txt",game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/extra/one'sautoexec.txt",true))
 		notification("Check workspace/AutoexecFiles",3)
 	else
 		notification("writefile not avaliable",3)
