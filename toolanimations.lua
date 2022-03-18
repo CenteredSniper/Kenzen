@@ -10,7 +10,7 @@ local function wait(val)
     end 
 end
 
-local files = game:GetObjects("rbxassetid://9136094720")[1]
+local files = game:GetObjects("rbxassetid://9136313101")[1]
 if getgenv().preloadanimations then
     local gui = files.ScreenGui:Clone()
     gui.Parent = game.CoreGui
