@@ -97,6 +97,7 @@ local PreloadAnimation = function(AssetId)
 	local Keyframes = Sequence:GetKeyframes()
 	local Yield = function(Seconds)
 		local Time = Seconds * (60.8) --+ Keyframes[#Keyframes].Time)
+		if (1/Time) > 1 then Time = 1 end
 		for I = 1,Time,_G.AnimationSpeed do 
 			run_service.Delta['Event']:Wait()
 			--task.wait(1/60.8)
@@ -306,5 +307,5 @@ local function AnimationLoader()
 	if renderstp then renderstp:Disconnect() end
 end
 
-task.wait()
+--task.wait()
 coroutine.wrap(AnimationLoader)()
