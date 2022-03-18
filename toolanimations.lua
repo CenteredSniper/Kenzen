@@ -10,7 +10,7 @@ local function wait(val)
     end 
 end
 
-local files = game:GetObjects("rbxassetid://9122671729")[1]
+local files = game:GetObjects("rbxassetid://9136094720")[1]
 if getgenv().preloadanimations then
     local gui = files.ScreenGui:Clone()
     gui.Parent = game.CoreGui
@@ -21,7 +21,7 @@ if getgenv().preloadanimations then
             wait(getgenv().loadtime)
         end
         spawn(function()
-            local animid,soundid = v.ToolTip,v.AnimationID.SoundID.SoundId
+            local animid,soundid = v.ToolTip,v.SoundID.SoundId
             if soundid then
                 local soundwait = Instance.new("Sound",game.Players.LocalPlayer)
                 soundwait.SoundId = soundid
@@ -58,7 +58,7 @@ for i,v in pairs(files.Folder:GetChildren()) do
         wait()
         tool.Activated:Connect(function()
             if _G.runanimation then
-                _G.runanimation(v.ToolTip,string.sub(v.AnimationID.SoundID.SoundId,14))
+                _G.runanimation(v.ToolTip,string.sub(v.SoundID.SoundId,14))
             end
         end)
         tool.Unequipped:Connect(function()
