@@ -21,6 +21,7 @@ if getgenv.Netless2 == nil then getgenv.Netless2 = false end
 if getgenv.Claim2 == nil then getgenv.Claim2 = false end
 if getgenv.Notification == nil then getgenv.Notification = true end
 if getgenv.DynamicVelocity == nil then getgenv.DynamicVelocity = false end
+if getgenv.DynamicVelocityExperimental == nil then getgenv.DynamicVelocityExperimental = false end
 if getgenv.AntiSleep == nil then getgenv.AntiSleep = false end
 if getgenv.MovementVelocity == nil then getgenv.MovementVelocity = false end
 if getgenv.R6toR15 == nil then getgenv.R6toR15 = false end
@@ -107,6 +108,10 @@ if getgenv.TorsoFling then
 end
 if getgenv.MovementVelocity then 
 	getgenv.DynamicVelocity = false 
+	getgenv.DynamicVelocityExperimental = false 
+end
+if getgenv.DynamicVelocityExperimental then 
+	getgenv.DynamicVelocity = false
 end
 
 -- // RigType
@@ -256,7 +261,9 @@ for i,v in pairs(OriginalRig:GetDescendants()) do
 			selectionbox.Transparency = 1; selectionbox.Adornee = v;
 			netlessbeat = RunService.Heartbeat:Connect(function()
 				if v and v.Parent then
-					v:ApplyImpulse(Velocity)
+					if not getgenv.DynamicVelocityExperimental then
+						v:ApplyImpulse(Velocity)
+					end
 					if v.Name == "Head" and not getgenv.GodMode then
 						v.SelectionBox.Transparency = 1
 					else
@@ -344,6 +351,30 @@ local function dynvelocity2()
 	end
 end
 
+local function dynvelocity3(part)
+	local prevpos = part.Position
+	local velstep
+	local partvel = Vector3.new(-25.05,-25.05,-25.05)
+	velstep = RunService.Heartbeat:Connect(function()
+		if part and part.Parent then
+			part:ApplyImpulse(partvel)
+			--Velocity = velocity
+			part.BodyVelocity.Velocity = partvel
+		else
+			velstep:Disconnect()
+		end
+	end)
+	while wait() and velstep do
+		local pos = (part.Position - prevpos)
+		if pos.Magnitude > 0.2 then
+			partvel = pos * Vector3.new(-25.05,-25.05,-25.05)
+		else
+			partvel = Vector3.new(-25.05,-25.05,-25.05)
+		end
+		prevpos = part.Position
+	end
+end
+
 -- changes velocity based on player movement
 if getgenv.MovementVelocity then
 	--local savedvel = getgenv.Velocity
@@ -375,6 +406,11 @@ if typeof(getgenv.Collisions) == "boolean" then
 	local Collisionrig = getgenv.Collisions and OriginalRig or Character
 	for i,v in pairs(Collisionrig:GetDescendants()) do
 		if v:IsA("BasePart") then
+			if getgenv.DynamicVelocityExperimental then
+				cr(cc(function()
+					dynvelocity3(v)
+				end))
+			end
 			local collisionstep
 			collisionstep = RunService.Stepped:Connect(function()
 				if v and v.Parent then
