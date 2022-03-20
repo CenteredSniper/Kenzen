@@ -364,10 +364,10 @@ local function dynvelocity3(part)
 			velstep:Disconnect()
 		end
 	end)
-	while wait() and velstep do
+	while wait(.1) and velstep do
 		local pos = (part.Position - prevpos)
 		if pos.Magnitude > 0.2 then
-			partvel = pos * Vector3.new(-25.05,-25.05,-25.05)
+			partvel = pos * Vector3.new(50,50,50)
 		else
 			partvel = Vector3.new(-25.05,-25.05,-25.05)
 		end
