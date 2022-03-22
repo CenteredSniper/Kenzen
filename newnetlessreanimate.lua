@@ -18,6 +18,10 @@ local wait = function(int)
 end
 
 -- Default Values
+if getgenv.Optimizer == nil then getgenv.Optimizer = true end
+if getgenv.Optimizer then
+	loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/GameOptimizer/main/src.lua", true))()
+end
 if getgenv.Fling == nil then getgenv.Fling = false end
 if getgenv.TorsoFling == nil then getgenv.TorsoFling = false end
 if getgenv.ShowReal == nil then getgenv.ShowReal = false end
