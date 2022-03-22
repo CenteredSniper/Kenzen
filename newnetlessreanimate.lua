@@ -5,6 +5,18 @@ local speedtesttick = tick()
 -- incase someone doesn't have getgenv in their exploit for some odd reason
 local getgenv = getgenv and getgenv() or _G
 
+-- Fast wait by Expro
+local wait = function(int)
+	if not int then
+		int = 0
+	end
+	local t = tick()
+	repeat
+		task.wait(0/1)
+	until (tick() - t) >= int
+	return (tick() - t), t
+end
+
 -- Default Values
 if getgenv.Fling == nil then getgenv.Fling = false end
 if getgenv.TorsoFling == nil then getgenv.TorsoFling = false end
@@ -78,6 +90,19 @@ local Velocity = Vector3.new(getgenv.Velocity, getgenv.Velocity, getgenv.Velocit
 if getgenv.Network then
 	game:GetService("Players").LocalPlayer.MaximumSimulationRadius=1000
 	SetHiddenProperty(game:GetService("Players").LocalPlayer,"SimulationRadius",1000)
+end
+
+-- Artifical HB
+local event = getgenv.MiliWait
+if not event then
+	event = Instance.new("BindableEvent")
+	cr(cc(function()
+		while wait() and event do
+			event:Fire()
+		end
+	end))
+	event.Name = "ExPro"
+	getgenv.MiliWait = event
 end
 
 -- Not all exploits have isnetworkowner
@@ -166,7 +191,6 @@ if RigType == Enum.HumanoidRigType.R15 then
 			v:Clone().Parent = Character
 		end
 	end
-	task.wait()
 elseif getgenv.R6toR15 then
 	Character = game:GetObjects("rbxassetid://9028578914")[1]:Clone()
 	Character.Parent = workspace
@@ -186,14 +210,13 @@ elseif getgenv.R6toR15 then
 		end
 	end
 	Character.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
-	task.wait()
 else
 	Player.Character.Archivable = true
 	Character = Player.Character:Clone()
 	Player.Character.Archivable = false
 	Character.Parent = workspace
-	task.wait()
 end
+wait()
 Character.Name = "ExProReanimate"
 
 getgenv.RealRig = OriginalRig
@@ -224,7 +247,7 @@ if getgenv.Claim2 then
 	Character.HumanoidRootPart.Anchored = true
 	--OriginalPosition = Player.Character.HumanoidRootPart.CFrame
 	local actualpos
-	repeat task.wait() 
+	repeat wait()
 		pcall(function()
 			local pos = Player.Character.HumanoidRootPart.Position + Vector3.new(math.random(-1500,1500),100,math.random(-1500,1500))
 			local check = true
@@ -259,7 +282,7 @@ for i,v in pairs(OriginalRig:GetDescendants()) do
 			v.CustomPhysicalProperties = PhysicalProperties.new(0,0,0,0,0)
 			local selectionbox = Instance.new("SelectionBox",v)
 			selectionbox.Transparency = 1; selectionbox.Adornee = v;
-			netlessbeat = RunService.Heartbeat:Connect(function()
+			netlessbeat = event.Event:Connect(function()
 				if v and v.Parent then
 					if not getgenv.DynamicVelocityExperimental then
 						v:ApplyImpulse(Velocity)
@@ -294,7 +317,7 @@ for i,v in pairs(OriginalRig:GetChildren()) do
 	end
 end
 
-task.wait(0/1) -- adding a wait as extra safety
+wait() -- adding a wait as extra safety
 
 -- old dynvelocity, feel free to edit and use this if u want
 local function dynvelocity()
@@ -355,7 +378,7 @@ local function dynvelocity3(part)
 	local prevpos = part.Position
 	local velstep
 	local partvel = Vector3.new(-25.05,-25.05,-25.05)
-	velstep = RunService.Heartbeat:Connect(function()
+	velstep = event.Event:Connect(function()
 		if part and part.Parent then
 			part:ApplyImpulse(partvel)
 			--Velocity = velocity
@@ -433,14 +456,14 @@ if getgenv.Claim2 then
 	local frametime = tick() task.wait() frametime = tick() - frametime 
 	for i=1,1/(frametime/1) do
 		game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = KeepInPlace
-		task.wait(frametime)
+		wait(frametime)
 	end
 	-- :BreakJoints breaks the neck, not good for non-godmode
 	for i,v in pairs(OriginalRig:GetDescendants()) do
 		cr(cc(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end))
 	end
 	cr(cc(function()
-		while keepingparts and task.wait() do
+		while keepingparts and wait() do
 			for i,v in pairs(OriginalRig:GetDescendants()) do
 				if v:IsA("BasePart") and v.Name ~= "Head" and v.Name ~= "HumanoidRootPart" then
 					v.CFrame = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame
@@ -448,7 +471,7 @@ if getgenv.Claim2 then
 			end
 		end
 	end))
-	task.wait(0.5)
+	wait(0.5)
 	local animat = game:GetService("TweenService"):Create(game.Players.LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(5), {CFrame = Character.HumanoidRootPart.CFrame})
 	animat:Play()
 	animat.Completed:wait()
@@ -470,14 +493,14 @@ if getgenv.GodMode and OriginalRig:FindFirstChild("Neck",true) then
 	if getgenv.Fling then
 		local savepos = OriginalRig.HumanoidRootPart.CFrame
 		cr(cc(function()
-			while keepingparts and task.wait() do
+			while keepingparts and wait() do
 				OriginalRig.HumanoidRootPart.CFrame = savepos
 			end
 		end))
 	elseif getgenv.TorsoFling then
 		local savepos = OriginalRig.HumanoidRootPart.CFrame
 		cr(cc(function()
-			while keepingparts and task.wait() do
+			while keepingparts and wait() do
 				if RigType == Enum.HumanoidRigType.R6 then
 					OriginalRig.Torso.CFrame = savepos
 				else
@@ -519,7 +542,7 @@ for i,v in pairs(tools) do
 		v.Parent = OriginalRig
 	end
 end
-task.wait()
+wait()
 Player.Character.Parent = Character; Player.Character = Character
 workspace.CurrentCamera.CameraSubject = Character.Humanoid
 notify("Set Character to Fake Rig",6)
@@ -548,7 +571,7 @@ if getgenv.AutoAnimate then
 			loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/extra/R15Animate.lua",true))()
 		end))
 	else
-		Character.Animate.Disabled = true; task.wait() Character.Animate.Disabled = false
+		Character.Animate.Disabled = true; wait() Character.Animate.Disabled = false
 	end
 end
 
@@ -572,7 +595,7 @@ if RigType == Enum.HumanoidRigType.R15 then
 		for i,R15PartNameOffset in pairs(R15PartNames) do
 			cr(cc(function()
 				local partbeat
-				partbeat = RunService.Heartbeat:Connect(function(delta)
+				partbeat = event.Event:Connect(function(delta)
 					if OriginalRig:FindFirstChild(i) then
 						if networkownership(OriginalRig[i]) then
 							if i == "LowerTorso" and getgenv.TorsoFling then
@@ -593,7 +616,7 @@ if RigType == Enum.HumanoidRigType.R15 then
 	for i,v in pairs(OriginalRig:GetChildren()) do
 		if v:IsA("Accessory") then
 			local partbeat
-			partbeat = RunService.Heartbeat:Connect(function(delta)
+			partbeat = event.Event:Connect(function(delta)
 				if v and v.Parent and v:FindFirstChild("Handle") then
 					if networkownership(v.Handle) then
 						v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
@@ -606,7 +629,7 @@ if RigType == Enum.HumanoidRigType.R15 then
 	end
 	if not getgenv.Fling and OriginalRig:FindFirstChild("HumanoidRootPart") then
 		local partbeat
-		partbeat = RunService.Heartbeat:Connect(function(delta)
+		partbeat = event.Event:Connect(function(delta)
 			if OriginalRig:FindFirstChild("HumanoidRootPart") then
 				if networkownership(OriginalRig["HumanoidRootPart"]) then
 					OriginalRig["HumanoidRootPart"].CFrame = Character["HumanoidRootPart"].CFrame 
@@ -620,7 +643,7 @@ elseif getgenv.R6toR15 then
 	for i,v in pairs(OriginalRig:GetChildren()) do
 		if v:IsA("Accessory") then
 			local partbeat
-			partbeat = RunService.Heartbeat:Connect(function(delta)
+			partbeat = event.Event:Connect(function(delta)
 				if v and v.Parent and v:FindFirstChild("Handle") then
 					if networkownership(v.Handle) then
 						v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
@@ -634,7 +657,7 @@ elseif getgenv.R6toR15 then
 	for i,v in pairs(R15Offsets) do
 		cr(cc(function()
 			local partbeat
-			partbeat = RunService.Heartbeat:Connect(function(delta)
+			partbeat = event.Event:Connect(function(delta)
 				if OriginalRig:FindFirstChild(v[1]) and Character:FindFirstChild(v[2]) then
 					if networkownership(OriginalRig[v[1]]) then
 						if v[1] == "Head" and OriginalRig:FindFirstChild("Neck",true) then
@@ -653,7 +676,7 @@ else
 		cr(cc(function()
 			if v:IsA("BasePart") then
 				local partbeat
-				partbeat = RunService.Heartbeat:Connect(function(delta)
+				partbeat = event.Event:Connect(function(delta)
 					if v and v.Parent then
 						if v.Name == "HumanoidRootPart" and getgenv.Fling and networkownership(v) then
 						elseif getgenv.TorsoFling and v.Name == "Torso" or v.Name == "LowerTorso" and networkownership(FakeHead)  then	
@@ -675,13 +698,12 @@ else
 				end)
 			elseif v:IsA("Accessory") and v.Handle ~= FakeTorso and v.Handle ~= FakeTorso1 and v.Handle ~= FakeHead then
 				local partbeat
-				partbeat = RunService.Heartbeat:Connect(function(delta)
+				partbeat = event.Event:Connect(function(delta)
 					if v and v.Parent and v:FindFirstChild("Handle") then
 						if networkownership(v.Handle) then
 							v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
 						end
 					else
-						print(v)
 						partbeat:Disconnect()
 					end
 				end)
@@ -692,7 +714,7 @@ end
 if getgenv.Tools then
 	for i,v in pairs(tools) do
 		local partbeat
-		partbeat = RunService.Heartbeat:Connect(function(delta)
+		partbeat = event.Event:Connect(function(delta)
 			if v and v.Parent and v:FindFirstChild("Handle") then
 				if Character:FindFirstChild(v.Name) and networkownership(v.Handle) then
 					v.Handle.CFrame = Character[v.Name].Handle.CFrame 
@@ -726,7 +748,7 @@ notify("Script loaded in " .. tostring(tick() - speedtesttick) .. " Seconds",5)
 
 -- // God Mode
 if getgenv.GodMode and OriginalRig:FindFirstChild("Neck",true) then 
-	task.wait(game.Players.RespawnTime + game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()/750); 
+	wait(game.Players.RespawnTime + game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()/750); 
 	if OriginalRig:FindFirstChild("Neck",true) then 
 		OriginalRig:FindFirstChild("Neck",true).Parent = nil 
 		keepinplace = false 
