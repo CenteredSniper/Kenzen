@@ -294,7 +294,7 @@ for i,v in pairs(OriginalRig:GetChildren()) do
 	end
 end
 
-task.wait(0.1) -- adding a wait as extra safety
+task.wait(0/1) -- adding a wait as extra safety
 
 -- old dynvelocity, feel free to edit and use this if u want
 local function dynvelocity()
