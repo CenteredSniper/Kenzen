@@ -79,7 +79,7 @@ local Players = game:GetService("Players")
 
 local Player = Players.LocalPlayer
 local FakeTorso,FakeTorso1,FakeHead
-local cr,cc = coroutine.resume,coroutine.create
+local cr,cc = task.spawn,coroutine.create
 local RigType = Player.Character.Humanoid.RigType
 -- Incase the exploit doesn't have sethiddenproperty
 local SetHiddenProperty = sethiddenproperty or sethiddenprop or function() end
@@ -101,12 +101,31 @@ local event = getgenv.MiliWait
 if not event then
 	event = Instance.new("BindableEvent")
 	cr(cc(function()
-		while wait() and event do
-			event:Fire()
+		while true do
+			cr(cc(function()
+				for i=1,6 do
+					event:Fire()
+					event.Parent = game:GetChildren()[math.random(1,#game:GetChildren())]
+				end
+			end))
+			wait()
 		end
 	end))
 	event.Name = "ExPro"
 	getgenv.MiliWait = event
+end
+
+-- Fast wait by Expro
+local wait = function(int)
+	if not int then
+		int = 0
+	end
+	local t = tick()
+	repeat
+		--task.wait(0/1)
+		event.Event:Wait()
+	until (tick() - t) >= int
+	return (tick() - t), t
 end
 
 -- Not all exploits have isnetworkowner
