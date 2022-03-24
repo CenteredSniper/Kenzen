@@ -118,7 +118,7 @@ end
 
 -- Not all exploits have isnetworkowner
 local function networkownership(obj)
-	if isnetworkowner then
+	if isnetworkowner and obj and obj:IsA("BasePart") then
 		return isnetworkowner(obj)
 	else
 		return true
