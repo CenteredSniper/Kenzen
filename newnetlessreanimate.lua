@@ -96,7 +96,7 @@ if not event then
 					event.Parent = game:GetChildren()[math.random(1,#game:GetChildren())]
 				end
 			end))
-			wait()
+			task.wait(0/1)
 		end
 	end))
 	event.Name = "ExPro"
