@@ -5,18 +5,6 @@ local speedtesttick = tick()
 -- incase someone doesn't have getgenv in their exploit for some odd reason
 local getgenv = getgenv and getgenv() or _G
 
--- Fast wait by Expro
-local wait = function(int)
-	if not int then
-		int = 0
-	end
-	local t = tick()
-	repeat
-		task.wait(0/1)
-	until (tick() - t) >= int
-	return (tick() - t), t
-end
-
 -- Default Values
 if getgenv.Optimizer == nil then getgenv.Optimizer = true end
 if getgenv.Optimizer then
