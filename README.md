@@ -1,2 +1,1 @@
-# Kenzen
-funy script hub
+# ya
