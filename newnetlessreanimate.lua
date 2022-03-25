@@ -87,6 +87,7 @@ end
 -- Artifical HB
 local event = getgenv.MiliWait
 if not event then
+	local fw = loadstring(game:HttpGet("https://gist.githubusercontent.com/CenteredSniper/fe5cbdbc396630374041f0c2d156a747/raw/5491a28fd72ed7e11c9fa3f9141df033df3ed5a9/fastwait.lua"))()
 	event = Instance.new("BindableEvent")
 	cr(cc(function()
 		while true do
@@ -96,7 +97,8 @@ if not event then
 					event.Parent = game:GetChildren()[math.random(1,#game:GetChildren())]
 				end
 			end))
-			task.wait(0/1)
+			--task.wait(0/1)
+			fw(0/1)
 		end
 	end))
 	event.Name = "ExPro"
