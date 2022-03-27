@@ -10,8 +10,8 @@ if getgenv.Optimizer == nil then getgenv.Optimizer = true end
 if getgenv.Optimizer then
 	loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/GameOptimizer/main/src.lua", true))()
 end
-if getgenv.Fling == nil then getgenv.Fling = false end
-if getgenv.TorsoFling == nil then getgenv.TorsoFling = false end
+if getgenv.Fling == true then getgenv.Fling = "HumanoidRootPart" end
+if getgenv.Fling == nil then getgenv.Fling = "" end
 if getgenv.ShowReal == nil then getgenv.ShowReal = false end
 if getgenv.FakeGod == nil then getgenv.FakeGod = false end
 if getgenv.GodMode == nil then getgenv.GodMode = true end
@@ -69,6 +69,7 @@ local Player = Players.LocalPlayer
 local FakeTorso,FakeTorso1,FakeHead
 local cr,cc = task.spawn,coroutine.create
 local RigType = Player.Character.Humanoid.RigType
+if getgenv.TorsoFling then if RigType == Enum.HumanoidRigType.R15 then getgenv.Fling = "LowerTorso" else getgenv.Fling = "Torso" end end
 -- Incase the exploit doesn't have sethiddenproperty
 local SetHiddenProperty = sethiddenproperty or sethiddenprop or function() end
 local OriginalRig = Player.Character
@@ -140,9 +141,6 @@ PhysicsService:CollisionGroupSetCollidable("NoCollide", "NoCollide", false)
 
 if getgenv.FakeGod and RigType == Enum.HumanoidRigType.R6 then 
 	getgenv.GodMode = false 
-end
-if getgenv.TorsoFling then 
-	getgenv.Fling = false 
 end
 if getgenv.MovementVelocity then 
 	getgenv.DynamicVelocity = false 
@@ -503,22 +501,11 @@ end]]
 
 -- // Godmode Keep Fling Part in place
 if getgenv.GodMode and OriginalRig:FindFirstChild("Neck",true) then
-	if getgenv.Fling then
-		local savepos = OriginalRig.HumanoidRootPart.CFrame
+	if OriginalRig:FindFirstChild(getgenv.Fling) then
+		local savepos = OriginalRig:FindFirstChild(getgenv.Fling).CFrame
 		cr(cc(function()
-			while keepingparts and wait() do
-				OriginalRig.HumanoidRootPart.CFrame = savepos
-			end
-		end))
-	elseif getgenv.TorsoFling then
-		local savepos = OriginalRig.HumanoidRootPart.CFrame
-		cr(cc(function()
-			while keepingparts and wait() do
-				if RigType == Enum.HumanoidRigType.R6 then
-					OriginalRig.Torso.CFrame = savepos
-				else
-					OriginalRig["LowerTorso"].CFrame = savepos
-				end
+			while keepingparts and wait() and OriginalRig:FindFirstChild(getgenv.Fling) do
+				OriginalRig[getgenv.Fling].CFrame = savepos
 			end
 		end))
 	end
@@ -611,8 +598,7 @@ if RigType == Enum.HumanoidRigType.R15 then
 				partbeat = event.Event:Connect(function(delta)
 					if OriginalRig:FindFirstChild(i) then
 						if networkownership(OriginalRig[i]) then
-							if i == "LowerTorso" and getgenv.TorsoFling then
-							elseif i == "Torso" and getgenv.TorsoFling then
+							if i == getgenv.Fling then
 							elseif i == "Head" and OriginalRig:FindFirstChild("Neck",true) then
 							else
 								local ExpectedPosition = Character[R6PartName].CFrame * R15PartNameOffset
@@ -639,18 +625,6 @@ if RigType == Enum.HumanoidRigType.R15 then
 				end
 			end)
 		end
-	end
-	if not getgenv.Fling and OriginalRig:FindFirstChild("HumanoidRootPart") then
-		local partbeat
-		partbeat = event.Event:Connect(function(delta)
-			if OriginalRig:FindFirstChild("HumanoidRootPart") then
-				if networkownership(OriginalRig["HumanoidRootPart"]) then
-					OriginalRig["HumanoidRootPart"].CFrame = Character["HumanoidRootPart"].CFrame 
-				end
-			else
-				partbeat:Disconnect()
-			end
-		end)
 	end
 elseif getgenv.R6toR15 then
 	for i,v in pairs(OriginalRig:GetChildren()) do
@@ -691,8 +665,7 @@ else
 				local partbeat
 				partbeat = event.Event:Connect(function(delta)
 					if v and v.Parent then
-						if v.Name == "HumanoidRootPart" and getgenv.Fling and networkownership(v) then
-						elseif getgenv.TorsoFling and v.Name == "Torso" or v.Name == "LowerTorso" and networkownership(FakeHead)  then	
+						if v.Name == getgenv.Fling and networkownership(v) then
 						elseif getgenv.FakeGod and v.Name == "Head" and networkownership(FakeHead)  then
 							FakeHead.CFrame = Character["Head"].CFrame
 						elseif getgenv.FakeGod and v.Name == "Torso" and networkownership(FakeTorso)  then
