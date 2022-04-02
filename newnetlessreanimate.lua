@@ -29,6 +29,7 @@ if getgenv.DynamicVelocityExperimental == nil then getgenv.DynamicVelocityExperi
 if getgenv.AntiSleep == nil then getgenv.AntiSleep = false end
 if getgenv.MovementVelocity == nil then getgenv.MovementVelocity = false end
 if getgenv.R6toR15 == nil then getgenv.R6toR15 = false end
+if getgenv.ArtificialHeartBeat == nil then getgenv.ArtificialHeartBeat = true end
 
 -- // Notification Module
 local notification = loadstring(game:HttpGet("https://gist.githubusercontent.com/CenteredSniper/5aacd41c762304c92802ed4ad714cc98/raw/e8c9b25cb3660028793342728553efdb24e72bec/NotificationService.lua",true))()
@@ -67,7 +68,7 @@ local Players = game:GetService("Players")
 
 local Player = Players.LocalPlayer
 local FakeTorso,FakeTorso1,FakeHead
-local cr,cc = task.spawn,coroutine.create
+local cr = task.spawn
 local RigType = Player.Character.Humanoid.RigType
 if getgenv.TorsoFling then if RigType == Enum.HumanoidRigType.R15 then getgenv.Fling = "LowerTorso" else getgenv.Fling = "Torso" end end
 -- Incase the exploit doesn't have sethiddenproperty
@@ -90,23 +91,29 @@ local event = getgenv.MiliWait
 if not event then
 	local fw = loadstring(game:HttpGet("https://gist.githubusercontent.com/CenteredSniper/fe5cbdbc396630374041f0c2d156a747/raw/5491a28fd72ed7e11c9fa3f9141df033df3ed5a9/fastwait.lua"))()
 	event = Instance.new("BindableEvent")
-	cr(cc(function()
-		while true do
-			cr(cc(function()
-				for i=1,math.max(game:GetService("Stats").Workspace.FPS:GetValue()/27.5,1) do
-					event:Fire()
-					--event.Parent = game:GetChildren()[math.random(1,#game:GetChildren())] 
-					--Above broke from adonis anticheat!
-					game:FindFirstChildOfClass("Terrain")
-        				game:FindFirstChildOfClass("Player")
-        				game:FindFirstChildOfClass("Script")
-        				game:FindFirstChildOfClass("StarterPlayerScripts")				
-				end
-			end))
-			--task.wait(0/1)
-			fw(0/1)
-		end
-	end))
+	if getgenv.ArtificialHeartBeat then
+		cr(function()
+			while true do
+				cr(function()
+					for i=1,math.max(game:GetService("Stats").Workspace.FPS:GetValue()/27.5,1) do
+						event:Fire()
+						--event.Parent = game:GetChildren()[math.random(1,#game:GetChildren())] 
+						--Above broke from adonis anticheat!
+						game:FindFirstChildOfClass("Terrain")
+						game:FindFirstChildOfClass("Player")
+						game:FindFirstChildOfClass("Script")
+						game:FindFirstChildOfClass("StarterPlayerScripts")				
+					end
+				end)
+				--task.wait(0/1)
+				fw(0/1)
+			end
+		end)
+	else
+		RunService.Heartbeat:Connect(function()
+			event:Fire()
+		end)
+	end
 	event.Name = "ExPro"
 	getgenv.MiliWait = event
 end
@@ -285,7 +292,7 @@ end
 
 -- // Netless claiming
 for i,v in pairs(OriginalRig:GetDescendants()) do
-	cr(cc(function()
+	cr(function()
 		if v:IsA("BasePart") then
 			--v.Velocity = Velocity
 			--v:ApplyImpulse(Velocity)
@@ -320,7 +327,7 @@ for i,v in pairs(OriginalRig:GetDescendants()) do
 				findmatchingaccessory(v)
 			end
 		end
-	end))
+	end)
 end
 notify("Netless Claimed",6)
 
@@ -446,9 +453,9 @@ if typeof(getgenv.Collisions) == "boolean" then
 	for i,v in pairs(Collisionrig:GetDescendants()) do
 		if v:IsA("BasePart") then
 			if getgenv.DynamicVelocityExperimental then
-				cr(cc(function()
+				cr(function()
 					dynvelocity3(v)
-				end))
+				end)
 			end
 			local collisionstep
 			collisionstep = RunService.Stepped:Connect(function()
@@ -476,9 +483,9 @@ if getgenv.Claim2 then
 	end
 	-- :BreakJoints breaks the neck, not good for non-godmode
 	for i,v in pairs(OriginalRig:GetDescendants()) do
-		cr(cc(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end))
+		cr(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end)
 	end
-	cr(cc(function()
+	cr(function()
 		while keepingparts and wait() do
 			for i,v in pairs(OriginalRig:GetDescendants()) do
 				if v:IsA("BasePart") and v.Name ~= "Head" and v.Name ~= "HumanoidRootPart" then
@@ -486,7 +493,7 @@ if getgenv.Claim2 then
 				end
 			end
 		end
-	end))
+	end)
 	wait(0.5)
 	local animat = game:GetService("TweenService"):Create(game.Players.LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(5), {CFrame = Character.HumanoidRootPart.CFrame})
 	animat:Play()
@@ -494,25 +501,25 @@ if getgenv.Claim2 then
 	Character.HumanoidRootPart.Anchored = false
 else
 	for i,v in pairs(OriginalRig:GetDescendants()) do
-		cr(cc(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end))
+		cr(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end)
 	end
 end
 
 --[[
 -- // Weld Removing
 for i,v in pairs(OriginalRig:GetDescendants()) do
-	cr(cc(function() if v:IsA("Motor6D") and v.Name ~= "Neck" then v:Destroy() end end))
+	cr(function() if v:IsA("Motor6D") and v.Name ~= "Neck" then v:Destroy() end end))
 end]]
 
 -- // Godmode Keep Fling Part in place
 if getgenv.GodMode and OriginalRig:FindFirstChild("Neck",true) then
 	if OriginalRig:FindFirstChild(getgenv.Fling) then
 		local savepos = OriginalRig:FindFirstChild(getgenv.Fling).CFrame
-		cr(cc(function()
+		cr(function()
 			while keepingparts and wait() and OriginalRig:FindFirstChild(getgenv.Fling) do
 				OriginalRig[getgenv.Fling].CFrame = savepos
 			end
-		end))
+		end)
 	end
 end
 
@@ -555,26 +562,26 @@ notify("Set Character to Fake Rig",6)
 -- // Turning Chosen Rig Invisible
 local invisrig = getgenv.ShowReal and Character or OriginalRig
 for i,v in pairs(invisrig:GetChildren()) do
-	cr(cc(function()
+	cr(function()
 		if v:IsA("BasePart") or v:IsA("Decal") then
 			v.Transparency = 1
 		elseif v:IsA("Accessory") or v:IsA("Tool") then
 			v.Handle.Transparency = 1
 		end
-	end))
+	end)
 end
 
 -- // Animating the fake rig
 if getgenv.AutoAnimate then
 	if RigType == Enum.HumanoidRigType.R15 then
-		cr(cc(function()
+		cr(function()
 			--getgenv.ForHonor = Character.Animate
 			loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/Animate"))()
-		end))
+		end)
 	elseif getgenv.R6toR15 then
-		cr(cc(function()
+		cr(function()
 			loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/extra/R15Animate.lua",true))()
-		end))
+		end)
 	else
 		Character.Animate.Disabled = true; wait() Character.Animate.Disabled = false
 	end
@@ -583,11 +590,11 @@ end
 
 -- // Making Characters not collide
 for i,v in pairs(Character:GetDescendants()) do
-	cr(cc(function()
+	cr(function()
 		if v:IsA("BasePart") then
 			PhysicsService:SetPartCollisionGroup(v, "NoCollide")
 		end
-	end))
+	end)
 end
 
 --[[
@@ -598,7 +605,7 @@ end
 if RigType == Enum.HumanoidRigType.R15 then
 	for R6PartName,R15PartNames in pairs(R15Offsets) do
 		for i,R15PartNameOffset in pairs(R15PartNames) do
-			cr(cc(function()
+			cr(function()
 				local partbeat
 				partbeat = event.Event:Connect(function(delta)
 					if OriginalRig:FindFirstChild(i) then
@@ -614,7 +621,7 @@ if RigType == Enum.HumanoidRigType.R15 then
 						partbeat:Disconnect()
 					end
 				end)
-			end))
+			end)
 		end
 	end
 	for i,v in pairs(OriginalRig:GetChildren()) do
@@ -647,7 +654,7 @@ elseif getgenv.R6toR15 then
 		end
 	end
 	for i,v in pairs(R15Offsets) do
-		cr(cc(function()
+		cr(function()
 			local partbeat
 			partbeat = event.Event:Connect(function(delta)
 				if OriginalRig:FindFirstChild(v[1]) and Character:FindFirstChild(v[2]) then
@@ -661,11 +668,11 @@ elseif getgenv.R6toR15 then
 					partbeat:Disconnect()
 				end
 			end)
-		end))
+		end)
 	end
 else
 	for i,v in pairs(OriginalRig:GetChildren()) do
-		cr(cc(function()
+		cr(function()
 			if v:IsA("BasePart") then
 				local partbeat
 				partbeat = event.Event:Connect(function(delta)
@@ -699,7 +706,7 @@ else
 					end
 				end)
 			end
-		end))
+		end)
 	end
 end
 if getgenv.Tools then
