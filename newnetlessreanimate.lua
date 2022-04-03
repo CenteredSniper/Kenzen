@@ -11,7 +11,7 @@ if getgenv.Optimizer then
 	loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/GameOptimizer/main/src.lua", true))()
 end
 if getgenv.Fling == true then getgenv.Fling = "HumanoidRootPart" end
-if getgenv.Fling == nil then getgenv.Fling = "" end
+if not getgenv.Fling then getgenv.Fling = "" end
 if getgenv.ShowReal == nil then getgenv.ShowReal = false end
 if getgenv.FakeGod == nil then getgenv.FakeGod = false end
 if getgenv.GodMode == nil then getgenv.GodMode = true end
