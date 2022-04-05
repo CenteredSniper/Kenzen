@@ -280,7 +280,7 @@ LeftLeg.Parent = FakeRig
 RightLeg.Parent = FakeRig
 
 HeadMesh.Parent = Head
-face.Parent = Head
+--face.Parent = Head
 
 Neck.Parent = Torso
 RootJoint.Parent = RootPart
