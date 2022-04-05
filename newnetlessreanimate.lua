@@ -189,7 +189,7 @@ if RigType == Enum.HumanoidRigType.R15 then
 		},
 	}
 
-	Character = game:GetObjects("rbxassetid://8232772380")[1]:Clone()
+	Character = loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/extra/R6Rig.lua",true))()--game:GetObjects("rbxassetid://8232772380")[1]:Clone()
 	Character.Parent = workspace
 	Character.Humanoid:ApplyDescription(Players:GetHumanoidDescriptionFromUserId(Player.UserId))
 	for i,v in pairs(Character:GetChildren()) do
@@ -611,7 +611,7 @@ if RigType == Enum.HumanoidRigType.R15 then
 					if OriginalRig:FindFirstChild(i) then
 						if networkownership(OriginalRig[i]) then
 							if i == getgenv.Fling then
-							elseif i == "Head" and OriginalRig:FindFirstChild("Neck",true) then
+							--elseif i == "Head" and OriginalRig:FindFirstChild("Neck",true) then
 							else
 								local ExpectedPosition = Character[R6PartName].CFrame * R15PartNameOffset
 								OriginalRig[i].CFrame = ExpectedPosition 
@@ -748,6 +748,9 @@ notify("Script loaded in " .. tostring(tick() - speedtesttick) .. " Seconds",5)
 if getgenv.GodMode and OriginalRig:FindFirstChild("Neck",true) then 
 	wait(game.Players.RespawnTime + game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()/750); 
 	if OriginalRig:FindFirstChild("Neck",true) then 
+	    if RigType == Enum.HumanoidRigType.R15 then
+	        repeat event.Event:Wait() until networkownership(OriginalRig:FindFirstChild("UpperTorso")) or networkownership(OriginalRig:FindFirstChild("Head"))
+	    end
 		OriginalRig:FindFirstChild("Neck",true).Parent = nil 
 		keepinplace = false 
 		notify("Permadeath On",6) 
