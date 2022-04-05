@@ -6,7 +6,7 @@ local Humanoid = Instance.new("Humanoid")
 
 local Head = Instance.new("Part")
 local HeadMesh = Instance.new("SpecialMesh")
-local face = Instance.new("Decal")
+--local face = Instance.new("Decal")
 
 local Torso = Instance.new("Part")
 local Neck = Instance.new("Motor6D")
@@ -64,11 +64,10 @@ Head.FormFactor = Enum.FormFactor.Symmetric
 Head.formFactor = Enum.FormFactor.Symmetric
 
 HeadMesh.Scale = Vector3.new(1.25, 1.25, 1.25)
-face.Name = "face"
+--face.Name = "face"
+--face.Texture = "http://www.roblox.com/asset/?id=405705854"
 
-face.Texture = "http://www.roblox.com/asset/?id=405705854"
 Torso.Name = "Torso"
-
 Torso.Color = Color3.new(0.227451, 0.490196, 0.0823529)
 Torso.Size = Vector3.new(2, 2, 1)
 Torso.BrickColor = BrickColor.new("Camo")
