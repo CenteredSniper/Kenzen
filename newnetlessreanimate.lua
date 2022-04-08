@@ -472,6 +472,16 @@ if typeof(getgenv.Collisions) == "boolean" then
 	end
 end
 
+local function R15Break()
+	if OriginalRig:FindFirstChild("HumanoidRootPart") then
+		OriginalRig.HumanoidRootPart:BreakJoints()
+	end
+	repeat event.Event:Wait() until networkownership(OriginalRig:WaitForChild("UpperTorso"),50)
+	for i,v in pairs(OriginalRig:GetDescendants()) do
+		cr(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end)
+	end
+end
+
 -- // Claim 2 Bring back
 local keepingparts = true
 if getgenv.Claim2 then
@@ -481,9 +491,13 @@ if getgenv.Claim2 then
 		game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = KeepInPlace
 		wait(frametime)
 	end
-	-- :BreakJoints breaks the neck, not good for non-godmode
-	for i,v in pairs(OriginalRig:GetDescendants()) do
-		cr(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end)
+	if RigType == Enum.HumanoidRigType.R15 then
+		R15Break()
+	else
+		-- :BreakJoints breaks the neck, not good for non-godmode
+		for i,v in pairs(OriginalRig:GetDescendants()) do
+			cr(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end)
+		end
 	end
 	cr(function()
 		while keepingparts and wait() do
@@ -500,8 +514,12 @@ if getgenv.Claim2 then
 	animat.Completed:wait()
 	Character.HumanoidRootPart.Anchored = false
 else
-	for i,v in pairs(OriginalRig:GetDescendants()) do
-		cr(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end)
+	if RigType == Enum.HumanoidRigType.R15 then
+		R15Break()
+	else
+		for i,v in pairs(OriginalRig:GetDescendants()) do
+			cr(function() if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then v:Destroy() end end)
+		end
 	end
 end
 
@@ -611,7 +629,7 @@ if RigType == Enum.HumanoidRigType.R15 then
 					if OriginalRig:FindFirstChild(i) then
 						if networkownership(OriginalRig[i]) then
 							if i == getgenv.Fling then
-							--elseif i == "Head" and OriginalRig:FindFirstChild("Neck",true) then
+								--elseif i == "Head" and OriginalRig:FindFirstChild("Neck",true) then
 							else
 								local ExpectedPosition = Character[R6PartName].CFrame * R15PartNameOffset
 								OriginalRig[i].CFrame = ExpectedPosition 
@@ -748,9 +766,9 @@ notify("Script loaded in " .. tostring(tick() - speedtesttick) .. " Seconds",5)
 if getgenv.GodMode and OriginalRig:FindFirstChild("Neck",true) then 
 	wait(game.Players.RespawnTime + game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()/750); 
 	if OriginalRig:FindFirstChild("Neck",true) then 
-	    if RigType == Enum.HumanoidRigType.R15 then
-	        repeat event.Event:Wait() until networkownership(OriginalRig:FindFirstChild("UpperTorso")) or networkownership(OriginalRig:FindFirstChild("Head"))
-	    end
+		if RigType == Enum.HumanoidRigType.R15 then
+			repeat event.Event:Wait() until networkownership(OriginalRig:FindFirstChild("UpperTorso")) or networkownership(OriginalRig:FindFirstChild("Head"))
+		end
 		OriginalRig:FindFirstChild("Neck",true).Parent = nil 
 		keepinplace = false 
 		notify("Permadeath On",6) 
