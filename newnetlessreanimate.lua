@@ -6,7 +6,7 @@ local speedtesttick = tick()
 local getgenv = getgenv and getgenv() or _G
 
 -- Default Values
-if getgenv.Optimizer == nil then getgenv.Optimizer = true end
+if getgenv.Optimizer == nil then getgenv.Optimizer = false end
 if getgenv.Optimizer then
 	loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/GameOptimizer/main/src.lua", true))()
 end
