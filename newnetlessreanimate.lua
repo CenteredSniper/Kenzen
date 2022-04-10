@@ -41,7 +41,7 @@ end
 if Global.Optimizer == nil then Global.Optimizer = false end
 if Global.Fling == true then Global.Fling = "HumanoidRootPart" end
 if not Global.Fling then Global.Fling = "" end
-if Global.ShowReal == nil then Global.ShowReal = false end
+if Global.ShowReal == nil then Global.ShowReal = true end
 if Global.FakeGod == nil then Global.FakeGod = false end
 if Global.GodMode == nil then Global.GodMode = true end
 if Global.AutoAnimate == nil then Global.AutoAnimate = true end
@@ -159,7 +159,7 @@ if RigType == Enum.HumanoidRigType.R15 then
 		["Head"] = {["Head"] = CFrame.new(0,0,0)
 		},
 	}
-	
+
 	Character = loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/extra/R6Rig.lua",true))()--game:GetObjects("rbxassetid://8232772380")[1]:Clone()
 	Character.Parent = workspace
 	Character.Humanoid:ApplyDescription(Players:GetHumanoidDescriptionFromUserId(Player.UserId))
@@ -193,13 +193,16 @@ Player.Character = Character
 local OriginalRigDescendants = OriginalRig:GetDescendants()
 local CharacterDescendants = Character:GetDescendants()
 
-Asset.Spawn(function()
-	task.wait(Players.RespawnTime+Ping:GetValue()/750)
-	if OriginalRig:FindFirstChild("Neck",true) then 
-		OriginalRig.Humanoid:ChangeState(15)
-		Notify("Permadeath On",6) 
-	end
-end)
+if Global.GodMode then
+	Asset.Spawn(function()
+		task.wait(Players.RespawnTime+Ping:GetValue()/750)
+		if OriginalRig:FindFirstChild("Neck",true) then 
+			OriginalRig.Humanoid:ChangeState(15)
+			Notify("Permadeath On",6) 
+		end
+	end)
+end
+
 
 Global.RealRig = OriginalRig
 Global.CloneRig = Character
@@ -245,18 +248,18 @@ for i,Part in pairs(OriginalRigDescendants) do
 	Asset.Spawn(function()
 		if Part:IsA("BasePart") then
 			local NetlessHB
-			
+
 			local BodyVelocity = Instance.new("BodyVelocity",Part)
 			BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge); BodyVelocity.P = math.huge; BodyVelocity.Velocity = Velocity
 			local BodyAngularVelocity = Instance.new("BodyAngularVelocity",Part)
 			BodyAngularVelocity.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); BodyAngularVelocity.P = math.huge; BodyAngularVelocity.AngularVelocity = Vector3.new(0,0,0)
-			
+
 			Part.Massless = true
 			Part.CustomPhysicalProperties = PhysicalProperties.new(0,0,0,0,0)
-			
+
 			local selectionbox = Instance.new("SelectionBox",Part)
 			selectionbox.Transparency = 1; selectionbox.Adornee = Part;
-			
+
 			NetlessHB = event:Connect(function()
 				if Part and Part.Parent and Part:IsDescendantOf(workspace) then
 					Part:ApplyImpulse(Velocity)
