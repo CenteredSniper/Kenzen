@@ -122,12 +122,7 @@ end
 
 local Velocity = Vector3.new(Global.Velocity, Global.Velocity, Global.Velocity)
 local wait = function(Time)
-	if Time == nil or Time <= 0 then
-		event:Wait()
-	else
-		local StartTick = tick()
-		repeat event:Wait() until Time >= tick()-StartTick
-	end
+	event:Wait()
 end
 
 if not pcall(function() PhysicsService:GetCollisionGroupId("NoCollide") end) then 
@@ -189,6 +184,7 @@ Character.Name = "ExProReanimate"
 
 OriginalRig.Parent = Character
 Player.Character = Character
+Player.ReplicationFocus = workspace
 
 local OriginalRigDescendants = OriginalRig:GetDescendants()
 local CharacterDescendants = Character:GetDescendants()
@@ -265,7 +261,6 @@ for i,Part in pairs(OriginalRigDescendants) do
 				if Part and Part.Parent and Part:IsDescendantOf(workspace) then
 					Part:ApplyImpulse(Velocity)
 					Part.AssemblyAngularVelocity = Vector3.new()
-					Part.AssemblyLinearVelocity = Vector3.new()
 					if Part.Name == "Head" and not Global.GodMode then
 						selectionbox.SurfaceTransparency = 1
 					elseif isnetworkowner(Part) then
@@ -301,8 +296,6 @@ for i,Part in pairs(OriginalRigDescendants) do
 	end)
 end
 Notify("Net Claimed",6)
-
-wait()
 
 
 
