@@ -156,8 +156,8 @@ if RigType == Enum.HumanoidRigType.R15 then
 			["RightLowerLeg"] = CFrame.new(-(1-OriginalRig.RightLowerLeg.Size.X)/2,-0.201*(OriginalRig.RightLowerLeg.Size.Y/1.193),0),
 			["RightFoot"] = CFrame.new(-(1-OriginalRig.RightFoot.Size.X)/2,-0.85*(OriginalRig.RightFoot.Size.Y/0.3),0),
 		},
-		["Head"] = {["Head"] = CFrame.new(0,0,0)
-		},
+		["Head"] = {["Head"] = CFrame.new(0,0,0)},
+		["HumanoidRootPart"] = {["HumanoidRootPart"] = CFrame.new(0,0,0)},
 	}
 
 	Character = loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/extra/R6Rig.lua",true))()--game:GetObjects("rbxassetid://8232772380")[1]:Clone()
@@ -415,22 +415,23 @@ if RigType == Enum.HumanoidRigType.R15 then
 	for R6PartName,R15PartNames in pairs(R15Offsets) do
 		for i,R15PartNameOffset in pairs(R15PartNames) do
 			Asset.Spawn(function()
-				local partbeat
-				partbeat = event:Connect(function(delta)
-					if OriginalRig:FindFirstChild(i) then
-						if isnetworkowner(OriginalRig[i]) then
-							if i == Global.Fling then
-							elseif i == "Head" and OriginalRig:FindFirstChild("Neck",true) then
-							else
-								local ExpectedPosition = Character[R6PartName].CFrame * R15PartNameOffset
-								OriginalRig[i].CFrame = ExpectedPosition 
+				if Global.Fling ~= i then
+					local partbeat
+					partbeat = event:Connect(function(delta)
+						if OriginalRig:FindFirstChild(i) then
+							if isnetworkowner(OriginalRig[i]) then
+								if i == "Head" and OriginalRig:FindFirstChild("Neck",true) then
+								else
+									local ExpectedPosition = Character[R6PartName].CFrame * R15PartNameOffset
+									OriginalRig[i].CFrame = ExpectedPosition 
+								end
 							end
+						else
+							partbeat:Disconnect()
 						end
-					else
-						partbeat:Disconnect()
-					end
-				end)
-				table.insert(Events,partbeat)
+					end)
+					table.insert(Events,partbeat)
+				end
 			end)
 		end
 	end
