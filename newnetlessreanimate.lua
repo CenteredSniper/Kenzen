@@ -256,6 +256,7 @@ for i,Part in pairs(OriginalRigDescendants) do
 
 			Part.Massless = true
 			Part.CustomPhysicalProperties = PhysicalProperties.new(0,0,0,0,0)
+			Part.RootPriority = 127
 
 			local selectionbox = Instance.new("SelectionBox",Part)
 			selectionbox.Transparency = 1; selectionbox.Adornee = Part;
@@ -263,6 +264,8 @@ for i,Part in pairs(OriginalRigDescendants) do
 			NetlessHB = event:Connect(function()
 				if Part and Part.Parent and Part:IsDescendantOf(workspace) then
 					Part:ApplyImpulse(Velocity)
+					Part.AssemblyAngularVelocity = Vector3.new()
+					Part.AssemblyLinearVelocity = Vector3.new()
 					if Part.Name == "Head" and not Global.GodMode then
 						selectionbox.SurfaceTransparency = 1
 					elseif isnetworkowner(Part) then
