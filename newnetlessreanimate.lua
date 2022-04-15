@@ -41,7 +41,7 @@ end
 if Global.Optimizer == nil then Global.Optimizer = false end
 if Global.Fling == true then Global.Fling = "HumanoidRootPart" end
 if not Global.Fling then Global.Fling = "" end
-if Global.ShowReal == nil then Global.ShowReal = true end
+if Global.ShowReal == nil then Global.ShowReal = false end
 if Global.FakeGod == nil then Global.FakeGod = false end
 if Global.GodMode == nil then Global.GodMode = true end
 if Global.AutoAnimate == nil then Global.AutoAnimate = true end
@@ -378,8 +378,7 @@ if Global.FakeGod then
 end
 
 
-
-for i,v in pairs(Global.ShowReal and OriginalRig:GetChildren() or Character:GetChildren()) do
+for i,v in pairs(Global.ShowReal and Character:GetChildren() or OriginalRig:GetChildren()) do
 	Asset.Spawn(function()
 		if v:IsA("BasePart") or v:IsA("Decal") then
 			v.Transparency = 1
@@ -453,17 +452,17 @@ else
 				local partbeat
 				partbeat = event:Connect(function(delta)
 					if v and v.Parent and v:IsDescendantOf(workspace) then
-						if isnetworkowner(v) then
+						if Global.FakeGod and v.Name == "Head" and isnetworkowner(FakeHead) then
+							FakeHead.CFrame = Character["Head"].CFrame
+						elseif Global.FakeGod and v.Name == "Torso" and isnetworkowner(FakeTorso) then
+							if FakeTorso1 and isnetworkowner(FakeTorso1) then
+								FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(0.5,0,0) 
+								FakeTorso1.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(-0.5,0,0) 
+							else
+								FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) 
+							end
+						elseif isnetworkowner(v) then
 							if v.Name == Global.Fling then
-							elseif Global.FakeGod and v.Name == "Head" then
-								FakeHead.CFrame = Character["Head"].CFrame
-							elseif Global.FakeGod and v.Name == "Torso" then
-								if FakeTorso1 then
-									FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(0.5,0,0) 
-									FakeTorso1.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(-0.5,0,0) 
-								else
-									FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) 
-								end
 							else
 								v.CFrame = Character[v.Name].CFrame 
 							end
