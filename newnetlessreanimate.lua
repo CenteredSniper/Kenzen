@@ -192,8 +192,10 @@ local CharacterDescendants = Character:GetDescendants()
 if Global.GodMode then
 	Asset.Spawn(function()
 		task.wait(Players.RespawnTime+Ping:GetValue()/750)
+		local neck = OriginalRig:FindFirstChild("Neck",true)
 		if OriginalRig:FindFirstChild("Neck",true) then 
 			OriginalRig.Humanoid:ChangeState(15)
+			neck.Parent = nil
 			Notify("Permadeath On",6) 
 		end
 	end)
@@ -233,8 +235,10 @@ end
 Asset.Spawn(function()
 	for i,v in pairs(OriginalRigDescendants) do
 		Asset.Spawn(function()
-			if v:IsA("Motor6D") and v.Name ~= "Neck" or v:IsA("Weld") and v.Name ~= "Neck" then
-				v:Destroy() 
+			if v.Name ~= "Neck" then
+				if v:IsA("Motor6D") or v:IsA("Weld") or v:IsA("BallSocketConstraint") or v:IsA("HingeConstraint") then
+					v:Destroy() 
+				end
 			end
 		end)
 	end
