@@ -15,7 +15,7 @@ local isnetworkowner = isnetworkowner or function() return true end
 
 local loadstring = pcall(function() loadstring("")() end) and loadstring or EmptyFunction
 
-local notification = loadstring(game:HttpGet("https://gist.githubusercontent.com/CenteredSniper/5aacd41c762304c92802ed4ad714cc98/raw/e8c9b25cb3660028793342728553efdb24e72bec/NotificationService.lua",true))()
+local notification = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/notificationstuff/main/src.lua",true))()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
 
 local PhysicsService = game:GetService("PhysicsService")
