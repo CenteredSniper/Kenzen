@@ -1,11 +1,12 @@
 -- bypass from BlastingStone#8878
 if game.PlaceId == 5771467270 or game.PlaceId == 8221489139 then
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/BlastingStone/MyLuaStuff/master/ttd3bypass.lua"))()
-    task.wait()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/BlastingStone/MyLuaStuff/master/universal_antisteal_bypass.lua"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/BlastingStone/MyLuaStuff/master/ttd3bypass.lua"))()
+	task.wait(0/1)
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/BlastingStone/MyLuaStuff/master/universal_antisteal_bypass.lua"))()
 else
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/BlastingStone/MyLuaStuff/master/universal_antisteal_bypass.lua"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/BlastingStone/MyLuaStuff/master/universal_antisteal_bypass.lua"))()
 end
+
 local screenxD = Instance.new("ScreenGui",game.CoreGui)
 screenxD.DisplayOrder = 500
 screenxD.ResetOnSpawn = false
@@ -86,21 +87,24 @@ end
 
 local animationtabl = {}
 
-while wait(0.1) do
+while true do
 	local localPlayer = game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid")
 	if localPlayer then
 		local a = localPlayer:GetPlayingAnimationTracks()
 		for i, track in pairs(a) do
-			local pass = true
-			for _,v in pairs(animationtabl) do
-				if v == track.Animation.AnimationId then
-					pass = false
+			task.spawn(function()
+				local pass = true
+				for _,v in pairs(animationtabl) do
+					if v == track.Animation.AnimationId then
+						pass = false
+					end
 				end
-			end
-			if pass then
-				table.insert(animationtabl,track.Animation.AnimationId)
-				createbutton(track.Animation.AnimationId)
-			end
+				if pass then
+					table.insert(animationtabl,track.Animation.AnimationId)
+					createbutton(track.Animation.AnimationId)
+				end
+			end)
 		end
 	end
+	task.wait()
 end
