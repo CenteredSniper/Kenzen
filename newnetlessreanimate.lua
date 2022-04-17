@@ -55,6 +55,7 @@ if Global.Notification == nil then Global.Notification = true end
 if Global.AntiSleep == nil then Global.AntiSleep = false end
 if Global.MovementVelocity == nil then Global.MovementVelocity = false end
 if Global.ArtificialHeartBeat == nil then Global.ArtificialHeartBeat = true end
+if Global.R6 == nil then Global.R6 = true end
 
 settings().Rendering.EagerBulkExecution = true
 settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
@@ -169,7 +170,7 @@ if Global.PartGUI then
 	end)
 end
 
-if RigType == Enum.HumanoidRigType.R15 then
+if RigType == Enum.HumanoidRigType.R15 and Global.R6 then
 	R15Offsets = {
 		["Left Arm"] = {["LeftUpperArm"] = CFrame.new((1-OriginalRig.LeftUpperArm.Size.X)*2,0.369*(OriginalRig.LeftUpperArm.Size.Y/1.169),0),
 			["LeftLowerArm"] = CFrame.new((1-OriginalRig.LeftLowerArm.Size.X)*2,-0.224*(OriginalRig.LeftLowerArm.Size.Y/1.052),0),
@@ -431,7 +432,7 @@ for i,v in pairs(Global.ShowReal and Character:GetChildren() or OriginalRig:GetC
 end
 
 if Global.AutoAnimate then
-	if RigType == Enum.HumanoidRigType.R15 then
+	if RigType == Enum.HumanoidRigType.R15 and Global.R6 then
 		Asset.Spawn(function()
 			loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/Animate"))()
 		end)
@@ -448,7 +449,7 @@ for i,v in pairs(CharacterDescendants) do
 	end)
 end
 
-if RigType == Enum.HumanoidRigType.R15 then
+if RigType == Enum.HumanoidRigType.R15 and Global.R6 then
 	for R6PartName,R15PartNames in pairs(R15Offsets) do
 		for i,R15PartNameOffset in pairs(R15PartNames) do
 			Asset.Spawn(function()
