@@ -25,6 +25,7 @@ local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local RigType = Player.Character.Humanoid.RigType
 local OriginalRig = Player.Character
+local OriginalRigDescendants = OriginalRig:GetDescendants()
 
 local FPS = game:GetService("Stats").Workspace.FPS
 local Ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]
@@ -41,6 +42,7 @@ end
 if Global.Optimizer == nil then Global.Optimizer = false end
 if Global.Fling == true then Global.Fling = "HumanoidRootPart" end
 if not Global.Fling then Global.Fling = "" end
+if Global.PartGUI == nil then Global.PartGUI = false end
 if Global.ShowReal == nil then Global.ShowReal = false end
 if Global.FakeGod == nil then Global.FakeGod = false end
 if Global.GodMode == nil then Global.GodMode = true end
@@ -130,6 +132,43 @@ if not pcall(function() PhysicsService:GetCollisionGroupId("NoCollide") end) the
 	PhysicsService:CollisionGroupSetCollidable("NoCollide", "NoCollide", false)
 end
 
+if Global.PartGUI then
+	Asset.Spawn(function()
+		local ScreenGui = Instance.new("ScreenGui")
+		local ViewPort = Instance.new("ViewportFrame")
+		local Camera = Instance.new("Camera")
+		Camera.CFrame = OriginalRig:WaitForChild("HumanoidRootPart",10).CFrame * CFrame.new(0,0,-5) * CFrame.Angles(0,math.rad(180),0)
+		ViewPort.BackgroundTransparency = 1
+		ViewPort.AnchorPoint = Vector2.new(1,0.5)
+		ViewPort.Position = UDim2.new(1,0,0.5,0)
+		ViewPort.Size = UDim2.new(0,200,0,300)
+		ViewPort.CurrentCamera = Camera
+
+		ViewPort.Parent = ScreenGui
+		ScreenGui.Parent = game.CoreGui
+
+		for i,v in pairs(OriginalRigDescendants) do
+			if v:IsA("BasePart") then
+				local Clone = v:Clone()
+				local PartHB
+				PartHB = event:Connect(function()
+					if v and v.Parent and v:IsDescendantOf(workspace) then
+						if isnetworkowner(v) then
+							Clone.Material = v.Material
+						else
+							Clone.Material = Enum.Material.ForceField
+						end
+					else
+						Clone:Destroy()
+						PartHB:Disconnect()
+					end
+				end)
+				Clone.Parent = ViewPort
+			end
+		end
+	end)
+end
+
 if RigType == Enum.HumanoidRigType.R15 then
 	R15Offsets = {
 		["Left Arm"] = {["LeftUpperArm"] = CFrame.new((1-OriginalRig.LeftUpperArm.Size.X)*2,0.369*(OriginalRig.LeftUpperArm.Size.Y/1.169),0),
@@ -186,7 +225,6 @@ OriginalRig.Parent = Character
 Player.Character = Character
 Player.ReplicationFocus = workspace
 
-local OriginalRigDescendants = OriginalRig:GetDescendants()
 local CharacterDescendants = Character:GetDescendants()
 
 if Global.GodMode then
