@@ -1,4 +1,12 @@
-local screenxD = Instance.new("ScreenGui",game.CoreGui)
+-- bypass from BlastingStone#8878
+if game.PlaceId == 5771467270 or game.PlaceId == 8221489139 then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/BlastingStone/MyLuaStuff/master/ttd3bypass.lua"))()
+    task.wait()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/BlastingStone/MyLuaStuff/master/universal_antisteal_bypass.lua"))()
+else
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/BlastingStone/MyLuaStuff/master/universal_antisteal_bypass.lua"))()
+end
+local screenxD = Instance.new("ScreenGui",game.Core Gui)
 screenxD.DisplayOrder = 500
 screenxD.ResetOnSpawn = false
 screenxD.Name = "🗿"
