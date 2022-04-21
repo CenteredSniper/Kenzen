@@ -1,6 +1,7 @@
 local Asset = {}
 
 local notification,fastwait,gethiddengui
+local sethiddenproperty = sethiddenproperty or function(obj,property,value) obj[property] = value end
 pcall(function() notification = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/notificationstuff/main/src.lua",true))() end)
 pcall(function() fastwait = loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/FastWait.lua"))() end)
 
@@ -32,10 +33,10 @@ Asset.Clone = function(Obj,Parent)
 end
 
 Asset.new = function(Name,Parent,Properties)
-	local NewInstance = Instance.new("Name")
-	for i,v in pairs(Properties) do
+	local NewInstance = Instance.new(Name)
+	for i,v in pairs(Properties or {}) do
 		pcall(function()
-			NewInstance[i] = v
+			sethiddenproperty(NewInstance,i,v)
 		end)
 	end
 	NewInstance.Parent = Parent or nil
@@ -160,7 +161,7 @@ end
 Asset.Stepped = function(Function,Property,Value)
 	if typeof(Function) == "Instance" then
 		game:GetService("RunService").Stepped:Connect(function()
-			Function[Property] = Value
+			sethiddenproperty(Function,Property,Value)
 		end)
 	else
 		game:GetService("RunService").Stepped:Connect(Function)
@@ -170,7 +171,7 @@ end
 Asset.RenderStep = function(Function,Property,Value)
 	if typeof(Function) == "Instance" then
 		game:GetService("RunService").RenderStepped:Connect(function()
-			Function[Property] = Value
+			sethiddenproperty(Function,Property,Value)
 		end)
 	else
 		game:GetService("RunService").RenderStepped:Connect(Function)
@@ -180,7 +181,7 @@ end
 Asset.Heartbeat = function(Function,Property,Value)
 	if typeof(Function) == "Instance" then
 		game:GetService("RunService").Heartbeat:Connect(function()
-			Function[Property] = Value
+			sethiddenproperty(Function,Property,Value)
 		end)
 	else
 		game:GetService("RunService").Heartbeat:Connect(Function)
