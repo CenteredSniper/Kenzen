@@ -237,19 +237,20 @@ end
 
 Asset.HiddenChanged = function(Obj,Property,Method)
 	local Event = Instance.new("BindableEvent")
-	local PropertyValue = Obj[Property]
+	local gethiddenproperty = gethiddenproperty or function(Obj,Property) return Obj[Property] end
+	local PropertyValue = gethiddenproperty(Obj,Property)
 	if Method == "Stepped" or Method == "Both" then
 		Asset.Stepped(function()
-			if PropertyValue ~= Obj[Property] then
-				PropertyValue = Obj[Property]
+			if PropertyValue ~= gethiddenproperty(Obj,Property) then
+				PropertyValue = gethiddenproperty(Obj,Property)
 				Event:Fire()
 			end
 		end)
 	end
 	if not Method or Method == "Heartbeat" or Method == "Both" then
 		Asset.Heartbeat(function()
-			if PropertyValue ~= Obj[Property] then
-				PropertyValue = Obj[Property]
+			if PropertyValue ~= gethiddenproperty(Obj,Property) then
+				PropertyValue = gethiddenproperty(Obj,Property)
 				Event:Fire()
 			end
 		end)
