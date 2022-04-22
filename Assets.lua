@@ -278,7 +278,19 @@ Asset.HiddenChanged = function(Obj,Property,Method)
 			end
 		end))
 	end
-	return Event.Event,RunEvents
+	Obj.Destroying:Connect(function()
+		for i,v in pairs(RunEvents) do
+			v:Disconnect()
+		end
+	end)
+	Obj.AncestryChanged:Connect(function()
+		if Obj.Parent == nil then
+			for i,v in pairs(RunEvents) do
+				v:Disconnect()
+			end
+		end
+	end)
+	return Event.Event
 end
 
 Asset.GetWeld = function(Part)
