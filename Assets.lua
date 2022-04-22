@@ -1,6 +1,7 @@
 local Asset = {}
 
-local notification,fastwait,gethiddengui
+local notification,fastwait
+local gethiddengui = gethiddengui or nil
 local sethiddenproperty = sethiddenproperty or function(obj,property,value) pcall(function() obj[property] = value end) end
 pcall(function() notification = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/notificationstuff/main/src.lua",true))() end)
 pcall(function() fastwait = loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/FastWait.lua"))() end)
@@ -291,6 +292,10 @@ Asset.GetWeld = function(Part)
 		end
 	end
 	return Instances
+end
+
+if getgenv().gethiddengui then
+	gethiddengui = getgenv().gethiddengui
 end
 
 Asset.Spawn(function()
