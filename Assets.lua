@@ -29,6 +29,7 @@ Asset.Clone = function(Obj,Parent)
 		else
 			Clone = Obj:Clone()
 		end
+		Clone.Parent = Parent or nil
 		return Clone
 	end
 	return nil
