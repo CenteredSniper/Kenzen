@@ -1,7 +1,7 @@
 local Asset = {}
 
 local notification,fastwait,gethiddengui
-local sethiddenproperty = sethiddenproperty or function(obj,property,value) obj[property] = value end
+local sethiddenproperty = sethiddenproperty or function(obj,property,value) pcall(function() obj[property] = value end) end
 pcall(function() notification = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/notificationstuff/main/src.lua",true))() end)
 pcall(function() fastwait = loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/FastWait.lua"))() end)
 pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))() end)
@@ -239,6 +239,13 @@ Asset.CollisionGroup = function(Part)
 	end
 end
 
+Asset.Ping = function()
+	return game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
+end
+Asset.FPS = function()
+	return 1/(task.wait())
+end
+
 Asset.MarketInfo = function(ID)
 	local marketinfo = game:GetService("MarketplaceService"):GetProductInfo(tonumber(ID))
 	repeat 
@@ -250,7 +257,7 @@ end
 
 Asset.HiddenChanged = function(Obj,Property,Method)
 	local Event = Instance.new("BindableEvent")
-	local gethiddenproperty = gethiddenproperty or function(Obj,Property) return Obj[Property] end
+	local gethiddenproperty = gethiddenproperty or function(Obj,Property) pcall(function() return Obj[Property] end) end
 	local PropertyValue = gethiddenproperty(Obj,Property)
 	if Method == "Stepped" or Method == "Both" then
 		Asset.Stepped(function()
