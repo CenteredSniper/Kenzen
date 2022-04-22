@@ -162,31 +162,31 @@ end
 
 Asset.Stepped = function(Function,Property,Value)
 	if typeof(Function) == "Instance" then
-		game:GetService("RunService").Stepped:Connect(function()
+		return game:GetService("RunService").Stepped:Connect(function()
 			sethiddenproperty(Function,Property,Value)
 		end)
 	else
-		game:GetService("RunService").Stepped:Connect(Function)
+		return game:GetService("RunService").Stepped:Connect(Function)
 	end
 end
 
 Asset.RenderStep = function(Function,Property,Value)
 	if typeof(Function) == "Instance" then
-		game:GetService("RunService").RenderStepped:Connect(function()
+		return game:GetService("RunService").RenderStepped:Connect(function()
 			sethiddenproperty(Function,Property,Value)
 		end)
 	else
-		game:GetService("RunService").RenderStepped:Connect(Function)
+		return game:GetService("RunService").RenderStepped:Connect(Function)
 	end
 end
 
 Asset.Heartbeat = function(Function,Property,Value)
 	if typeof(Function) == "Instance" then
-		game:GetService("RunService").Heartbeat:Connect(function()
+		return game:GetService("RunService").Heartbeat:Connect(function()
 			sethiddenproperty(Function,Property,Value)
 		end)
 	else
-		game:GetService("RunService").Heartbeat:Connect(Function)
+		return game:GetService("RunService").Heartbeat:Connect(Function)
 	end
 end
 
@@ -260,23 +260,24 @@ Asset.HiddenChanged = function(Obj,Property,Method)
 	local Event = Instance.new("BindableEvent")
 	local gethiddenproperty = gethiddenproperty or function(Obj,Property) pcall(function() return Obj[Property] end) end
 	local PropertyValue = gethiddenproperty(Obj,Property)
+	local RunEvents = {}
 	if Method == "Stepped" or Method == "Both" then
-		Asset.Stepped(function()
+		table.insert(RunEvents,Asset.Stepped(function()
 			if PropertyValue ~= gethiddenproperty(Obj,Property) then
 				PropertyValue = gethiddenproperty(Obj,Property)
 				Event:Fire()
 			end
-		end)
+		end))
 	end
 	if not Method or Method == "Heartbeat" or Method == "Both" then
-		Asset.Heartbeat(function()
+		table.insert(RunEvents,Asset.Heartbeat(function()
 			if PropertyValue ~= gethiddenproperty(Obj,Property) then
 				PropertyValue = gethiddenproperty(Obj,Property)
 				Event:Fire()
 			end
-		end)
+		end))
 	end
-	return Event.Event
+	return Event.Event,RunEvents
 end
 
 Asset.GetWeld = function(Part)
