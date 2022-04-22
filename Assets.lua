@@ -4,6 +4,7 @@ local notification,fastwait,gethiddengui
 local sethiddenproperty = sethiddenproperty or function(obj,property,value) obj[property] = value end
 pcall(function() notification = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/notificationstuff/main/src.lua",true))() end)
 pcall(function() fastwait = loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/FastWait.lua"))() end)
+pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))() end)
 
 Asset.ProtectGUI = function(GUI)
 	if gethiddengui then
@@ -225,6 +226,17 @@ end
 Asset.WebhookSend = function(webhook,message)
 	local request = (syn and syn.request) or (http and http.request) or (request) or error('http request function expected')
 	request{Url = webhook, Body = game:GetService("HttpService"):JSONEncode({['content'] = message}), Method = "POST", Headers = {["content-type"] = "application/json"}}	
+end
+
+Asset.CollisionGroup = function(Part)
+	local PhysicsService = game:GetService("PhysicsService")
+	if not pcall(function() PhysicsService:GetCollisionGroupId("NoCollide") end) then 
+		PhysicsService:CreateCollisionGroup("NoCollide")
+		PhysicsService:CollisionGroupSetCollidable("NoCollide", "NoCollide", false)
+	end
+	if Part:IsA("BasePart") then
+		PhysicsService:SetPartCollisionGroup(Part, "NoCollide")
+	end
 end
 
 Asset.MarketInfo = function(ID)
