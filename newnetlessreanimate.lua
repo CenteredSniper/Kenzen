@@ -197,7 +197,7 @@ if RigType == Enum.HumanoidRigType.R15 and Global.R6 then
 
 	Character = loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/extra/R6Rig.lua",true))()--game:GetObjects("rbxassetid://8232772380")[1]:Clone()
 	Character.Parent = workspace
-	Character.Humanoid:ApplyDescription(OriginalRig:FindFirstChild("HumanoidDescription",true) or Players:GetHumanoidDescriptionFromUserId(Player.UserId))
+	Character.Humanoid:ApplyDescription(Players:GetHumanoidDescriptionFromUserId(Player.UserId)) --OriginalRig:FindFirstChild("HumanoidDescription",true) or 
 	for i,v in pairs(OriginalRig:GetChildren()) do
 		if v:IsA("Accessory") then
 			local clonehats = v:Clone()
