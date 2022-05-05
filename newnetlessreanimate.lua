@@ -12,23 +12,26 @@ local EmptyFunction = function() end
 local Global = getgenv and getgenv() or _G
 local sethiddenproperty = sethiddenproperty or sethiddenprop or EmptyFunction
 local isnetworkowner = isnetworkowner or function() return true end
+local cloneref = cloneref or function(ref) return ref end
 
 local loadstring = pcall(function() loadstring("")() end) and loadstring or EmptyFunction
 
 local notification = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/notificationstuff/main/src.lua",true))()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
 
+local TweenService = cloneref(game:GetService("TweenService"))
 local PhysicsService = game:GetService("PhysicsService")
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
+local RunService = cloneref(game:GetService("RunService"))
+local Players = cloneref(game:GetService("Players"))
+local Stats = cloneref(game:GetService("Stats"))
 
 local Player = Players.LocalPlayer
 local RigType = Player.Character.Humanoid.RigType
 local OriginalRig = Player.Character
 local OriginalRigDescendants = OriginalRig:GetDescendants()
 
-local FPS = game:GetService("Stats").Workspace.FPS
-local Ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]
+local FPS = Stats.Workspace.FPS
+local Ping = Stats.Network.ServerStatsItem["Data Ping"]
 
 local Asset,Events,BodyVel,Tools = {},{},{},{}
 
@@ -65,6 +68,7 @@ settings().Physics.DisableCSGv2 = true
 settings().Physics.UseCSGv2 = false
 settings().Physics.ThrottleAdjustTime = math.huge
 workspace.InterpolationThrottling = "Disabled"
+Player.ReplicationFocus = workspace
 
 if Global.Optimizer then
 	loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/GameOptimizer/main/src.lua", true))()
@@ -197,6 +201,7 @@ if RigType == Enum.HumanoidRigType.R15 and Global.R6 then
 
 	Character = loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/extra/R6Rig.lua",true))()--game:GetObjects("rbxassetid://8232772380")[1]:Clone()
 	Character.Parent = workspace
+	Notify("Applying Character Description",3)
 	Character.Humanoid:ApplyDescription(Players:GetHumanoidDescriptionFromUserId(Player.UserId)) --OriginalRig:FindFirstChild("HumanoidDescription",true) or 
 	for i,v in pairs(Character:GetChildren()) do
 		if v:IsA("Accessory") then
@@ -229,7 +234,6 @@ Character.Name = "ExProReanimate"
 
 OriginalRig.Parent = Character
 Player.Character = Character
-Player.ReplicationFocus = workspace
 
 local CharacterDescendants = Character:GetDescendants()
 
@@ -271,9 +275,9 @@ if Global.Claim2 then
 	until FoundPos
 	FoundPos = CFrame.new(FoundPos)
 	OriginalRig.HumanoidRootPart.CFrame = FoundPos
+	task.wait(1/22+Ping:GetValue()/750)
 	Character.Head.CFrame = FoundPos
 	Character.Head.Anchored = true
-	Notify("Claim2; Found Pos",6)
 end
 
 Asset.Spawn(function()
@@ -343,9 +347,6 @@ for i,Part in pairs(OriginalRigDescendants) do
 		end
 	end)
 end
-Notify("Net Claimed",6)
-
-
 
 if Global.MovementVelocity then
 	table.insert(Events,Character.Humanoid:GetPropertyChangedSignal("MoveDirection"):Connect(function()
@@ -378,18 +379,55 @@ for i,v in pairs(Global.Collisions and OriginalRigDescendants or CharacterDescen
 end
 
 local Claim2 = true
+local ReclaimingParts = false
 if Global.Claim2 then
-	local StartTick = tick()
-	while Claim2 do
-		Asset.Spawn(function()
-			for i,v in pairs(OriginalRigDescendants) do
-				if v:IsA("BasePart") then
+	Notify("Claim2; Found Pos",3)
+	local ClaimTick = tick()
+	repeat 
+		for i,v in pairs(OriginalRigDescendants) do
+			if v:IsA("BasePart") then
+				if v.Name == "Head" and not isnetworkowner(v) then
+				else
 					v.CFrame = FoundPos
 				end
 			end
-		end)
+		end
 		wait()
+	until tick() - ClaimTick >= 1/22+Ping:GetValue()/750
+	local A = 0
+	Notify("Claim2; Returning Parts",3)
+	Asset.Spawn(function()
+		repeat 
+			for i,v in pairs(OriginalRigDescendants) do
+				if v:IsA("BasePart") then
+					if v.Name == "Head" and not isnetworkowner(v) then
+					else
+						v.CFrame = FoundPos:Lerp(Character.Head.CFrame,A)
+					end
+				end
+			end
+			wait()
+		until A == 1
+	end)
+	for i=1,100 do
+		A = i/100
+		task.wait(1/60)
 	end
+	Notify("Claim2; Finished",3)
+	Character.Head.Anchored = false
+end
+
+Global.ReclaimPart = function(Part)
+	ReclaimingParts = true
+	repeat
+		for i,v in pairs(OriginalRigDescendants) do
+			if v:IsA("BasePart") then
+				v.CFrame = Part.CFrame
+			end
+		end
+		wait()
+	until isnetworkowner(Part)
+	ReclaimingParts = false
 end
 
 if OriginalRig:FindFirstChild(Global.Fling) then
@@ -462,12 +500,14 @@ if RigType == Enum.HumanoidRigType.R15 and Global.R6 then
 					local partbeat
 					partbeat = event:Connect(function(delta)
 						if OriginalRig:FindFirstChild(i) then
-							if isnetworkowner(OriginalRig[i]) then
+							if isnetworkowner(OriginalRig[i]) and not ReclaimingParts then
 								if i == "Head" and OriginalRig:FindFirstChild("Neck",true) then
 								else
 									local ExpectedPosition = Character[R6PartName].CFrame * R15PartNameOffset
 									OriginalRig[i].CFrame = ExpectedPosition 
 								end
+							else
+								OriginalRig[i].CFrame = OriginalRig.Head.CFrame
 							end
 						else
 							partbeat:Disconnect()
@@ -483,8 +523,10 @@ if RigType == Enum.HumanoidRigType.R15 and Global.R6 then
 			local partbeat
 			partbeat = event:Connect(function(delta)
 				if v and v.Parent and v:FindFirstChild("Handle") then
-					if isnetworkowner(v.Handle) then
+					if isnetworkowner(v.Handle) and not ReclaimingParts then
 						v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
+					else
+						v.Handle.CFrame = OriginalRig.Head.CFrame
 					end
 				else
 					partbeat:Disconnect()
@@ -499,36 +541,44 @@ else
 			if v:IsA("BasePart") and v.Parent == OriginalRig then
 				local partbeat
 				partbeat = event:Connect(function(delta)
-					if v and v.Parent and v:IsDescendantOf(workspace) then
-						if Global.FakeGod and v.Name == "Head" and isnetworkowner(FakeHead) then
-							FakeHead.CFrame = Character["Head"].CFrame
-						elseif Global.FakeGod and v.Name == "Torso" and isnetworkowner(FakeTorso) then
-							if FakeTorso1 and isnetworkowner(FakeTorso1) then
-								FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(0.5,0,0) 
-								FakeTorso1.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(-0.5,0,0) 
-							else
-								FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) 
+					if not ReclaimingParts then
+						if v and v.Parent and v:IsDescendantOf(workspace) then
+							if Global.FakeGod and v.Name == "Head" and isnetworkowner(FakeHead) then
+								FakeHead.CFrame = Character["Head"].CFrame
+							elseif Global.FakeGod and v.Name == "Torso" and isnetworkowner(FakeTorso) then
+								if FakeTorso1 and isnetworkowner(FakeTorso1) then
+									FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(0.5,0,0) 
+									FakeTorso1.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(-0.5,0,0) 
+								else
+									FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) 
+								end
+							elseif isnetworkowner(v) then
+								if v.Name == Global.Fling then
+								else
+									v.CFrame = Character[v.Name].CFrame 
+								end
 							end
-						elseif isnetworkowner(v) then
-							if v.Name == Global.Fling then
-							else
-								v.CFrame = Character[v.Name].CFrame 
-							end
+						else
+							partbeat:Disconnect()
 						end
 					else
-						partbeat:Disconnect()
+						v.CFrame = OriginalRig.Head.CFrame
 					end
 				end)
 				table.insert(Events,partbeat)
 			elseif v:IsA("Accessory") and v.Handle ~= FakeTorso and v.Handle ~= FakeTorso1 and v.Handle ~= FakeHead then
 				local partbeat
 				partbeat = event:Connect(function(delta)
-					if v and v.Parent and v:FindFirstChild("Handle") and v:IsDescendantOf(workspace) then
-						if isnetworkowner(v.Handle) then
-							v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
+					if not ReclaimingParts then
+						if v and v.Parent and v:FindFirstChild("Handle") and v:IsDescendantOf(workspace) then
+							if isnetworkowner(v.Handle) then
+								v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
+							end
+						else
+							partbeat:Disconnect()
 						end
 					else
-						partbeat:Disconnect()
+						v.Handle.CFrame = OriginalRig.Head.CFrame
 					end
 				end)
 				table.insert(Events,partbeat)
@@ -542,21 +592,26 @@ end
 for i,v in pairs(Tools) do
 	local partbeat
 	partbeat = event:Connect(function(delta)
-		if v and v.Parent and v:FindFirstChild("Handle") then
-			if Character:FindFirstChild(v.Name) and isnetworkowner(v.Handle) then
-				v.Handle.CFrame = Character[v.Name].Handle.CFrame 
-			elseif isnetworkowner(v.Handle) then
-				v.Handle.CFrame = Character["Head"].CFrame + Vector3.new(0,-5,0) 
+		if not ReclaimingParts then
+			if v and v.Parent and v:FindFirstChild("Handle") then
+				if Character:FindFirstChild(v.Name) and isnetworkowner(v.Handle) then
+					v.Handle.CFrame = Character[v.Name].Handle.CFrame 
+				elseif isnetworkowner(v.Handle) then
+					v.Handle.CFrame = Character["Head"].CFrame + Vector3.new(0,-5,0) 
+				end
+			else
+				partbeat:Disconnect()
 			end
 		else
-			partbeat:Disconnect()
+			v.Handle.CFrame = OriginalRig.Head
 		end
 	end)
 	table.insert(Events,partbeat)
 end
 
-
-Claim2 = false
+if not getgenv().Claim2 then
+	Claim2 = false
+end
 Character.Humanoid.Died:Connect(function() 
 	pcall(function() 
 		Player.Character = OriginalRig; 
