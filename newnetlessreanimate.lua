@@ -255,6 +255,7 @@ Global.CloneRig = Character
 
 OriginalRig.Humanoid:ChangeState(16)
 workspace.CurrentCamera.CameraSubject = Character.Humanoid
+pcall(function() OriginalRig.Head.FaceCenterAttachment:Destroy() end)
 
 if Global.Claim2 then
 	repeat wait()
