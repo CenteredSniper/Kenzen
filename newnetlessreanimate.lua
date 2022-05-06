@@ -352,10 +352,23 @@ end
 if Global.MovementVelocity then
 	table.insert(Events,Character.Humanoid:GetPropertyChangedSignal("MoveDirection"):Connect(function()
 		local Vector = Character.Humanoid.MoveDirection * Global.Velocity
-		if Vector.X == 0 and Vector.Y == 0 and Vector.Z == 0 then Vector = Vector3.new(Global.Velocity,Global.Velocity,Global.Velocity) end
-		Velocity = Vector
+		local X,Z = Vector.X,Vector.Z
+		if Vector.X == 0 and Vector.Z == 0 then X = Global.Velocity Z = Global.Velocity end
+		Velocity = Vector3.new(X,Velocity,Z)
 		for i,v in pairs(BodyVel) do
-			v.Velocity = Vector
+			v.Velocity = Velocity
+		end
+	end))
+	table.insert(Events,Character.Humanoid.StateChanged:Connect(function(old,new)
+		local Y = 0
+		if new == Enum.HumanoidStateType.Jumping then
+			Y = -Global.Velocity
+		elseif new == Enum.HumanoidStateType.Freefall then
+			Y = Global.Velocity
+		end
+		Velocity = Vector3.new(Velocity.X,Y,Velocity.Z)
+		for i,v in pairs(BodyVel) do
+			v.Velocity = Velocity
 		end
 	end))
 end
