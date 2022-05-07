@@ -13,6 +13,7 @@ local Global = getgenv and getgenv() or _G
 local sethiddenproperty = sethiddenproperty or sethiddenprop or EmptyFunction
 local isnetworkowner = isnetworkowner or function() return true end
 local cloneref = cloneref or function(ref) return ref end
+local printconsole = printconsole or print
 
 local loadstring = pcall(function() loadstring("")() end) and loadstring or EmptyFunction
 
@@ -59,6 +60,7 @@ if Global.AntiSleep == nil then Global.AntiSleep = false end
 if Global.MovementVelocity == nil then Global.MovementVelocity = false end
 if Global.ArtificialHeartBeat == nil then Global.ArtificialHeartBeat = true end
 if Global.R6 == nil then Global.R6 = true end
+if Global.AutoReclaim == nil then Global.AutoReclaim = false end
 
 settings().Rendering.EagerBulkExecution = true
 settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
@@ -91,6 +93,7 @@ local function Notify(title,duration)
 			Duration = duration
 		})
 	end
+	printconsole("Zendey // "..tostring(title))
 end
 
 if Global.Network then
@@ -431,8 +434,9 @@ if Global.Claim2 then
 	Character.Head.Anchored = false
 end
 
-Global.ReclaimPart = function(Part)
+local ReclaimPart = function(Part)
 	ReclaimingParts = true
+	Notify("Attempting to Reclaim " .. Part.Name,5)
 	repeat
 		for i,v in pairs(OriginalRigDescendants) do
 			if v:IsA("BasePart") then
@@ -440,9 +444,11 @@ Global.ReclaimPart = function(Part)
 			end
 		end
 		wait()
-	until isnetworkowner(Part)
+	until isnetworkowner(Part) or not Part:IsDescendantOf(workspace) or not Character
 	ReclaimingParts = false
+	Notify("Reclaimed " .. Part.Name,5)
 end
+Global.ReclaimPart = ReclaimPart
 
 if OriginalRig:FindFirstChild(Global.Fling) then
 	Asset.Spawn(function()
@@ -490,9 +496,9 @@ end
 
 if Global.AutoAnimate then
 	if RigType == Enum.HumanoidRigType.R15 and Global.R6 then
-		Asset.Spawn(function()
-			loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/Animate"))()
-		end)
+		Asset.Spawn(function() pcall(function() 
+				loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/Animate"))()
+		end) end)
 	else
 		Character.Animate.Disabled = true; wait() Character.Animate.Disabled = false
 	end
@@ -601,7 +607,21 @@ else
 	end
 end
 
-
+if Global.AutoReclaim then
+	Asset.Spawn(function()
+		while task.wait(1) and Character do
+			for i,v in pairs(OriginalRigDescendants) do
+				if v:IsA("BasePart") and not isnetworkowner(v) then
+					if v.Name == "Head" then
+					else
+						ReclaimPart(v)
+						wait()
+					end
+				end
+			end
+		end
+	end)
+end
 
 for i,v in pairs(Tools) do
 	local partbeat
@@ -623,24 +643,26 @@ for i,v in pairs(Tools) do
 	table.insert(Events,partbeat)
 end
 
-if not getgenv().Claim2 then
+if not Global.Claim2 then
 	Claim2 = false
 end
 Character.Humanoid.Died:Connect(function() 
 	pcall(function() 
 		Player.Character = OriginalRig; 
 		OriginalRig.Parent = workspace; 
-		Character:Destroy() 
+		if Character then Character:Destroy() end
 		for i,v in pairs(Events) do
 			v:Disconnect()
 		end
+		Character = nil
 	end) 
 end)
 Player.CharacterAdded:Connect(function() 
-	Character:Destroy() 
+	if Character then Character:Destroy() end
 	for i,v in pairs(Events) do
 		v:Disconnect()
 	end
+	Character = nil
 end) 
 
 Notify("Script loaded in " .. tostring(tick() - TickTest) .. " Seconds",5)
