@@ -439,7 +439,7 @@ local ReclaimPart = function(Part)
 	Notify("Attempting to Reclaim " .. Part.Name,5)
 	repeat
 		for i,v in pairs(OriginalRigDescendants) do
-			if v:IsA("BasePart") then
+			if v:IsA("BasePart") and isnetworkowner(v) then
 				v.CFrame = Part.CFrame
 			end
 		end
