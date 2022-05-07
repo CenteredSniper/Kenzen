@@ -498,7 +498,7 @@ if Global.AutoAnimate then
 	if RigType == Enum.HumanoidRigType.R15 and Global.R6 then
 		Asset.Spawn(function() pcall(function() 
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/Animate"))()
-		end) end)
+			end) end)
 	else
 		Character.Animate.Disabled = true; wait() Character.Animate.Disabled = false
 	end
@@ -611,7 +611,7 @@ if Global.AutoReclaim then
 	Asset.Spawn(function()
 		while task.wait(1) and Character do
 			for i,v in pairs(OriginalRigDescendants) do
-				if v:IsA("BasePart") and not isnetworkowner(v) then
+				if v:IsA("BasePart") and not isnetworkowner(v) and v:IsDescendantOf(workspace) then
 					if v.Name == "Head" then
 					else
 						ReclaimPart(v)
