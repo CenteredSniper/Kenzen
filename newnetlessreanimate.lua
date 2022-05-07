@@ -36,7 +36,70 @@ local Ping = Stats.Network.ServerStatsItem["Data Ping"]
 
 local Asset,Events,BodyVel,Tools = {},{},{},{}
 
-local FakeTorso,FakeTorso1,FakeHead,Character,R15Offsets,Claim2Heartbeat,FoundPos
+local TorsoHats = {
+	{"6053208962",CFrame.Angles(0,0,0)},
+	{"6859433369",CFrame.Angles(0,0,0)},
+	{"6239379629",CFrame.Angles(0,0,0)},
+	{"6741673853",CFrame.Angles(math.rad(-90),0,0)},
+	{"6239349425",CFrame.Angles(0,0,0)},
+	{"24907105",CFrame.Angles(math.rad(-90),0,0)},
+	{"6239399609",CFrame.Angles(0,0,0)},
+	{"28666413",CFrame.Angles(0,math.rad(90),0)},
+	{"2256438720",CFrame.Angles(0,math.rad(90),0)},
+	{"6076800984",CFrame.Angles(0,math.rad(90),0)},
+	{"29322010",CFrame.Angles(math.rad(-90),0,0)},
+}
+local SplitTorsoHats = {
+	{"19999406",CFrame.Angles(math.rad(-90),0,0)},
+	{"26400954",CFrame.Angles(math.rad(-90),0,0)},
+	{"81504106",CFrame.Angles(math.rad(-90),0,0)},
+	{"20367587",CFrame.Angles(math.rad(-90),0,0)},
+	{"15730704",CFrame.Angles(math.rad(-90),0,0)},
+	{"6858317867",CFrame.Angles(math.rad(-90),0,0)},
+	{"6858318826",CFrame.Angles(math.rad(-90),0,0)},
+	{"6926051356",CFrame.Angles(math.rad(-90),0,0)},
+	{"45915003",CFrame.Angles(math.rad(-90),0,0)},
+	{"44106323",CFrame.Angles(math.rad(-90),0,0)},
+	{"376188163",CFrame.Angles(math.rad(-90),0,0)},
+	{"417448095",CFrame.Angles(math.rad(-90),0,0)},
+	{"47991609",CFrame.Angles(math.rad(-90),0,0)},
+	{"3210183293",CFrame.Angles(math.rad(-90),0,0)},
+	{"21778516",CFrame.Angles(math.rad(-90),0,0)},
+	{"19999406",CFrame.Angles(math.rad(-90),0,0)},
+	{"19999406",CFrame.Angles(math.rad(-90),0,0)},
+	{"7287236788",CFrame.Angles(0,0,0)},
+	{"31740496",CFrame.Angles(0,0,0)},
+	{"3612040655",CFrame.Angles(0,0,0)},
+	{"30303412",CFrame.Angles(0,0,0)},
+	{"4802604574",CFrame.Angles(0,0,0)},
+	{"7250556324",CFrame.Angles(0,0,0)},
+	{"7402858015",CFrame.Angles(0,0,0)},
+	{"14456185",CFrame.Angles(0,0,0)},
+}
+local HeadHats = {
+	{"4905027238",CFrame.Angles(0,0,0)},
+	{"4904528793",CFrame.Angles(0,0,0)},
+	{"7097383073",CFrame.Angles(0,0,0)},
+	{"7117381471",CFrame.Angles(0,0,0)},
+	{"7436282751",CFrame.Angles(0,0,0)},
+	{"8891492740",CFrame.Angles(0,0,0)},
+	{"5355543242",CFrame.Angles(0,0,0)},
+	{"5314945173",CFrame.Angles(0,0,0)},
+	{"8974788752",CFrame.Angles(0,0,0)},
+	{"9245818421",CFrame.Angles(0,0,0)},
+	{"5012971322",CFrame.Angles(0,0,0)},
+	{"7148229003",CFrame.Angles(0,0,0)},
+	{"5830615971",CFrame.Angles(0,0,0)},
+	{"7052761637",CFrame.Angles(0,0,0)},
+	{"8083233113",CFrame.Angles(0,0,0)},
+	{"5830616229",CFrame.Angles(0,0,0)},
+	{"4921870697",CFrame.Angles(0,0,0)},
+	{"5645662435",CFrame.Angles(0,0,0)},
+	{"6669710893",CFrame.Angles(0,0,0)},
+	{"7792915162",CFrame.Angles(0,0,0)},
+}
+
+local FakeTorso,FakeTorso1,FakeHead,FakeLeg,Character,R15Offsets,Claim2Heartbeat,FoundPos
 
 Asset.Spawn = function(func)
 	return task.spawn(coroutine.create(func))
@@ -459,30 +522,45 @@ if OriginalRig:FindFirstChild(Global.Fling) then
 	end)
 end
 
-if Global.FakeGod then
-	if OriginalRig:FindFirstChild("SeeMonkey") then
-		FakeTorso = OriginalRig.SeeMonkey.Handle
-		Character.SeeMonkey.Handle.Transparency = 1
-	else
-		FakeTorso1 = OriginalRig["Kate Hair"].Handle
-		FakeTorso1.Mesh:Destroy();
-		FakeTorso = OriginalRig.Robloxclassicred.Handle
-		Character["Kate Hair"].Handle.Transparency = 1
-		Character["Robloxclassicred"].Handle.Transparency = 1
+local function GetHatBodyPart(Table)
+	for i,Hat in pairs(OriginalRigDescendants) do
+		if Hat:IsA("Accessory") then
+			local Texture = Hat.Handle:FindFirstChildOfClass("SpecialMesh") and Hat.Handle:FindFirstChildOfClass("SpecialMesh").TextureId
+			print(Texture,Hat)
+			if not Texture then
+				Notify("Error Loading; no mesh?")
+				pcall(function() 
+					Player.Character = OriginalRig; 
+					OriginalRig.Parent = workspace; 
+					if Character then Character:Destroy() end
+					for i,v in pairs(Events) do
+						v:Disconnect()
+					end
+					Character = nil
+				end) 
+			end
+			for i,v in pairs(Table) do
+				if v[1] == string.match(Texture,"%d+") then
+					table.remove(Table,i)
+					return {Hat.Handle,v[2]}
+				end
+			end
+		end
 	end
-	if OriginalRig:FindFirstChild("Void Head") then
-		FakeHead = OriginalRig["Void Head"].Handle
-		Character["Void Head"].Handle.Transparency = 1
-	elseif OriginalRig:FindFirstChild("Dummy_Head") then
-		FakeHead = OriginalRig["Dummy_Head"].Handle
-		Character["Dummy_Head"].Handle.Transparency = 1
-	else
-		FakeHead = OriginalRig.MediHood.Handle
-		Character["MediHood"].Handle.Transparency = 1
-	end
-	FakeTorso.Mesh:Destroy();
 end
 
+if Global.FakeGod then
+	FakeTorso = GetHatBodyPart(TorsoHats)
+	FakeHead = GetHatBodyPart(HeadHats)
+	if not FakeTorso then
+		FakeTorso = GetHatBodyPart(SplitTorsoHats)
+		FakeTorso1 = GetHatBodyPart(SplitTorsoHats)
+		FakeTorso1[1].CloneHat.Value.Transparency = 1
+		FakeTorso1[1]:FindFirstChildOfClass("SpecialMesh"):Destroy();
+	end
+	FakeTorso[1].CloneHat.Value.Transparency = 1
+	FakeTorso[1]:FindFirstChildOfClass("SpecialMesh"):Destroy();
+end
 
 for i,v in pairs(Global.ShowReal and Character:GetChildren() or OriginalRig:GetChildren()) do
 	Asset.Spawn(function()
@@ -563,14 +641,14 @@ else
 				partbeat = event:Connect(function(delta)
 					if not ReclaimingParts then
 						if v and v.Parent and v:IsDescendantOf(workspace) then
-							if Global.FakeGod and v.Name == "Head" and isnetworkowner(FakeHead) then
-								FakeHead.CFrame = Character["Head"].CFrame
-							elseif Global.FakeGod and v.Name == "Torso" and isnetworkowner(FakeTorso) then
+							if Global.FakeGod and v.Name == "Head" and isnetworkowner(FakeHead[1]) then
+								FakeHead[1].CFrame = Character["Head"].CFrame
+							elseif Global.FakeGod and v.Name == "Torso" and isnetworkowner(FakeTorso[1]) then
 								if FakeTorso1 and isnetworkowner(FakeTorso1) then
-									FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(0.5,0,0) 
-									FakeTorso1.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) * CFrame.new(-0.5,0,0) 
+									FakeTorso[1].CFrame = Character["Torso"].CFrame * FakeTorso[2] * CFrame.new(0.5,0,0) 
+									FakeTorso1[1].CFrame = Character["Torso"].CFrame * FakeTorso1[2] * CFrame.new(-0.5,0,0) 
 								else
-									FakeTorso.CFrame = Character["Torso"].CFrame * CFrame.Angles(math.rad(-90),0,0) 
+									FakeTorso[1].CFrame = Character["Torso"].CFrame * FakeTorso[2]
 								end
 							elseif isnetworkowner(v) then
 								if v.Name == Global.Fling then
