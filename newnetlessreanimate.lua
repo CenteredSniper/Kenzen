@@ -539,7 +539,7 @@ local function GetHatBodyPart(Table)
 	for i,Hat in pairs(OriginalRigDescendants) do
 		if Hat:IsA("Accessory") then
 			local Texture = Hat.Handle:FindFirstChildOfClass("SpecialMesh") and Hat.Handle:FindFirstChildOfClass("SpecialMesh").TextureId
-			print(Texture,Hat)
+			--print(Texture,Hat)
 			if not Texture then
 				Notify("Error Loading; no mesh?")
 				pcall(function() 
