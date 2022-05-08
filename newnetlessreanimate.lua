@@ -36,6 +36,33 @@ local Ping = Stats.Network.ServerStatsItem["Data Ping"]
 
 local Asset,Events,BodyVel,Tools = {},{},{},{}
 
+local FakeTorso,FakeTorso1,FakeHead,FakeLeg,Character,Claim2Heartbeat,FoundPos,R15Offsets
+
+Asset.Spawn = function(func)
+	return task.spawn(coroutine.create(func))
+end
+
+-- Default Values
+if Global.Optimizer == nil then Global.Optimizer = false end
+if Global.Fling == true then Global.Fling = "HumanoidRootPart" end
+if not Global.Fling then Global.Fling = "" end
+if Global.PartGUI == nil then Global.PartGUI = false end
+if Global.ShowReal == nil then Global.ShowReal = false end
+if Global.FakeGod == nil then Global.FakeGod = false end
+if Global.GodMode == nil then Global.GodMode = true end
+if Global.AutoAnimate == nil then Global.AutoAnimate = true end
+if Global.Velocity == nil then Global.Velocity = -25.05 end
+if Global.Collisions == nil then Global.Collisions = true end
+if Global.Network == nil then Global.Network = true end
+if Global.Claim2 == nil then Global.Claim2 = false end
+if Global.Notification == nil then Global.Notification = true end
+if Global.AntiSleep == nil then Global.AntiSleep = false end
+if Global.MovementVelocity == nil then Global.MovementVelocity = false end
+if Global.ArtificialHeartBeat == nil then Global.ArtificialHeartBeat = true end
+if Global.R6 == nil then Global.R6 = true end
+if Global.AutoReclaim == nil then Global.AutoReclaim = false end
+if Global.HatCollision == nil then Global.HatCollision = false end
+
 local TorsoHats = {
 	{"6053208962",CFrame.Angles(0,0,0)},
 	{"6859433369",CFrame.Angles(0,0,0)},
@@ -99,32 +126,6 @@ local HeadHats = {
 	{"7792915162",CFrame.Angles(0,0,0)},
 }
 
-local FakeTorso,FakeTorso1,FakeHead,FakeLeg,Character,R15Offsets,Claim2Heartbeat,FoundPos
-
-Asset.Spawn = function(func)
-	return task.spawn(coroutine.create(func))
-end
-
--- Default Values
-if Global.Optimizer == nil then Global.Optimizer = false end
-if Global.Fling == true then Global.Fling = "HumanoidRootPart" end
-if not Global.Fling then Global.Fling = "" end
-if Global.PartGUI == nil then Global.PartGUI = false end
-if Global.ShowReal == nil then Global.ShowReal = false end
-if Global.FakeGod == nil then Global.FakeGod = false end
-if Global.GodMode == nil then Global.GodMode = true end
-if Global.AutoAnimate == nil then Global.AutoAnimate = true end
-if Global.Velocity == nil then Global.Velocity = -25.05 end
-if Global.Collisions == nil then Global.Collisions = true end
-if Global.Network == nil then Global.Network = true end
-if Global.Claim2 == nil then Global.Claim2 = false end
-if Global.Notification == nil then Global.Notification = true end
-if Global.AntiSleep == nil then Global.AntiSleep = false end
-if Global.MovementVelocity == nil then Global.MovementVelocity = false end
-if Global.ArtificialHeartBeat == nil then Global.ArtificialHeartBeat = true end
-if Global.R6 == nil then Global.R6 = true end
-if Global.AutoReclaim == nil then Global.AutoReclaim = false end
-
 settings().Rendering.EagerBulkExecution = true
 settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
 settings().Physics.AllowSleep = false
@@ -147,6 +148,10 @@ if Global.TorsoFling then
 end
 if Global.FakeGod and RigType == Enum.HumanoidRigType.R6 then 
 	Global.GodMode = false 
+end
+if Global.HatCollision and RigType == Enum.HumanoidRigType.R6 then 
+	Global.GodMode = true
+	Global.FakeGod = false
 end
 
 local function Notify(title,duration)
@@ -264,7 +269,6 @@ if RigType == Enum.HumanoidRigType.R15 and Global.R6 then
 		["Head"] = {["Head"] = CFrame.new(0,0,0)},
 		["HumanoidRootPart"] = {["HumanoidRootPart"] = CFrame.new(0,0,0)},
 	}
-
 	Character = loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/extra/R6Rig.lua",true))()--game:GetObjects("rbxassetid://8232772380")[1]:Clone()
 	Character.Parent = workspace
 	Notify("Applying Character Description",3)
@@ -306,11 +310,17 @@ local CharacterDescendants = Character:GetDescendants()
 if Global.GodMode then
 	Asset.Spawn(function()
 		task.wait(Players.RespawnTime+Ping:GetValue()/750)
-		local neck = OriginalRig:FindFirstChild("Neck",true)
-		if OriginalRig:FindFirstChild("Neck",true) then 
-			OriginalRig.Humanoid:ChangeState(15)
-			neck.Parent = nil
-			Notify("Permadeath On",6) 
+		if Global.HatCollision then
+			for i,v in pairs({OriginalRig.HumanoidRootPart,OriginalRig.Torso,OriginalRig["Left Leg"]}) do
+				v:Destroy()
+			end
+		else
+			local neck = OriginalRig:FindFirstChild("Neck",true)
+			if OriginalRig:FindFirstChild("Neck",true) then 
+				OriginalRig.Humanoid:ChangeState(15)
+				neck.Parent = nil
+				Notify("Permadeath On",6) 
+			end
 		end
 	end)
 end
@@ -350,7 +360,7 @@ end
 Asset.Spawn(function()
 	for i,v in pairs(OriginalRigDescendants) do
 		Asset.Spawn(function()
-			if v.Name ~= "Neck" then
+			if v.Name ~= "Neck" and not Global.HatCollision then
 				if v:IsA("Motor6D") or v:IsA("Weld") or v:IsA("BallSocketConstraint") or v:IsA("HingeConstraint") then
 					v:Destroy() 
 				end
@@ -552,18 +562,51 @@ local function GetHatBodyPart(Table)
 	end
 end
 
-if Global.FakeGod then
-	FakeTorso = GetHatBodyPart(TorsoHats)
-	FakeHead = GetHatBodyPart(HeadHats)
-	if not FakeTorso then
-		FakeTorso = GetHatBodyPart(SplitTorsoHats)
-		FakeTorso1 = GetHatBodyPart(SplitTorsoHats)
-		FakeTorso1[1].CloneHat.Value.Transparency = 1
-		FakeTorso1[1]:FindFirstChildOfClass("SpecialMesh"):Destroy();
+pcall(function()
+	if Global.FakeGod then
+		FakeTorso = GetHatBodyPart(TorsoHats)
+		FakeHead = GetHatBodyPart(HeadHats)
+		if not FakeTorso then
+			FakeTorso = GetHatBodyPart(SplitTorsoHats)
+			FakeTorso1 = GetHatBodyPart(SplitTorsoHats)
+
+			FakeTorso1[1].CloneHat.Value.Transparency = 1
+			FakeTorso1[1]:FindFirstChildOfClass("SpecialMesh"):Destroy();
+
+			FakeTorso1[1].Name = "Fake Torso"
+		end
+		FakeTorso[1].CloneHat.Value.Transparency = 1
+		FakeTorso[1]:FindFirstChildOfClass("SpecialMesh"):Destroy();
+		FakeTorso[1].Name = "Fake Torso"
+
+		FakeHead[1].Name = "Fake Head"
+
+		FakeHead[1].Parent = OriginalRig
+		FakeTorso[1].Parent = OriginalRig
 	end
-	FakeTorso[1].CloneHat.Value.Transparency = 1
-	FakeTorso[1]:FindFirstChildOfClass("SpecialMesh"):Destroy();
-end
+
+	if Global.HatCollision then
+		FakeTorso = GetHatBodyPart(TorsoHats)
+		FakeLeg = GetHatBodyPart(SplitTorsoHats)
+		if not FakeTorso then
+			FakeTorso = GetHatBodyPart(SplitTorsoHats)
+			FakeTorso1 = GetHatBodyPart(SplitTorsoHats)
+			FakeTorso1[1].CloneHat.Value.Transparency = 1
+			FakeTorso1[1]:FindFirstChildOfClass("SpecialMesh"):Destroy();
+			FakeTorso1[1].Name = "Fake Torso"
+		end
+		FakeTorso[1].CloneHat.Value.Transparency = 1
+		FakeTorso[1]:FindFirstChildOfClass("SpecialMesh"):Destroy();
+		FakeTorso[1].Name = "Fake Torso"
+
+		FakeLeg[1].CloneHat.Value.Transparency = 1
+		FakeLeg[1]:FindFirstChildOfClass("SpecialMesh"):Destroy();
+		FakeLeg[1].Name = "Fake Left Leg"
+
+		FakeLeg[1].Parent = OriginalRig
+		FakeTorso[1].Parent = OriginalRig
+	end
+end)
 
 for i,v in pairs(Global.ShowReal and Character:GetChildren() or OriginalRig:GetChildren()) do
 	Asset.Spawn(function()
@@ -644,15 +687,17 @@ else
 				partbeat = event:Connect(function(delta)
 					if not ReclaimingParts then
 						if v and v.Parent and v:IsDescendantOf(workspace) then
-							if Global.FakeGod and v.Name == "Head" and isnetworkowner(FakeHead[1]) then
+							if v.Name == "Fake Head" and isnetworkowner(FakeHead[1]) then
 								FakeHead[1].CFrame = Character["Head"].CFrame
-							elseif Global.FakeGod and v.Name == "Torso" and isnetworkowner(FakeTorso[1]) then
+							elseif v.Name == "Fake Torso" and isnetworkowner(FakeTorso[1]) then
 								if FakeTorso1 and isnetworkowner(FakeTorso1) then
 									FakeTorso[1].CFrame = Character["Torso"].CFrame * FakeTorso[2] * CFrame.new(0.5,0,0) 
 									FakeTorso1[1].CFrame = Character["Torso"].CFrame * FakeTorso1[2] * CFrame.new(-0.5,0,0) 
 								else
 									FakeTorso[1].CFrame = Character["Torso"].CFrame * FakeTorso[2]
 								end
+							elseif v.Name == "Fake Left Leg" and isnetworkowner(FakeLeg[1]) then
+								FakeLeg[1].CFrame = Character["Left Leg"].CFrame * FakeLeg[2]
 							elseif isnetworkowner(v) then
 								if v.Name == Global.Fling then
 								else
@@ -667,7 +712,7 @@ else
 					end
 				end)
 				table.insert(Events,partbeat)
-			elseif v:IsA("Accessory") and v.Handle ~= FakeTorso and v.Handle ~= FakeTorso1 and v.Handle ~= FakeHead then
+			elseif v:IsA("Accessory") and v:FindFirstChild("Handle") then
 				local partbeat
 				partbeat = event:Connect(function(delta)
 					if not ReclaimingParts then
