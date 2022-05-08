@@ -367,8 +367,9 @@ for i,Part in pairs(OriginalRigDescendants) do
 			local BodyVelocity = Instance.new("BodyVelocity",Part)
 			BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge); BodyVelocity.P = math.huge; BodyVelocity.Velocity = Velocity
 			local BodyAngularVelocity = Instance.new("BodyAngularVelocity",Part)
-			BodyAngularVelocity.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); BodyAngularVelocity.P = math.huge; BodyAngularVelocity.AngularVelocity = Vector3.new(0,0,0)
-
+			BodyAngularVelocity.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); BodyAngularVelocity.P = math.huge; BodyAngularVelocity.AngularVelocity = Part.Name == Global.Fling and Vector3.new(2147483646,2147483646,2147483646) or Vector3.new(0,0,0)
+			
+			Part:ApplyImpulse(Velocity)
 			Part.Massless = true
 			Part.CustomPhysicalProperties = PhysicalProperties.new(0,0,0,0,0)
 			Part.RootPriority = 127
@@ -379,7 +380,9 @@ for i,Part in pairs(OriginalRigDescendants) do
 			NetlessHB = event:Connect(function()
 				if Part and Part.Parent and Part:IsDescendantOf(workspace) then
 					Part:ApplyImpulse(Velocity)
-					Part.AssemblyAngularVelocity = Vector3.new()
+					if BodyAngularVelocity.AngularVelocity == Vector3.new(0,0,0) then
+						Part.AssemblyAngularVelocity = Vector3.new()
+					end
 					if Part.Name == "Head" and not Global.GodMode then
 						selectionbox.SurfaceTransparency = 1
 					elseif isnetworkowner(Part) then
