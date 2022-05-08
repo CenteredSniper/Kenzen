@@ -61,7 +61,7 @@ if Global.MovementVelocity == nil then Global.MovementVelocity = false end
 if Global.ArtificialHeartBeat == nil then Global.ArtificialHeartBeat = true end
 if Global.R6 == nil then Global.R6 = true end
 if Global.AutoReclaim == nil then Global.AutoReclaim = false end
-if Global.HatCollision == nil then Global.HatCollision = false end
+if Global.HatCollision == nil then Global.HatCollision = true end
 
 local TorsoHats = {
 	{"6053208962",CFrame.Angles(0,0,0)},
@@ -745,6 +745,7 @@ if Global.AutoReclaim then
 			for i,v in pairs(OriginalRigDescendants) do
 				if v:IsA("BasePart") and not isnetworkowner(v) and v:IsDescendantOf(workspace) then
 					if v.Name == "Head" then
+					elseif Global.HatCollision and OriginalRig:FindFirstChild("Neck",true) then
 					else
 						ReclaimPart(v)
 						wait()
