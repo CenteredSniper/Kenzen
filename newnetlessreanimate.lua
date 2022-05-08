@@ -148,10 +148,16 @@ if Global.TorsoFling then
 end
 if Global.FakeGod and RigType == Enum.HumanoidRigType.R6 then 
 	Global.GodMode = false 
+else
+	Global.FakeGod = false
+	Global.GodMode = true
 end
 if Global.HatCollision and RigType == Enum.HumanoidRigType.R6 then 
 	Global.GodMode = true
 	Global.FakeGod = false
+else
+	Global.HatCollision = false
+	Global.GodMode = true
 end
 
 local function Notify(title,duration)
