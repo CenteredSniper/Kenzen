@@ -61,7 +61,7 @@ if Global.MovementVelocity == nil then Global.MovementVelocity = false end
 if Global.ArtificialHeartBeat == nil then Global.ArtificialHeartBeat = true end
 if Global.R6 == nil then Global.R6 = true end
 if Global.AutoReclaim == nil then Global.AutoReclaim = false end
-if Global.HatCollision == nil then Global.HatCollision = true end
+if Global.HatCollision == nil then Global.HatCollision = false end
 
 local TorsoHats = {
 	{"6053208962",CFrame.Angles(0,0,0)},
@@ -148,14 +148,14 @@ if Global.TorsoFling then
 end
 if Global.FakeGod and RigType == Enum.HumanoidRigType.R6 then 
 	Global.GodMode = false 
-else
+elseif Global.FakeGod then
 	Global.FakeGod = false
 	Global.GodMode = true
 end
 if Global.HatCollision and RigType == Enum.HumanoidRigType.R6 then 
 	Global.GodMode = true
 	Global.FakeGod = false
-else
+elseif Global.HatCollision then
 	Global.HatCollision = false
 	Global.GodMode = true
 end
@@ -384,7 +384,7 @@ for i,Part in pairs(OriginalRigDescendants) do
 			BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge); BodyVelocity.P = math.huge; BodyVelocity.Velocity = Velocity
 			local BodyAngularVelocity = Instance.new("BodyAngularVelocity",Part)
 			BodyAngularVelocity.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); BodyAngularVelocity.P = math.huge; BodyAngularVelocity.AngularVelocity = Part.Name == Global.Fling and Vector3.new(2147483646,2147483646,2147483646) or Vector3.new(0,0,0)
-			
+
 			Part:ApplyImpulse(Velocity)
 			Part.Massless = true
 			Part.CustomPhysicalProperties = PhysicalProperties.new(0,0,0,0,0)
