@@ -191,7 +191,7 @@ end
 
 local event = Global.MiliWait
 if not event then
-	if Global.ArtificialHeartBeat and fastwait then
+	if Global.ArtificialHeartBeat then
 		local BindEvent = Instance.new("BindableEvent")
 		for _,Event in pairs({RunService.RenderStepped,RunService.Heartbeat,RunService.Stepped,RunService.PreSimulation,RunService.PostSimulation}) do
 			Event:Connect(function()
