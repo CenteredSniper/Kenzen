@@ -191,7 +191,6 @@ end
 
 local event = Global.MiliWait
 if not event then
-	local fastwait = loadstring(game:HttpGet("https://gist.githubusercontent.com/CenteredSniper/fe5cbdbc396630374041f0c2d156a747/raw/5491a28fd72ed7e11c9fa3f9141df033df3ed5a9/fastwait.lua"))()
 	if Global.ArtificialHeartBeat and fastwait then
 		local BindEvent = Instance.new("BindableEvent")
 		for _,Event in pairs({RunService.RenderStepped,RunService.Heartbeat,RunService.Stepped,RunService.PreSimulation,RunService.PostSimulation}) do
