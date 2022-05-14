@@ -10,15 +10,19 @@ local TickTest = tick()
 local EmptyFunction = function() end
 
 local Global = getgenv and getgenv() or _G
-local sethiddenproperty = sethiddenproperty or sethiddenprop or EmptyFunction
+local sethiddenproperty = sethiddenproperty or sethiddenprop or setscriptable and function(loc,prop,val) local succ,f = pcall(function() local a = loc[prop] end) if not succ then setscriptable(loc,prop,true) end loc[prop] = val end or EmptyFunction
 local isnetworkowner = isnetworkowner or function() return true end
 local cloneref = cloneref or function(ref) return ref end
 local printconsole = printconsole or print
+local setfflag = setfflag or function(flag,bool) game:DefineFastFlag(flag,bool) end
 
 local loadstring = pcall(function() loadstring("")() end) and loadstring or EmptyFunction
 
 local notification = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/notificationstuff/main/src.lua",true))()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/LegoHacker1337/legohacks/main/PhysicsServiceOnClient.lua"))()
+
+pcall(function() setfflag("NewRunServiceSignals", "true") end) 
+pcall(function() setfflag("NewRunServiceSignals", true) end) 
 
 local TweenService = cloneref(game:GetService("TweenService"))
 local PhysicsService = game:GetService("PhysicsService")
@@ -51,7 +55,7 @@ if Global.ShowReal == nil then Global.ShowReal = false end
 if Global.FakeGod == nil then Global.FakeGod = false end
 if Global.GodMode == nil then Global.GodMode = true end
 if Global.AutoAnimate == nil then Global.AutoAnimate = true end
-if Global.Velocity == nil then Global.Velocity = -25.05 end
+if Global.Velocity == nil then Global.Velocity = (200*(Ping:GetValue()/50))/10 end
 if Global.Collisions == nil then Global.Collisions = true end
 if Global.Network == nil then Global.Network = true end
 if Global.Claim2 == nil then Global.Claim2 = false end
@@ -133,7 +137,11 @@ settings().Physics.ForceCSGv2 = false
 settings().Physics.DisableCSGv2 = true
 settings().Physics.UseCSGv2 = false
 settings().Physics.ThrottleAdjustTime = math.huge
-workspace.InterpolationThrottling = "Disabled"
+sethiddenproperty(workspace,"InterpolationThrottling",Enum.InterpolationThrottlingMode.Disabled)
+sethiddenproperty(workspace,"PhysicsSteppingMethod",Enum.PhysicsSteppingMethod.Fixed)
+sethiddenproperty(workspace,"StreamOutBehavior",Enum.StreamOutBehavior.Opportunistic)
+sethiddenproperty(workspace,"StreamingMinRadius",1/0)
+sethiddenproperty(workspace,"StreamingEnabled",true)
 Player.ReplicationFocus = workspace
 
 if Global.Optimizer then
@@ -171,12 +179,12 @@ local function Notify(title,duration)
 end
 
 if Global.Network then
-	Player.MaximumSimulationRadius=1000
-	sethiddenproperty(Player,"SimulationRadius",1000)
+	Player.MaximumSimulationRadius=2022
+	sethiddenproperty(Player,"SimulationRadius",2022)
 	if not Global.SimRadius then
 		Global.SimRadius = RunService.Stepped:Connect(function()
-			Player.MaximumSimulationRadius=1000
-			sethiddenproperty(Player,"SimulationRadius",1000)
+			Player.MaximumSimulationRadius=2022
+			sethiddenproperty(Player,"SimulationRadius",2022)
 		end)
 	end
 end
@@ -186,17 +194,11 @@ if not event then
 	local fastwait = loadstring(game:HttpGet("https://gist.githubusercontent.com/CenteredSniper/fe5cbdbc396630374041f0c2d156a747/raw/5491a28fd72ed7e11c9fa3f9141df033df3ed5a9/fastwait.lua"))()
 	if Global.ArtificialHeartBeat and fastwait then
 		local BindEvent = Instance.new("BindableEvent")
-		Asset.Spawn(function()
-			while true do
-				for i=1,math.max(FPS:GetValue()/27.5,1) do
-					task.spawn(coroutine.create(function()
-						BindEvent:Fire()
-						fastwait(0.1)
-					end))
-				end
-				fastwait(0/1)
-			end
-		end)
+		for _,Event in pairs({RunService.RenderStepped,RunService.Heartbeat,RunService.Stepped,RunService.PreSimulation,RunService.PostSimulation}) do
+			Event:Connect(function()
+				BindEvent:Fire()
+			end)
+		end -- thanks 4eyes
 		event = BindEvent.Event
 	else
 		event = RunService.Heartbeat
