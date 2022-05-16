@@ -437,10 +437,13 @@ end
 
 if Global.MovementVelocity then
 	table.insert(Events,Character.Humanoid:GetPropertyChangedSignal("MoveDirection"):Connect(function()
-		local Vector = Character.Humanoid.MoveDirection * Global.Velocity*2
+		local Vector = Character.Humanoid.MoveDirection * Global.Velocity
 		local X,Z = Vector.X,Vector.Z
-		if Vector.X == 0 and Vector.Z == 0 then X = Global.Velocity*1.5 Z = Global.Velocity*1.5 end
+		if Vector.X == 0 and Vector.Z == 0 then X = Global.Velocity Z = Global.Velocity end
 		Velocity = Vector3.new(X,Velocity,Z)
+		if Velocity.Magnitude < 25.06 then 
+			Velocity = Velocity*(25.06/Velocity.Magnitude)
+		end
 		for i,v in pairs(BodyVel) do
 			v.Velocity = Velocity
 		end
@@ -453,6 +456,9 @@ if Global.MovementVelocity then
 			Y = Global.Velocity
 		end
 		Velocity = Vector3.new(Velocity.X,Y,Velocity.Z)
+		if Velocity.Magnitude < 25.06 then 
+			Velocity = Velocity*(25.06/Velocity.Magnitude)
+		end
 		for i,v in pairs(BodyVel) do
 			v.Velocity = Velocity
 		end
