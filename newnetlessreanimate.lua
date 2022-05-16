@@ -55,7 +55,7 @@ if Global.ShowReal == nil then Global.ShowReal = false end
 if Global.FakeGod == nil then Global.FakeGod = false end
 if Global.GodMode == nil then Global.GodMode = true end
 if Global.AutoAnimate == nil then Global.AutoAnimate = true end
-if Global.Velocity == nil then Global.Velocity = math.random(167,260)/10 end
+if Global.Velocity == nil then Global.Velocity = -14.465 end
 if Global.Collisions == nil then Global.Collisions = true end
 if Global.Network == nil then Global.Network = true end
 if Global.Claim2 == nil then Global.Claim2 = false end
