@@ -441,23 +441,8 @@ if Global.MovementVelocity then
 		local X,Z = Vector.X,Vector.Z
 		if Vector.X == 0 and Vector.Z == 0 then X = Global.Velocity Z = Global.Velocity end
 		Velocity = Vector3.new(X,Velocity,Z)
-		if Velocity.Magnitude < 25.06 then 
-			Velocity = Velocity*(25.06/Velocity.Magnitude)
-		end
-		for i,v in pairs(BodyVel) do
-			v.Velocity = Velocity
-		end
-	end))
-	table.insert(Events,Character.Humanoid.StateChanged:Connect(function(old,new)
-		local Y = 0
-		if new == Enum.HumanoidStateType.Jumping then
-			Y = -Global.Velocity
-		elseif new == Enum.HumanoidStateType.Freefall then
-			Y = Global.Velocity
-		end
-		Velocity = Vector3.new(Velocity.X,Y,Velocity.Z)
-		if Velocity.Magnitude < 25.06 then 
-			Velocity = Velocity*(25.06/Velocity.Magnitude)
+		if Velocity.Magnitude < 28 then 
+			Velocity = Velocity*(28/Velocity.Magnitude)
 		end
 		for i,v in pairs(BodyVel) do
 			v.Velocity = Velocity
