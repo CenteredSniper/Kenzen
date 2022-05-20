@@ -1,6 +1,6 @@
 --[[
 	How to use:
-	local ErrorPrompt = <loadstring>
+	local ErrorPrompt = loadstring(game:HttpGet("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/Error.lua",true))()
 	ErrorPrompt(
 		"Title",
 		"Text",
@@ -13,6 +13,7 @@ local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
 local GUI = Instance.new("ScreenGui")
 GUI.ResetOnSpawn = false
+GUI.DisplayOrder = 50
 
 local ErrorPrompt = getrenv().require(game.CoreGui.RobloxGui.Modules.ErrorPrompt)
 
