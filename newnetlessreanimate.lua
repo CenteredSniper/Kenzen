@@ -48,6 +48,20 @@ local FakeTorso,FakeTorso1,FakeHead,Character,Claim2Heartbeat,FoundPos,R15Offset
 local Claim2 = true
 local ReclaimingParts = false
 
+
+do -- [[ Removing Tools (Currently Crashes) ]] --
+	for i,v in pairs(OriginalRigDescendants) do
+		if v:IsA("Tool") then
+			v:Destroy()
+		end
+	end
+	for i,v in pairs(Player:WaitForChild("Backpack"):GetChildren()) do
+		if v:IsA("Tool") then
+			v:Destroy()
+		end
+	end
+end
+
 do -- [[ PhysicsService bypass thanks to DanDavis#5234 ]] --
 	if gethiddenproperty and setreadonly then
 		local Workspace = game:GetService("Workspace")
@@ -1031,7 +1045,7 @@ do -- [[ Netless Claim ]] --
 						else
 							selectionbox.Enabled = true
 						end
-						
+
 						if Global.AllowSleep then 
 							sethiddenproperty(Part, "NetworkIsSleeping", false) 
 						end
@@ -1039,10 +1053,10 @@ do -- [[ Netless Claim ]] --
 						NetlessHB:Disconnect()
 					end
 				end)
-				
+
 				table.insert(Events,NetlessHB)
 				table.insert(BodyVel,BodyVelocity)
-				
+
 				do -- [[ Find CloneHats ]]
 					if Part.Parent:IsA("Accessory") then
 						for i,v in pairs(Character:GetChildren()) do
@@ -1164,7 +1178,7 @@ do -- [[ Reclaim Parts ]] --
 		Notify("Reclaimed " .. Part.Name,5)
 	end
 	Global.ReclaimPart = ReclaimPart
-	
+
 	if Global.AutoReclaim then
 		Asset.Spawn(function()
 			while task.wait(1) and Character do
@@ -1257,7 +1271,7 @@ do -- [[ FakeGod/HatCollisions Hat Replacements ]] --
 			FakeTorso[1].CloneHat.Value.Transparency = 1
 			FakeTorso[1]:FindFirstChildOfClass("SpecialMesh"):Destroy();
 			FakeTorso[1].Name = "Fake Torso"
-			
+
 			FakeTorso[1].Parent = OriginalRig
 		end
 	end)
@@ -1474,9 +1488,9 @@ do -- [[ Animation ]] --
 							currentAnimTrack:AdjustSpeed(currentAnimSpeed)
 						end
 					end
-					
+
 					local playAnimation
-					
+
 					local function keyFrameReachedFunc(frameName)
 						if (frameName == "End") then
 
