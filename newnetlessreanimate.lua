@@ -63,7 +63,8 @@ do -- [[ Removing Tools (Currently Crashes) ]] --
 end
 
 do -- [[ PhysicsService bypass thanks to DanDavis#5234 ]] --
-	if gethiddenproperty and setreadonly then
+	if gethiddenproperty and setreadonly and not Global.CollisionGroupsEnabled then
+		Global.CollisionGroupsEnabled = true
 		local Workspace = game:GetService("Workspace")
 
 		local function doMath(index)
@@ -426,7 +427,7 @@ do -- [[ Default Settings ]] --
 	if Global.FakeGod == nil then Global.FakeGod = false end
 	if Global.GodMode == nil then Global.GodMode = true end
 	if Global.AutoAnimate == nil then Global.AutoAnimate = true end
-	if Global.Velocity == nil then Global.Velocity = -14.465 end
+	if Global.Velocity == nil then Global.Velocity = -17.72 end
 	if Global.Collisions == nil then Global.Collisions = true end
 	if Global.Network == nil then Global.Network = true end
 	if Global.Claim2 == nil then Global.Claim2 = false end
@@ -498,7 +499,7 @@ do -- [[ Artificial Heartbeat, original by 4eyedfool ]] --
 	if not event then
 		if Global.ArtificialHeartBeat then
 			local BindEvent = Instance.new("BindableEvent")
-			for _,Event in pairs({RunService.Heartbeat,RunService.Stepped,RunService.PreSimulation,RunService.PostSimulation}) do
+			for _,Event in pairs({RunService.Heartbeat,RunService.Stepped,RunService.RenderStepped,RunService.PreAnimation}) do
 				Event:Connect(function()
 					BindEvent:Fire()
 				end)
@@ -511,7 +512,7 @@ do -- [[ Artificial Heartbeat, original by 4eyedfool ]] --
 	end
 end
 
-local Velocity = Vector3.new(Global.Velocity, Global.Velocity, Global.Velocity)
+local Velocity = Vector3.new(Global.Velocity, 0, Global.Velocity) -- Using Velocity on Y axis can cause jittering (rumored)
 
 local wait = function(Time)
 	event:Wait()
@@ -1028,8 +1029,8 @@ do -- [[ Netless Claim ]] --
 				Part.CustomPhysicalProperties = PhysicalProperties.new(0,0,0,0,0)
 				Part.RootPriority = 127
 
-				local selectionbox = Instance.new("Highlight")
-				selectionbox.Enabled = false; selectionbox.Parent = Part
+				local selectionbox = Instance.new("SelectionBox")
+				selectionbox.Adornee = Part; selectionbox.Transparency = 1; selectionbox.Parent = Part
 				BodyVelocity.Parent = Part; BodyAngularVelocity.Parent = Part
 
 				NetlessHB = event:Connect(function()
@@ -1039,11 +1040,11 @@ do -- [[ Netless Claim ]] --
 							Part.AssemblyAngularVelocity = Vector3.new()
 						end
 						if Part.Name == "Head" and not Global.GodMode then
-							selectionbox.Enabled = false
+							selectionbox.SurfaceTransparency = 1
 						elseif isnetworkowner(Part) then
-							selectionbox.Enabled = false
+							selectionbox.SurfaceTransparency = 1
 						else
-							selectionbox.Enabled = true
+							selectionbox.SurfaceTransparency = 0
 						end
 
 						if Global.AllowSleep then 
@@ -1085,7 +1086,7 @@ do -- [[ Movement Velocity ]] --
 			local Vector = Character.Humanoid.MoveDirection * Global.Velocity
 			local X,Z = Vector.X,Vector.Z
 			if Vector.X == 0 and Vector.Z == 0 then X = Global.Velocity Z = Global.Velocity end
-			Velocity = Vector3.new(X,Velocity,Z)
+			Velocity = Vector3.new(X,0,Z)
 			if Velocity.Magnitude < 28 then 
 				Velocity = Velocity*(28/Velocity.Magnitude)
 			end
