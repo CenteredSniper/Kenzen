@@ -1,12 +1,10 @@
--- R6 Rig (GetObjects can cause lagspikes if not cached)
-cors = {}
 local FakeRig = Instance.new("Model")
 
 local Humanoid = Instance.new("Humanoid")
 
 local Head = Instance.new("Part")
 local HeadMesh = Instance.new("SpecialMesh")
---local face = Instance.new("Decal")
+local face = Instance.new("Decal")
 
 local Torso = Instance.new("Part")
 local Neck = Instance.new("Motor6D")
@@ -25,6 +23,21 @@ local RightHip = Instance.new("Motor6D")
 
 local RootPart = Instance.new("Part")
 local RootJoint = Instance.new("Motor6D")
+
+local FaceCenterAttachment = Instance.new("Attachment")
+local FaceFrontAttachment = Instance.new("Attachment")
+local HairAttachment = Instance.new("Attachment")
+local HatAttachment = Instance.new("Attachment")
+local LeftShoulderAttachment = Instance.new("Attachment")
+local RightShoulderAttachment = Instance.new("Attachment")
+local BodyBackAttachment = Instance.new("Attachment")
+local BodyFrontAttachment = Instance.new("Attachment")
+local LeftCollarAttachment = Instance.new("Attachment")
+local RightCollarAttachment = Instance.new("Attachment")
+local NeckAttachment = Instance.new("Attachment")
+local WaistCenterAttachment = Instance.new("Attachment")
+local WaistFrontAttachment = Instance.new("Attachment")
+local WaistBackAttachment = Instance.new("Attachment")
 
 -- not gonna bother naming all of these
 local Animate = Instance.new("LocalScript")
@@ -64,8 +77,8 @@ Head.FormFactor = Enum.FormFactor.Symmetric
 Head.formFactor = Enum.FormFactor.Symmetric
 
 HeadMesh.Scale = Vector3.new(1.25, 1.25, 1.25)
---face.Name = "face"
---face.Texture = "http://www.roblox.com/asset/?id=405705854"
+face.Name = "face"
+face.Texture = "http://www.roblox.com/asset/?id=405705854"
 
 Torso.Name = "Torso"
 Torso.Color = Color3.new(0.227451, 0.490196, 0.0823529)
@@ -185,81 +198,76 @@ RootJoint.Part0 = RootPart
 RootJoint.Part1 = Torso
 
 Animate.Name = "Animate"
-Animate.Parent = FakeRig
 
 Idle.Name = "idle"
-Idle.Parent = Animate
+
+FaceFrontAttachment.Position = Vector3.new(0,0,-0.6)
+FaceFrontAttachment.Name = "FaceFrontAttachment"
+HairAttachment.Position = Vector3.new(0,0.6,0)
+HairAttachment.Name = "HairAttachment"
+HatAttachment.Position = Vector3.new(0,0.6,0)
+HatAttachment.Name = "HatAttachment"
+LeftShoulderAttachment.Position = Vector3.new(0,1,0)
+LeftShoulderAttachment.Name = "LeftShoulderAttachment"
+RightShoulderAttachment.Position = Vector3.new(0,1,0)
+RightShoulderAttachment.Name = "RightShoulderAttachment"
+BodyBackAttachment.Position = Vector3.new(0,0,0.5)
+BodyBackAttachment.Name = "BodyBackAttachment"
+BodyFrontAttachment.Position = Vector3.new(0,0,-0.5)
+BodyFrontAttachment.Name = "BodyFrontAttachment"
+LeftCollarAttachment.Position = Vector3.new(-1,1,0)
+LeftCollarAttachment.Name = "LeftCollarAttachment"
+NeckAttachment.Position = Vector3.new(0,1,0)
+NeckAttachment.Name = "NeckAttachment"
+RightCollarAttachment.Position = Vector3.new(1,1,0)
+RightCollarAttachment.Name = "RightCollarAttachment"
+WaistBackAttachment.Position = Vector3.new(0,-1,0.5)
+WaistBackAttachment.Name = "WaistBackAttachment"
+WaistCenterAttachment.Position = Vector3.new(0,-1,0)
+WaistCenterAttachment.Name = "WaistCenterAttachment"
+WaistFrontAttachment.Position = Vector3.new(0,-1,-0.5)
+WaistFrontAttachment.Name = "WaistFrontAttachment"
 
 Animation31.Name = "Animation1"
-Animation31.Parent = Idle
 Animation31.AnimationId = "http://www.roblox.com/asset/?id=180435571"
-
 NumberValue32.Name = "Weight"
-NumberValue32.Parent = Animation31
 NumberValue32.Value = 9
 
 Animation33.Name = "Animation2"
-Animation33.Parent = Idle
 Animation33.AnimationId = "http://www.roblox.com/asset/?id=180435792"
-
 NumberValue34.Name = "Weight"
-NumberValue34.Parent = Animation33
 NumberValue34.Value = 1
 
 StringValue35.Name = "walk"
-StringValue35.Parent = Animate
-
 Animation36.Name = "WalkAnim"
-Animation36.Parent = StringValue35
 Animation36.AnimationId = "http://www.roblox.com/asset/?id=180426354"
 
 StringValue37.Name = "run"
-StringValue37.Parent = Animate
-
 Animation38.Name = "RunAnim"
-Animation38.Parent = StringValue37
 Animation38.AnimationId = "http://www.roblox.com/asset/?id=180426354"
 
 StringValue39.Name = "jump"
-StringValue39.Parent = Animate
-
 Animation40.Name = "JumpAnim"
-Animation40.Parent = StringValue39
 Animation40.AnimationId = "http://www.roblox.com/asset/?id=125750702"
 
 StringValue41.Name = "climb"
-StringValue41.Parent = Animate
-
 Animation42.Name = "ClimbAnim"
-Animation42.Parent = StringValue41
 Animation42.AnimationId = "http://www.roblox.com/asset/?id=180436334"
 
 StringValue43.Name = "toolnone"
-StringValue43.Parent = Animate
-
 Animation44.Name = "ToolNoneAnim"
-Animation44.Parent = StringValue43
 Animation44.AnimationId = "http://www.roblox.com/asset/?id=182393478"
 
 StringValue45.Name = "fall"
-StringValue45.Parent = Animate
-
 Animation46.Name = "FallAnim"
-Animation46.Parent = StringValue45
 Animation46.AnimationId = "http://www.roblox.com/asset/?id=180436148"
 
 StringValue47.Name = "sit"
-StringValue47.Parent = Animate
-
 Animation48.Name = "SitAnim"
-Animation48.Parent = StringValue47
 Animation48.AnimationId = "http://www.roblox.com/asset/?id=178130996"
-
 NumberValue49.Name = "ScaleDampeningPercent"
-NumberValue49.Parent = Animate
 NumberValue49.Value = 0.4000000059604645
 
-BodyColors50.Parent = FakeRig
 BodyColors50.HeadColor = BrickColor.new("Bright yellow")
 BodyColors50.HeadColor3 = Color3.new(0.960784, 0.803922, 0.188235)
 BodyColors50.LeftArmColor = BrickColor.new("Bright yellow")
@@ -280,7 +288,7 @@ LeftLeg.Parent = FakeRig
 RightLeg.Parent = FakeRig
 
 HeadMesh.Parent = Head
---face.Parent = Head
+face.Parent = Head
 
 Neck.Parent = Torso
 RootJoint.Parent = RootPart
@@ -288,6 +296,45 @@ LeftShoulder.Parent = Torso
 RightShoulder.Parent = Torso
 LeftHip.Parent = Torso
 RightHip.Parent = Torso
+
+Animate.Parent = FakeRig
+Idle.Parent = Animate
+Animation31.Parent = Idle
+NumberValue32.Parent = Animation31
+Animation33.Parent = Idle
+NumberValue34.Parent = Animation33
+StringValue35.Parent = Animate
+Animation36.Parent = StringValue35
+StringValue37.Parent = Animate
+Animation38.Parent = StringValue37
+StringValue39.Parent = Animate
+Animation40.Parent = StringValue39
+StringValue41.Parent = Animate
+Animation42.Parent = StringValue41
+StringValue43.Parent = Animate
+Animation44.Parent = StringValue43
+StringValue45.Parent = Animate
+Animation46.Parent = StringValue45
+StringValue47.Parent = Animate
+Animation48.Parent = StringValue47
+NumberValue49.Parent = Animate
+
+FaceCenterAttachment.Parent = Head
+FaceFrontAttachment.Parent = Head
+HairAttachment.Parent = Head
+HatAttachment.Parent = Head
+LeftShoulderAttachment.Parent = LeftArm
+RightShoulderAttachment.Parent = RightArm
+BodyBackAttachment.Parent = Torso
+BodyFrontAttachment.Parent = Torso
+LeftCollarAttachment.Parent = Torso
+RightCollarAttachment.Parent = Torso
+NeckAttachment.Parent = Torso
+WaistCenterAttachment.Parent = Torso
+WaistFrontAttachment.Parent = Torso
+WaistBackAttachment.Parent = Torso
+
+BodyColors50.Parent = FakeRig
 
 Humanoid.Parent = FakeRig
 
