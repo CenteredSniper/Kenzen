@@ -50,12 +50,12 @@ local ReclaimingParts = false
 
 
 do -- [[ Removing Tools (Currently Crashes) ]] --
-	for i,v in pairs(OriginalRigDescendants) do
+	for i,v in ipairs(OriginalRigDescendants) do
 		if v:IsA("Tool") then
 			v:Destroy()
 		end
 	end
-	for i,v in pairs(Player:WaitForChild("Backpack"):GetChildren()) do
+	for i,v in ipairs(Player:WaitForChild("Backpack"):GetChildren()) do
 		if v:IsA("Tool") then
 			v:Destroy()
 		end
@@ -263,7 +263,7 @@ do -- [[ Notification Service, original by quirky anime boy#5506 ]] --
 				--Properties:
 
 				local Children = ScreenGui:GetChildren()
-				for i,v in pairs(Children) do
+				for i,v in ipairs(Children) do
 					local Tween = TweenService:Create(v,TweenInfo.new(0.5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Position = UDim2.new(ErrorMessage.Position.X.Scale, 0, .1, (i*v.AbsoluteSize.Y*1.2))})
 					Tween:Play()
 				end
@@ -422,6 +422,7 @@ do -- [[ Default Settings ]] --
 	if Global.Optimizer == nil then Global.Optimizer = false end
 	if Global.Fling == true then Global.Fling = "HumanoidRootPart" end
 	if not Global.Fling then Global.Fling = "" end
+	if Global.EnableSpin == nil then Global.EnableSpin = false end
 	if Global.PartGUI == nil then Global.PartGUI = false end
 	if Global.ShowReal == nil then Global.ShowReal = false end
 	if Global.FakeGod == nil then Global.FakeGod = false end
@@ -499,7 +500,7 @@ do -- [[ Artificial Heartbeat, original by 4eyedfool ]] --
 	if not event then
 		if Global.ArtificialHeartBeat then
 			local BindEvent = Instance.new("BindableEvent")
-			for _,Event in pairs({RunService.Heartbeat,RunService.Stepped,RunService.RenderStepped,RunService.PreAnimation}) do
+			for _,Event in ipairs({RunService.Heartbeat,RunService.Stepped,RunService.RenderStepped,RunService.PreAnimation}) do
 				Event:Connect(function()
 					BindEvent:Fire()
 				end)
@@ -543,7 +544,7 @@ do -- [[ Part GUI ]]
 			ViewPort.Parent = ScreenGui
 			ScreenGui.Parent = game.CoreGui
 
-			for i,v in pairs(OriginalRigDescendants) do
+			for i,v in ipairs(OriginalRigDescendants) do
 				if v:IsA("BasePart") then
 					local Clone = v:Clone()
 					local PartHB
@@ -907,11 +908,11 @@ do -- [[ Create Fake Rig ]]
 				HumanoidDescription:SetAccessories({},false)
 			end
 			Character.Humanoid:ApplyDescription(HumanoidDescription) --OriginalRig:FindFirstChild("HumanoidDescription",true) or 
-			for i,v in pairs(OriginalRig:GetChildren()) do
+			for i,v in ipairs(OriginalRig:GetChildren()) do
 				if v:IsA("Accessory") then
 					local clonehats = v:Clone()
 					clonehats.Parent = Character
-					for p,g in pairs(R15Offsets) do
+					for p,g in ipairs(R15Offsets) do
 						if g[v.Handle.AccessoryWeld.Part1.Name] then
 							clonehats.Handle.AccessoryWeld.Part1 = Character[p]
 						end
@@ -956,7 +957,7 @@ do -- [[ GodMode ]] --
 		Asset.Spawn(function()
 			task.wait(Players.RespawnTime+Ping:GetValue()/750)
 			if Global.HatCollision then
-				for i,v in pairs({OriginalRig.HumanoidRootPart,OriginalRig.Torso,OriginalRig["Body Colors"]}) do
+				for i,v in ipairs({OriginalRig.HumanoidRootPart,OriginalRig.Torso,OriginalRig["Body Colors"]}) do
 					v.Parent = nil
 				end
 			else
@@ -977,7 +978,7 @@ do -- [[ Claim 2 ]] --
 			pcall(function()
 				local pos = OriginalRig.HumanoidRootPart.Position + Vector3.new(math.random(-1500,1500),100,math.random(-1500,1500))
 				local check = true
-				for i,v in pairs(Players:GetPlayers()) do
+				for i,v in ipairs(Players:GetPlayers()) do
 					if v~= Player and v.Character and v.Character:FindFirstChild("Head") then
 						if (v.Character.HumanoidRootPart.Position-pos).magnitude <= 1000 then
 							check = false
@@ -1000,7 +1001,7 @@ end
 do -- [[ Joints ]] -- 
 	if not Global.HatCollision then
 		Asset.Spawn(function()
-			for i,v in pairs(OriginalRigDescendants) do
+			for i,v in ipairs(OriginalRigDescendants) do
 				Asset.Spawn(function()
 					if v.Name ~= "Neck" then
 						if v:IsA("Motor6D") or v:IsA("Weld") or v:IsA("BallSocketConstraint") or v:IsA("HingeConstraint") then
@@ -1014,7 +1015,7 @@ do -- [[ Joints ]] --
 end
 
 do -- [[ Netless Claim ]] -- 
-	for i,Part in pairs(OriginalRigDescendants) do
+	for i,Part in ipairs(OriginalRigDescendants) do
 		Asset.Spawn(function()
 			if Part:IsA("BasePart") then
 				local NetlessHB
@@ -1022,7 +1023,7 @@ do -- [[ Netless Claim ]] --
 				local BodyVelocity = Instance.new("BodyVelocity")
 				BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge); BodyVelocity.P = math.huge; BodyVelocity.Velocity = Velocity
 				local BodyAngularVelocity = Instance.new("BodyAngularVelocity")
-				BodyAngularVelocity.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); BodyAngularVelocity.P = math.huge; BodyAngularVelocity.AngularVelocity = Part.Name == Global.Fling and Vector3.new(2147483646,2147483646,2147483646) or Vector3.new(0,0,0)
+				BodyAngularVelocity.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); BodyAngularVelocity.P = math.huge; BodyAngularVelocity.AngularVelocity = Part.Name == Global.Fling and Global.EnableSpin and Vector3.new(2147483646,2147483646,2147483646) or Vector3.new(0,0,0)
 
 				Part:ApplyImpulse(Velocity)
 				Part.Massless = true
@@ -1060,7 +1061,7 @@ do -- [[ Netless Claim ]] --
 
 				do -- [[ Find CloneHats ]]
 					if Part.Parent:IsA("Accessory") then
-						for i,v in pairs(Character:GetChildren()) do
+						for i,v in ipairs(Character:GetChildren()) do
 							if v:IsA("Accessory") then
 								local meshid1 = v.Handle:FindFirstChildOfClass("SpecialMesh") or v.Handle
 								local meshid2 = Part:FindFirstChildOfClass("SpecialMesh") or Part
@@ -1090,7 +1091,7 @@ do -- [[ Movement Velocity ]] --
 			if Velocity.Magnitude < 28 then 
 				Velocity = Velocity*(28/Velocity.Magnitude)
 			end
-			for i,v in pairs(BodyVel) do
+			for i,v in ipairs(BodyVel) do
 				v.Velocity = Velocity
 			end
 		end))
@@ -1099,7 +1100,7 @@ end
 
 do -- [[ Collisions ]] -- 
 	if PhysicsService then
-		for i,v in pairs(CharacterDescendants) do
+		for i,v in ipairs(CharacterDescendants) do
 			Asset.Spawn(function()
 				if v:IsA("BasePart") then
 					PhysicsService:SetPartCollisionGroup(v, "NoCollide")
@@ -1107,7 +1108,24 @@ do -- [[ Collisions ]] --
 			end)
 		end
 	end
-	for i,v in pairs(Global.Collisions and OriginalRigDescendants or CharacterDescendants) do
+	if not Global.Collisions then
+		for i,v in ipairs(CharacterDescendants) do
+			Asset.Spawn(function()
+				if v:IsA("BasePart") then
+					local CollideStep
+					CollideStep = RunService.Stepped:Connect(function()
+						if v and v.Parent and v:IsDescendantOf(workspace) then
+							v.CanCollide = false
+						else
+							CollideStep:Disconnect()
+						end
+					end)
+					table.insert(Events,CollideStep)
+				end
+			end)
+		end
+	end
+	for i,v in ipairs(OriginalRigDescendants) do
 		Asset.Spawn(function()
 			if v:IsA("BasePart") then
 				local CollideStep
@@ -1129,7 +1147,7 @@ do -- [[ Claim 2; Electric Boogaloo ]] --
 		Notify("Claim2; Found Pos",3)
 		local ClaimTick = tick()
 		repeat 
-			for i,v in pairs(OriginalRigDescendants) do
+			for i,v in ipairs(OriginalRigDescendants) do
 				if v:IsA("BasePart") then
 					if v.Name == "Head" and not isnetworkowner(v) then
 					else
@@ -1143,7 +1161,7 @@ do -- [[ Claim 2; Electric Boogaloo ]] --
 		Notify("Claim2; Returning Parts",3)
 		Asset.Spawn(function()
 			repeat 
-				for i,v in pairs(OriginalRigDescendants) do
+				for i,v in ipairs(OriginalRigDescendants) do
 					if v:IsA("BasePart") then
 						if v.Name == "Head" and not isnetworkowner(v) then
 						else
@@ -1168,7 +1186,7 @@ do -- [[ Reclaim Parts ]] --
 		ReclaimingParts = true
 		Notify("Attempting to Reclaim " .. Part.Name,5)
 		repeat
-			for i,v in pairs(OriginalRigDescendants) do
+			for i,v in ipairs(OriginalRigDescendants) do
 				if v:IsA("BasePart") and isnetworkowner(v) then
 					v.CFrame = Part.CFrame
 				end
@@ -1183,7 +1201,7 @@ do -- [[ Reclaim Parts ]] --
 	if Global.AutoReclaim then
 		Asset.Spawn(function()
 			while task.wait(1) and Character do
-				for i,v in pairs(OriginalRigDescendants) do
+				for i,v in ipairs(OriginalRigDescendants) do
 					if v:IsA("BasePart") and not isnetworkowner(v) and v:IsDescendantOf(workspace) then
 						if v.Name == "Head" then
 						elseif Global.HatCollision and OriginalRig:FindFirstChild("Neck",true) then
@@ -1211,7 +1229,7 @@ end
 
 do -- [[ FakeGod/HatCollisions Hat Replacements ]] -- 
 	local function GetHatBodyPart(Table)
-		for i,Hat in pairs(OriginalRigDescendants) do
+		for i,Hat in ipairs(OriginalRigDescendants) do
 			if Hat:IsA("Accessory") then
 				local Texture = Hat.Handle:FindFirstChildOfClass("SpecialMesh") and Hat.Handle:FindFirstChildOfClass("SpecialMesh").TextureId
 				--print(Texture,Hat)
@@ -1221,13 +1239,13 @@ do -- [[ FakeGod/HatCollisions Hat Replacements ]] --
 						Player.Character = OriginalRig; 
 						OriginalRig.Parent = workspace; 
 						if Character then Character:Destroy() end
-						for i,v in pairs(Events) do
+						for i,v in ipairs(Events) do
 							v:Disconnect()
 						end
 						Character = nil
 					end) 
 				end
-				for i,v in pairs(Table) do
+				for i,v in ipairs(Table) do
 					if v[1] == string.match(Texture,"%d+") then
 						table.remove(Table,i)
 						return {Hat.Handle,v[2]}
@@ -1279,7 +1297,7 @@ do -- [[ FakeGod/HatCollisions Hat Replacements ]] --
 end
 
 do -- [[ Hide Other Character ]] -- 
-	for i,v in pairs(Global.ShowReal and Character:GetChildren() or OriginalRig:GetChildren()) do
+	for i,v in ipairs(Global.ShowReal and Character:GetChildren() or OriginalRig:GetChildren()) do
 		Asset.Spawn(function()
 			if v:IsA("BasePart") or v:IsA("Decal") then
 				v.Transparency = 1
@@ -1848,8 +1866,8 @@ end
 
 do -- [[ Copy CFrames ]] -- 
 	if RigType == Enum.HumanoidRigType.R15 and Global.R6 then
-		for R6PartName,R15PartNames in pairs(R15Offsets) do
-			for i,R15PartNameOffset in pairs(R15PartNames) do
+		for R6PartName,R15PartNames in ipairs(R15Offsets) do
+			for i,R15PartNameOffset in ipairs(R15PartNames) do
 				Asset.Spawn(function()
 					if Global.Fling ~= i then
 						local partbeat
@@ -1873,7 +1891,7 @@ do -- [[ Copy CFrames ]] --
 				end)
 			end
 		end
-		for i,v in pairs(OriginalRigDescendants) do
+		for i,v in ipairs(OriginalRigDescendants) do
 			if v:IsA("Accessory") then
 				local partbeat
 				partbeat = event:Connect(function(delta)
@@ -1891,7 +1909,7 @@ do -- [[ Copy CFrames ]] --
 			end
 		end
 	else
-		for i,v in pairs(OriginalRigDescendants) do
+		for i,v in ipairs(OriginalRigDescendants) do
 			Asset.Spawn(function()
 				if v:IsA("BasePart") and v.Parent == OriginalRig then
 					local partbeat
@@ -1952,7 +1970,7 @@ do -- [[ Respawn Events ]] --
 			Player.Character = OriginalRig; 
 			OriginalRig.Parent = workspace; 
 			if Character then Character:Destroy() end
-			for i,v in pairs(Events) do
+			for i,v in ipairs(Events) do
 				v:Disconnect()
 			end
 			Character = nil
@@ -1960,7 +1978,7 @@ do -- [[ Respawn Events ]] --
 	end)
 	Player.CharacterAdded:Connect(function() 
 		if Character then Character:Destroy() end
-		for i,v in pairs(Events) do
+		for i,v in ipairs(Events) do
 			v:Disconnect()
 		end
 		Character = nil
