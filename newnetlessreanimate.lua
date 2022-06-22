@@ -1036,7 +1036,8 @@ do -- [[ Netless Claim ]] --
 
 				NetlessHB = event:Connect(function()
 					if Part and Part.Parent and Part:IsDescendantOf(workspace) then
-						Part:ApplyImpulse(Velocity)
+						--Part:ApplyImpulse(Velocity) [[ Velocity can stack and make parts much more unstable ]]
+						Part.Velocity = Velocity
 						if BodyAngularVelocity.AngularVelocity == Vector3.new(0,0,0) then
 							Part.AssemblyAngularVelocity = Vector3.new()
 						end
