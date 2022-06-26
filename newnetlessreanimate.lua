@@ -67,7 +67,8 @@ do -- [[ Removing Tools (Currently Crashes) ]] --
 end
 
 do -- [[ PhysicsService bypass thanks to DanDavis#5234 ]] --
-	if gethiddenproperty and setreadonly and not Global.CollisionGroupsEnabled then
+	if Global.CollisionGroupsEnabled then
+	elseif gethiddenproperty and setreadonly then
 		Global.CollisionGroupsEnabled = true
 		local Workspace = game:GetService("Workspace")
 
@@ -1107,6 +1108,13 @@ end
 do -- [[ Collisions ]] -- 
 	if PhysicsService then
 		for i,v in ipairs(CharacterDescendants) do
+			Asset.Spawn(function()
+				if v:IsA("BasePart") then
+					PhysicsService:SetPartCollisionGroup(v, "NoCollide")
+				end
+			end)
+		end
+		for i,v in ipairs(OriginalRigDescendants) do
 			Asset.Spawn(function()
 				if v:IsA("BasePart") then
 					PhysicsService:SetPartCollisionGroup(v, "NoCollide")
