@@ -455,6 +455,7 @@ do -- [[ Optimizations ]] --
 	settings().Physics.ThrottleAdjustTime = math.huge
 	sethiddenproperty(workspace,"InterpolationThrottling",Enum.InterpolationThrottlingMode.Disabled)
 	sethiddenproperty(workspace,"PhysicsSteppingMethod",Enum.PhysicsSteppingMethod.Fixed)
+	sethiddenproperty(workspace,"PhysicsSimulationRate",Enum.PhysicsSteppingMethod.Fixed240Hz)
 	sethiddenproperty(workspace,"StreamOutBehavior",Enum.StreamOutBehavior.Opportunistic)
 	sethiddenproperty(workspace,"StreamingMinRadius",1/0)
 	sethiddenproperty(workspace,"StreamingEnabled",true)
