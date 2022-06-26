@@ -8,9 +8,6 @@ do -- [[ Checks ]] --
 	if workspace:FindFirstChild("ExProReanimate") then 
 		error("Already Reanimated?") 
 	end
-	if not pcall(function() loadstring("")() end) then
-		error("Loadstring Not Available") 
-	end
 end
 
 local SpeedTest = tick()
@@ -18,8 +15,15 @@ local SpeedTest = tick()
 -- [[ Variables ]] --
 
 local Global = getgenv and getgenv() or _G
-local sethiddenproperty = sethiddenproperty or set_hidden_property or sethiddenprop or setscriptable and function(loc,prop,val) if not loc then return true end local succ,f = pcall(function() local a = loc[prop] end) if not succ then setscriptable(loc,prop,true) end loc[prop] = val end or function() return nil end
 local gethiddenproperty = gethiddenproperty or get_hidden_property or gethiddenprop or nil
+
+local sethiddenproperty = function(loc,prop,val) -- futureproofing
+	local shp = sethiddenproperty or set_hidden_property or sethiddenprop or setscriptable and function(loc,prop,val) if not loc then return true end local succ,f = pcall(function() local a = loc[prop] end) if not succ then setscriptable(loc,prop,true) end loc[prop] = val end or nil
+	if shp and gethiddenproperty and pcall(function() gethiddenproperty(loc,prop) end) then
+		shp(loc,prop,val)
+	end
+end
+
 local isnetworkowner = isnetworkowner or function() return true end
 local cloneref = cloneref or function(ref) return ref end
 local printconsole = printconsole or print
@@ -458,7 +462,7 @@ do -- [[ Optimizations ]] --
 end
 
 do -- [[ Global Variable Fixes ]] -- 
-	if Global.Optimizer then
+	if Global.Optimizer and pcall(function() loadstring("")() end) then
 		loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/GameOptimizer/main/src.lua", true))()
 	end
 	if Global.TorsoFling then 
