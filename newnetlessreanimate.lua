@@ -17,11 +17,11 @@ local SpeedTest = tick()
 local Global = getgenv and getgenv() or _G
 local gethiddenproperty = gethiddenproperty or get_hidden_property or gethiddenprop or nil
 
-local sethiddenproperty = function(loc,prop,val) -- futureproofing
-	local shp = sethiddenproperty or set_hidden_property or sethiddenprop or setscriptable and function(loc,prop,val) if not loc then return true end local succ,f = pcall(function() local a = loc[prop] end) if not succ then setscriptable(loc,prop,true) end loc[prop] = val end or nil
-	if shp and gethiddenproperty and pcall(function() gethiddenproperty(loc,prop) end) then
+local shp = sethiddenproperty or set_hidden_property or sethiddenprop or setscriptable and function(loc,prop,val) if not loc then return true end local succ,f = pcall(function() local a = loc[prop] end) if not succ then setscriptable(loc,prop,true) end loc[prop] = val end or nil
+local sethiddenproperty = function(loc,prop,val) -- krnl has a broken sethiddenproperty
+	pcall(function()
 		shp(loc,prop,val)
-	end
+	end)
 end
 
 local isnetworkowner = isnetworkowner or function() return true end
