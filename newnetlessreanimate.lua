@@ -506,7 +506,7 @@ do -- [[ Artificial Heartbeat, original by 4eyedfool ]] --
 	if not event then
 		if Global.ArtificialHeartBeat then
 			local BindEvent = Instance.new("BindableEvent")
-			for _,Event in ipairs({RunService.Heartbeat,RunService.Stepped,RunService.RenderStepped,RunService.PreAnimation}) do
+			for _,Event in ipairs({RunService.PostSimulation,RunService.PreSimulation,RunService.PreRender,RunService.PreAnimation}) do
 				Event:Connect(function()
 					BindEvent:Fire()
 				end)
