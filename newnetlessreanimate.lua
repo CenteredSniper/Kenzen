@@ -2,7 +2,7 @@
 -- [[ Zendey Reanimate // By ProductionTakeOne#3330 // Additional support from nul#3174 and Iamverybored#9941 ]] --
 
 do -- [[ Checks ]] --
-	if not game:IsLoaded() then
+	if not game:IsLoaded("Workspace") then -- scriptware uses isloaded args
 		game.Loaded:Wait()
 	end
 	if workspace:FindFirstChild("ExProReanimate") then 
