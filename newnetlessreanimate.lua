@@ -1880,8 +1880,8 @@ end
 
 do -- [[ Copy CFrames ]] -- 
 	if RigType == Enum.HumanoidRigType.R15 and Global.R6 then
-		for R6PartName,R15PartNames in ipairs(R15Offsets) do
-			for i,R15PartNameOffset in ipairs(R15PartNames) do
+		for R6PartName,R15PartNames in pairs(R15Offsets) do
+			for i,R15PartNameOffset in pairs(R15PartNames) do
 				Asset.Spawn(function()
 					if Global.Fling ~= i then
 						local partbeat
@@ -1905,7 +1905,7 @@ do -- [[ Copy CFrames ]] --
 				end)
 			end
 		end
-		for i,v in ipairs(OriginalRigDescendants) do
+		for i,v in pairs(OriginalRigDescendants) do
 			if v:IsA("Accessory") then
 				local partbeat
 				partbeat = event:Connect(function(delta)
@@ -1923,7 +1923,7 @@ do -- [[ Copy CFrames ]] --
 			end
 		end
 	else
-		for i,v in ipairs(OriginalRigDescendants) do
+		for i,v in pairs(OriginalRigDescendants) do
 			Asset.Spawn(function()
 				if v:IsA("BasePart") and v.Parent == OriginalRig then
 					local partbeat
