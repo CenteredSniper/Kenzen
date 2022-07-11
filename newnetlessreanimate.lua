@@ -1018,6 +1018,13 @@ do -- [[ Joints ]] --
 			end
 		end)
 	end
+	if RigType == Enum.HumanoidRigType.R15 and Global.R6 then
+		Character.DescendantRemoving:Connect(function(p)
+			if p.Name == "AccessoryWeld" then
+				p:Clone().Parent = p.Parent
+			end
+		end)
+	end
 end
 
 do -- [[ Netless Claim ]] -- 
@@ -1909,14 +1916,16 @@ do -- [[ Copy CFrames ]] --
 			if v:IsA("Accessory") then
 				local partbeat
 				partbeat = event:Connect(function(delta)
-					if v and v.Parent and v:FindFirstChild("Handle") then
-						if isnetworkowner(v.Handle) and not ReclaimingParts then
-							v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
+					if not ReclaimingParts then
+						if v and v.Parent and v:FindFirstChild("Handle") and v:IsDescendantOf(workspace) then
+							if isnetworkowner(v.Handle) then
+								v.Handle.CFrame = v.Handle.CloneHat.Value.CFrame 
+							end
 						else
-							v.Handle.CFrame = OriginalRig.Head.CFrame
+							partbeat:Disconnect()
 						end
 					else
-						partbeat:Disconnect()
+						v.Handle.CFrame = OriginalRig.Head.CFrame
 					end
 				end)
 				table.insert(Events,partbeat)
