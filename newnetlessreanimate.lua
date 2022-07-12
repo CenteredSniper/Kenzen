@@ -667,8 +667,8 @@ do -- [[ Create Fake Rig ]]
 				Head.formFactor = Enum.FormFactor.Symmetric
 
 				HeadMesh.Scale = Vector3.new(1.25, 1.25, 1.25)
-				--face.Name = "face"
-				--face.Texture = "http://www.roblox.com/asset/?id=405705854"
+				face.Name = "face"
+				face.Texture = "http://www.roblox.com/asset/?id=405705854"
 
 				Torso.Name = "Torso"
 				Torso.Color = Color3.new(0.227451, 0.490196, 0.0823529)
@@ -885,7 +885,7 @@ do -- [[ Create Fake Rig ]]
 				RightLeg.Parent = FakeRig
 
 				HeadMesh.Parent = Head
-				--face.Parent = Head
+				face.Parent = Head
 
 				Neck.Parent = Torso
 				RootJoint.Parent = RootPart
