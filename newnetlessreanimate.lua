@@ -914,6 +914,7 @@ do -- [[ Create Fake Rig ]]
 				HumanoidDescription:SetAccessories({},false)
 			end
 			Character.Humanoid:ApplyDescription(HumanoidDescription) --OriginalRig:FindFirstChild("HumanoidDescription",true) or 
+			if OriginalRig.Head:FindFirstChild('face') then OriginalRig.Head:FindFirstChild('face'):Clone().Parent = Character.Head end
 			for i,v in ipairs(OriginalRig:GetChildren()) do
 				if v:IsA("Accessory") then
 					local clonehats = v:Clone()
