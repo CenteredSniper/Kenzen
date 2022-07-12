@@ -609,7 +609,7 @@ do -- [[ Create Fake Rig ]]
 
 				local Head = Instance.new("Part")
 				local HeadMesh = Instance.new("SpecialMesh")
-				--local face = Instance.new("Decal")
+				local face = Instance.new("Decal")
 
 				local Torso = Instance.new("Part")
 				local Neck = Instance.new("Motor6D")
