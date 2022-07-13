@@ -962,7 +962,7 @@ do -- [[ GodMode ]] --
 	if Global.GodMode then
 		Asset.Spawn(function()
 			--task.wait(Players.RespawnTime+Ping:GetValue()/750)
-			task.wait(Players.RespawnTime+.1) -- temporary, will be changed in rewrite
+			task.wait(Players.RespawnTime+.1+Ping:GetValue()/750) -- temporary, will be changed in rewrite
 			if Global.HatCollision then
 				for i,v in ipairs({OriginalRig.HumanoidRootPart,OriginalRig.Torso,OriginalRig["Body Colors"]}) do
 					v.Parent = nil
