@@ -447,7 +447,7 @@ do -- [[ Default Settings ]] --
 end
 
 do -- [[ Optimizations ]] -- 
-	settings().Rendering.EagerBulkExecution = true
+	--settings().Rendering.EagerBulkExecution = true
 	settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
 	settings().Physics.AllowSleep = false
 	settings().Physics.ForceCSGv2 = false
@@ -456,7 +456,7 @@ do -- [[ Optimizations ]] --
 	settings().Physics.ThrottleAdjustTime = math.huge
 	sethiddenproperty(workspace,"InterpolationThrottling",Enum.InterpolationThrottlingMode.Disabled)
 	sethiddenproperty(workspace,"PhysicsSteppingMethod",Enum.PhysicsSteppingMethod.Fixed)
-	sethiddenproperty(workspace,"PhysicsSimulationRate",Enum.PhysicsSimulationRate.Fixed240Hz)
+	sethiddenproperty(workspace,"PhysicsSimulationRateReplicator",Enum.PhysicsSimulationRate.Fixed240Hz)
 	sethiddenproperty(workspace,"StreamOutBehavior",Enum.StreamOutBehavior.Opportunistic)
 	sethiddenproperty(workspace,"StreamingMinRadius",1/0)
 	sethiddenproperty(workspace,"StreamingEnabled",true)
