@@ -35,7 +35,7 @@ TranslateSetting("GodMode","PermaDeath")
 TranslateSetting("R6","R15ToR6")
 TranslateSetting("AutoAnimate","AutoAnimate")
 TranslateSetting("Collisions","Collisions")
-TranslateSetting("GameOptimize","Optimizer")
+TranslateSetting("Optimizer","GameOptimize")
 TranslateSetting("Notifications","Notifications")
 
 loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/CenteredSniper/Kenzen/master/ZendeyReanimate.lua", true))()
