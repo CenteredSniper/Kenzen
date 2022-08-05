@@ -857,14 +857,15 @@ do -- [[ Part Manipulation ]]
 					SelectionBox.Transparency = 1; 
 					SelectionBox.Parent = Part
 				end
-
+				
 				NetlessHB = Event:Connect(function()
 					if Part and Part.Parent and v[1] and v[1].Parent then
 						Part:ApplyImpulse(Velocity) -- https://fflag.eryn.io/history/PCDesktopClient/DFFlagSimApplyImpulseTakeOwnership
 						Part.Velocity = Velocity
 
-						if IsOwner and not Global.AlignsEnabled and not Global.Fling == Part.Name then
-							if PartToReclaim then
+						if IsOwner and not Global.AlignsEnabled then
+							if Global.Fling == Part.Name then
+							elseif PartToReclaim then
 								Part.CFrame = PartToReclaim.CFrame
 							else
 								Part.CFrame = v[1].CFrame * v[2]
