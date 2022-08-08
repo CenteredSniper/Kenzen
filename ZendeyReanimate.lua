@@ -7,13 +7,6 @@ local Global = getgenv and getgenv() or shared
 
 local R6 = true
 
-do -- [[ Create Global Table ]]
-	if not Global['0'] then
-		Global['0'] = {}
-	end
-	Global = Global['0']
-end
-
 do -- [[ Default Settings ]] -- 
 	local function CheckSetting(Var,DefaultValue)
 		if Global[Var] == nil then
