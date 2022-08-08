@@ -5,8 +5,6 @@ local SpeedTest = tick()
 
 local Global = getgenv and getgenv() or shared
 
-local R6 = true
-
 do -- [[ Default Settings ]] -- 
 	local function CheckSetting(Var,DefaultValue)
 		if Global[Var] == nil then
