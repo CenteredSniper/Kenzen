@@ -671,7 +671,7 @@ do -- [[ Create Fake Rig ]]
 	end
 end
 
-wait()
+--wait()
 FakeRig.Name = " " .. game.PlaceVersion .. "𝚉𝚎𝚗𝚍𝚎𝚢"
 FakeChildren = FakeRig:GetDescendants()
 FakeDescendants = FakeRig:GetDescendants()
@@ -1490,7 +1490,7 @@ do -- [[ Animation ]] --
 				end) 
 			end)
 		else
-			FakeRig.Animate.Disabled = true; wait() FakeRig.Animate.Disabled = false
+			FakeRig.Animate.Disabled = true; FakeRig.Animate.Disabled = false
 		end
 	end
 end
@@ -1526,4 +1526,4 @@ do -- [[ Respawn Events ]] --
 	end))
 end
 
-Notify("Netted in " .. string.sub(tostring(tick()-SpeedTest),1,string.find(tostring(tick()-SpeedTest),".")+4),3)
+Notify("Netted in " .. string.sub(tostring(tick()-SpeedTest),1,string.find(tostring(tick()-SpeedTest),".")+5),3)
