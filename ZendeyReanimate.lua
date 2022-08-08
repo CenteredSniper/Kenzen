@@ -856,7 +856,7 @@ do -- [[ Part Manipulation ]]
 					SelectionBox.Transparency = 1; 
 					SelectionBox.Parent = Part
 				end
-				
+
 				NetlessHB = Event:Connect(function()
 					if Part and Part.Parent and v[1] and v[1].Parent then
 						Part:ApplyImpulse(Velocity) -- https://fflag.eryn.io/history/PCDesktopClient/DFFlagSimApplyImpulseTakeOwnership
@@ -937,9 +937,11 @@ end
 
 do -- [[ Animation ]] -- 
 	if Global.AutoAnimate then
-		if RigType == Enum.HumanoidRigType.R15 and Global.R15ToR6 then
-			task.spawn(function() 
+		task.spawn(function() 
+			if RigType == Enum.HumanoidRigType.R15 and Global.R15ToR6 then
 				pcall(function() 
+					if RealRig:FindFirstChild("Animate") then RealRig.Animate.Disabled = true end
+					for i,v in pairs(RealRig.Humanoid:GetPlayingAnimationTracks()) do v:Stop() end
 					local Figure = FakeRig
 					local Animatee = Figure.Animate
 					local Torso = Figure:WaitForChild("Torso")
@@ -1192,7 +1194,7 @@ do -- [[ Animation ]] --
 								table.insert(Events,currentAnimKeyframeHandler)
 							end
 						end
-						
+
 
 					end
 
@@ -1406,7 +1408,7 @@ do -- [[ Animation ]] --
 							frequency = 1
 							setAngles = true
 						end
-						
+
 
 						if (setAngles) then
 							local desiredAngle = amplitude * math.sin(time * frequency)
@@ -1487,10 +1489,12 @@ do -- [[ Animation ]] --
 						end
 					end
 				end) 
-			end)
-		else
-			FakeRig.Animate.Disabled = true; FakeRig.Animate.Disabled = false
-		end
+			else
+				FakeRig.Animate.Disabled = true; FakeRig.Animate.Disabled = false
+				if RealRig:FindFirstChild("Animate") then RealRig.Animate.Disabled = true end
+				for i,v in pairs(RealRig.Humanoid:GetPlayingAnimationTracks()) do v:Stop() end
+			end
+		end)
 	end
 end
 
