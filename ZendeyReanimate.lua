@@ -788,7 +788,9 @@ do -- [[ Create Dictionaries ]]
 					or Weld.Part1.Name == "RightUpperArm" and FakeRig["Right Arm"]
 					or Weld.Part1.Name == "LeftUpperArm" and FakeRig["Left Arm"]
 					or FakeRig:FindFirstChild(Weld.Part1.Name)
-				v.Handle.AccessoryWeld:Destroy()
+				if v.Handle:FindFirstChild("AccessoryWeld") then
+					v.Handle.AccessoryWeld:Destroy()	
+				end
 				Clone.Parent = FakeRig
 			end
 		end)
