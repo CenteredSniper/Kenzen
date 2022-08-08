@@ -36,7 +36,7 @@ do -- [[ Default Settings ]] --
 	CheckSetting("Notifications",true)
 	CheckSetting("GameOptimize",false)
 	CheckSetting("AlignsEnabled",false)
-	CheckSetting("ArtificialHeartBeat",{"PreRender","PreAnimation","Stepped","Heartbeat"}) -- 
+	CheckSetting("ArtificialHeartBeat",{"PreRender","PreAnimation","Stepped","Heartbeat"})
 end
 
 do -- [[ Checks ]] --
@@ -48,6 +48,9 @@ do -- [[ Checks ]] --
 	end
 	if Global.GameOptimize and pcall(function() loadstring("")() end) then
 		loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/GameOptimizer/main/src.lua", true))()
+	end
+	if Global.ArtificialHeartBeat == true then
+		ArtificialHeartBeat = {"PreRender","PreAnimation","Stepped","Heartbeat"}
 	end
 end
 
