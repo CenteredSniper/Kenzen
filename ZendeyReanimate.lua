@@ -86,7 +86,7 @@ local Velocity = Global.VelocityVector * Global.Velocity
 
 local PartToReclaim = nil
 
-local FakeRig,FakeChildren,FakeDescendants,sethiddenproperty,Notify
+local FakeRig,FakeChildren,sethiddenproperty,Notify
 
 do -- [[ Enabling Extra Runservice Signals ]] --
 	pcall(function() setfflag("NewRunServiceSignals", "true") end) 
@@ -673,8 +673,7 @@ end
 
 --wait()
 FakeRig.Name = " " .. game.PlaceVersion .. "𝚉𝚎𝚗𝚍𝚎𝚢"
-FakeChildren = FakeRig:GetDescendants()
-FakeDescendants = FakeRig:GetDescendants()
+FakeChildren = FakeRig:GetChildren()
 
 local OriginCameraCFrame = workspace.CurrentCamera.CFrame
 
