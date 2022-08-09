@@ -50,7 +50,7 @@ do -- [[ Checks ]] --
 		loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/GameOptimizer/main/src.lua", true))()
 	end
 	if Global.ArtificialHeartBeat == true then
-		ArtificialHeartBeat = {"PreRender","PreAnimation","Stepped","Heartbeat"}
+		Global.ArtificialHeartBeat = {"PreRender","PreAnimation","Stepped","Heartbeat"}
 	end
 end
 
