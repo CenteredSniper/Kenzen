@@ -712,17 +712,17 @@ do -- [[ Set Character States ]] --
 end
 
 do -- [[ Joints ]] -- 
-		task.spawn(function()
-			for i,v in pairs(RealDescendants) do
-				task.spawn(function()
-					if v.Name ~= "Neck" then
-						if v:IsA("Motor6D") or v:IsA("Weld") and v.Name ~= "AccessoryWeld" or v:IsA("BallSocketConstraint") or v:IsA("HingeConstraint") then
-							v:Destroy() 
-						end
+	task.spawn(function()
+		for i,v in pairs(RealDescendants) do
+			task.spawn(function()
+				if v.Name ~= "Neck" then
+					if v:IsA("Motor6D") or v:IsA("Weld") and v.Name ~= "AccessoryWeld" or v:IsA("BallSocketConstraint") or v:IsA("HingeConstraint") then
+						v:Destroy() 
 					end
-				end)
-			end
-		end)
+				end
+			end)
+		end
+	end)
 	task.spawn(function()
 		wait()
 		if RigType == Enum.HumanoidRigType.R15 and Global.R15ToR6 then
@@ -828,7 +828,7 @@ do -- [[ Part Manipulation ]]
 					local BodyVelocity = Instance.new("BodyVelocity"); do
 						BodyVelocity.MaxForce = Vector3.new(1,1,1) * math.huge; 
 						BodyVelocity.P = math.huge; 
-						BodyVelocity.Velocity = Part.Name == "Head" and Global.WhitelistHead and Vector3.new() or Velocity;
+						BodyVelocity.Velocity = Part.Name == "Head" and Global.WhitelistHead and RigType == Enum.HumanoidRigType.R6 and Vector3.new() or Velocity;
 						BodyVelocity.Parent = Part;
 					end
 					BodyAngularVelocity = Instance.new("BodyAngularVelocity"); do
@@ -869,7 +869,7 @@ do -- [[ Part Manipulation ]]
 
 				NetlessHB = Event:Connect(function()
 					if Part and Part.Parent and v[1] and v[1].Parent then
-						if Part.Name == "Head" and Global.WhitelistHead then
+						if Part.Name == "Head" and Global.WhitelistHead and RigType == Enum.HumanoidRigType.R6 then
 						else
 							Part:ApplyImpulse(Velocity) -- https://fflag.eryn.io/history/PCDesktopClient/DFFlagSimApplyImpulseTakeOwnership
 							Part.Velocity = Velocity
