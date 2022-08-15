@@ -706,7 +706,9 @@ do -- [[ Set Character States ]] --
 		RunService.RenderStepped:Wait()
 		workspace.CurrentCamera.CFrame = OriginCameraCFrame
 	end)
-	pcall(function() RealRig.Head.FaceCenterAttachment:Destroy() end)
+	if RealRig:FindFirstChild("FaceCenterAttachment",true) then RealRig.Head.FaceCenterAttachment:Destroy() end
+	if RealRig:FindFirstChild("Animate") then RealRig.Animate.Disabled = true end
+	for i,v in pairs(RealRig.Humanoid:GetPlayingAnimationTracks()) do v:Stop() end
 end
 
 do -- [[ Joints ]] -- 
@@ -958,8 +960,6 @@ do -- [[ Animation ]] --
 		task.spawn(function() 
 			if RigType == Enum.HumanoidRigType.R15 and Global.R15ToR6 then
 				pcall(function() 
-					if RealRig:FindFirstChild("Animate") then RealRig.Animate.Disabled = true end
-					for i,v in pairs(RealRig.Humanoid:GetPlayingAnimationTracks()) do v:Stop() end
 					local Figure = FakeRig
 					local Animatee = Figure.Animate
 					local Torso = Figure:WaitForChild("Torso")
