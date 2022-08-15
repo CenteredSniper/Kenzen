@@ -852,7 +852,23 @@ do -- [[ Part Manipulation ]]
 					SelectionBox.Transparency = 1; 
 					SelectionBox.Parent = Part
 				end
-
+				
+				local SelectionBillboard = Instance.new("BillboardGui"); do
+					SelectionBillboard.StudsOffset = Vector3.new(0,Part.Size.Y,0)
+					SelectionBillboard.Size = UDim2.new(3,0,1,0)
+					local TextLabel = Instance.new("TextLabel"); do
+						TextLabel.BackgroundTransparency = 1
+						TextLabel.Text = Part.Name
+						TextLabel.TextScaled = true
+						TextLabel.TextColor3 = Color3.new(1,1,1)
+						TextLabel.TextStrokeTransparency = 0
+						TextLabel.Size = UDim2.new(1,0,1,0)
+						TextLabel.Font = Enum.Font.IndieFlower
+						TextLabel.Parent = SelectionBillboard
+					end
+					SelectionBillboard.Parent = Part
+				end
+				
 				NetlessHB = Event:Connect(function()
 					if Part and Part.Parent and v[1] and v[1].Parent then
 						Part:ApplyImpulse(Velocity) -- https://fflag.eryn.io/history/PCDesktopClient/DFFlagSimApplyImpulseTakeOwnership
@@ -873,10 +889,13 @@ do -- [[ Part Manipulation ]]
 
 						if Part.Name == "Head" and not Global.GodMode then
 							SelectionBox.SurfaceTransparency = 1
+							SelectionBillboard.Enabled = false
 						elseif IsOwner then
 							SelectionBox.SurfaceTransparency = 1
+							SelectionBillboard.Enabled = false
 						else
 							SelectionBox.SurfaceTransparency = 0
+							SelectionBillboard.Enabled = true
 						end
 
 						if Global.AllowSleep then 
