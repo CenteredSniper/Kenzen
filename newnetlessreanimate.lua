@@ -12,9 +12,7 @@ do -- [[ Create Global Table ]]
 end
 
 local function TranslateSetting(Setting,NewName)
-	if Global[Setting] then
-		NewGlobal[NewName] = Global[Setting]
-	end
+	NewGlobal[NewName] = Global[Setting]
 end
 
 TranslateSetting("Fling","Fling")
