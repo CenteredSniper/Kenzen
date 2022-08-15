@@ -641,7 +641,7 @@ do -- [[ Create Fake Rig ]]
 		FakeRig.Parent = workspace
 		--Notify("Applying Character Description",3)
 		do -- [[ Applying Appearance ]] -- 
-			local HumanoidDescription = Players:GetHumanoidDescriptionFromUserId(Player.UserId)
+			local HumanoidDescription = RealRig:WaitForChild("Humanoid"):FindFirstChild("HumanoidDescription") or Players:GetHumanoidDescriptionFromUserId(Player.UserId)
 			do  -- [[ Remove Hats ]] -- 
 				HumanoidDescription.BackAccessory = ""
 				HumanoidDescription.FaceAccessory = ""
@@ -675,9 +675,6 @@ RealRig.Parent = FakeRig
 Player.Character = FakeRig
 
 do -- [[ Set CloneRig and RealRig Globals ]]
-	Global.RealRig = RealRig
-	Global.CloneRig = FakeRig
-	local Global = getgenv and getgenv() or shared['0']
 	Global.RealRig = RealRig
 	Global.CloneRig = FakeRig
 end
@@ -852,7 +849,7 @@ do -- [[ Part Manipulation ]]
 					SelectionBox.Transparency = 1; 
 					SelectionBox.Parent = Part
 				end
-				
+
 				local SelectionBillboard = Instance.new("BillboardGui"); do
 					SelectionBillboard.StudsOffset = Vector3.new(0,Part.Size.Y,0)
 					SelectionBillboard.Size = UDim2.new(3,0,1,0)
@@ -868,7 +865,7 @@ do -- [[ Part Manipulation ]]
 					end
 					SelectionBillboard.Parent = Part
 				end
-				
+
 				NetlessHB = Event:Connect(function()
 					if Part and Part.Parent and v[1] and v[1].Parent then
 						Part:ApplyImpulse(Velocity) -- https://fflag.eryn.io/history/PCDesktopClient/DFFlagSimApplyImpulseTakeOwnership
