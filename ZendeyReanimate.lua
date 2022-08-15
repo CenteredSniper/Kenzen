@@ -1527,6 +1527,19 @@ do -- [[ Movement Velocity ]]
 end
 
 do -- [[ Respawn Events ]] -- 
+	table.insert(Events,RunService.Heartbeat:Connect(function() 
+		if FakeRig.HumanoidRootPart.Position.Y <= workspace.FallenPartsDestroyHeight+3 then
+			pcall(function() 
+				Player.Character = RealRig; 
+				RealRig.Parent = workspace; 
+				if FakeRig then FakeRig:Destroy() end
+				for i,v in pairs(Events) do
+					v:Disconnect()
+				end
+				FakeRig = nil
+			end) 
+		end
+	end))
 	table.insert(Events,FakeRig.Humanoid.Died:Connect(function() 
 		pcall(function() 
 			Player.Character = RealRig; 
