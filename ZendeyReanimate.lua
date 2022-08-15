@@ -82,7 +82,7 @@ local Velocity = Global.VelocityVector * Global.Velocity
 
 local PartToReclaim = nil
 
-local TorsoDelay = 1
+local TorsoDelay = 0.026
 
 local FakeRig,FakeChildren,sethiddenproperty,Notify
 
@@ -882,7 +882,7 @@ do -- [[ Part Manipulation ]]
 							if Global.Fling == Part.Name then
 							elseif PartToReclaim then
 								Part.CFrame = PartToReclaim.CFrame
-							elseif Part.Name == "HumanoidRootPart" and RigType == Enum.HumanoidRigType.R6 then
+							elseif Part.Name == "HumanoidRootPart" then
 								Part.CFrame = v[1].CFrame * v[2] * CFrame.new(0,TorsoDelay,0)
 								TorsoDelay *= -1
 							else
