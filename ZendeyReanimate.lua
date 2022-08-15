@@ -15,6 +15,7 @@ do -- [[ Default Settings ]] --
 	CheckSetting("Velocity",-17.72)
 	CheckSetting("VelocityVector",Vector3.new(1,0,1))
 	CheckSetting("MovementVelocity",false)
+	CheckSetting("WhitelistHead",true)
 
 	CheckSetting("SimRadius",true)
 	CheckSetting("AutoReclaim",false)
@@ -709,7 +710,6 @@ do -- [[ Set Character States ]] --
 end
 
 do -- [[ Joints ]] -- 
-	if not Global.R6HatCollision then
 		task.spawn(function()
 			for i,v in pairs(RealDescendants) do
 				task.spawn(function()
@@ -721,7 +721,6 @@ do -- [[ Joints ]] --
 				end)
 			end
 		end)
-	end
 	task.spawn(function()
 		wait()
 		if RigType == Enum.HumanoidRigType.R15 and Global.R15ToR6 then
@@ -742,15 +741,15 @@ do -- [[ Create Dictionaries ]]
 					if v.Name == "LeftUpperArm" then
 						BaseParts[v] = {FakeRig:FindFirstChild("Left Arm"),CFrame.new((1-RealRig.LeftUpperArm.Size.X)*2,0.369*(RealRig.LeftUpperArm.Size.Y/1.169),0)}
 					elseif v.Name == "LeftLowerArm" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Left Arm"),CFrame.new(-(1-RealRig.LeftLowerArm.Size.X)*2,-0.224*(RealRig.LeftLowerArm.Size.Y/1.052),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Left Arm"),CFrame.new((1-RealRig.LeftLowerArm.Size.X)*2,-0.224*(RealRig.LeftLowerArm.Size.Y/1.052),0)}
 					elseif v.Name == "LeftHand" then
 						BaseParts[v] = {FakeRig:FindFirstChild("Left Arm"),CFrame.new((1-RealRig.LeftHand.Size.X)*2,-0.85*(RealRig.LeftHand.Size.Y/0.3),0)}
 					elseif v.Name == "RightUpperArm" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Right Arm"),CFrame.new((1-RealRig.RightUpperArm.Size.X)*2,0.369*(RealRig.RightUpperArm.Size.Y/1.169),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Right Arm"),CFrame.new(-(1-RealRig.RightUpperArm.Size.X)*2,0.369*(RealRig.RightUpperArm.Size.Y/1.169),0)}
 					elseif v.Name == "RightLowerArm" then
 						BaseParts[v] = {FakeRig:FindFirstChild("Right Arm"),CFrame.new(-(1-RealRig.RightLowerArm.Size.X)*2,-0.224*(RealRig.RightLowerArm.Size.Y/1.052),0)}
 					elseif v.Name == "RightHand" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Right Arm"),CFrame.new((1-RealRig.RightHand.Size.X)*2,-0.85*(RealRig.RightHand.Size.Y/0.3),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Right Arm"),CFrame.new(-(1-RealRig.RightHand.Size.X)*2,-0.85*(RealRig.RightHand.Size.Y/0.3),0)}
 					elseif v.Name == "LeftUpperLeg" then
 						BaseParts[v] = {FakeRig:FindFirstChild("Left Leg"),CFrame.new((1-RealRig.LeftUpperLeg.Size.X)/2,0.579*(RealRig.LeftUpperLeg.Size.Y/1.217),0)}
 					elseif v.Name == "LeftLowerLeg" then
@@ -758,11 +757,11 @@ do -- [[ Create Dictionaries ]]
 					elseif v.Name == "LeftFoot" then
 						BaseParts[v] = {FakeRig:FindFirstChild("Left Leg"),CFrame.new((1-RealRig.LeftFoot.Size.X)/2,-0.85*(RealRig.LeftFoot.Size.Y/0.3),0)}
 					elseif v.Name == "RightUpperLeg" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Right Leg"),CFrame.new((1-RealRig.RightUpperLeg.Size.X)/2,0.579*(RealRig.RightUpperLeg.Size.Y/1.217),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Right Leg"),CFrame.new(-(1-RealRig.RightUpperLeg.Size.X)/2,0.579*(RealRig.RightUpperLeg.Size.Y/1.217),0)}
 					elseif v.Name == "RightLowerLeg" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Right Leg"),CFrame.new((1-RealRig.RightLowerLeg.Size.X)/2,-0.201*(RealRig.RightLowerLeg.Size.Y/1.193),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Right Leg"),CFrame.new(-(1-RealRig.RightLowerLeg.Size.X)/2,-0.201*(RealRig.RightLowerLeg.Size.Y/1.193),0)}
 					elseif v.Name == "RightFoot" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Right Leg"),CFrame.new((1-RealRig.RightFoot.Size.X)/2,-0.85*(RealRig.RightFoot.Size.Y/0.3),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Right Leg"),CFrame.new(-(1-RealRig.RightFoot.Size.X)/2,-0.85*(RealRig.RightFoot.Size.Y/0.3),0)}
 					elseif v.Name == "UpperTorso" then
 						BaseParts[v] = {FakeRig:FindFirstChild("Torso"),CFrame.new(0,0.2*(RealRig.UpperTorso.Size.Y/1.6),0)}
 					elseif v.Name == "LowerTorso" then
@@ -827,7 +826,7 @@ do -- [[ Part Manipulation ]]
 					local BodyVelocity = Instance.new("BodyVelocity"); do
 						BodyVelocity.MaxForce = Vector3.new(1,1,1) * math.huge; 
 						BodyVelocity.P = math.huge; 
-						BodyVelocity.Velocity = Velocity;
+						BodyVelocity.Velocity = Part.Name == "Head" and Global.WhitelistHead and Vector3.new() or Velocity;
 						BodyVelocity.Parent = Part;
 					end
 					BodyAngularVelocity = Instance.new("BodyAngularVelocity"); do
@@ -868,8 +867,11 @@ do -- [[ Part Manipulation ]]
 
 				NetlessHB = Event:Connect(function()
 					if Part and Part.Parent and v[1] and v[1].Parent then
-						Part:ApplyImpulse(Velocity) -- https://fflag.eryn.io/history/PCDesktopClient/DFFlagSimApplyImpulseTakeOwnership
-						Part.Velocity = Velocity
+						if Part.Name == "Head" and Global.WhitelistHead then
+						else
+							Part:ApplyImpulse(Velocity) -- https://fflag.eryn.io/history/PCDesktopClient/DFFlagSimApplyImpulseTakeOwnership
+							Part.Velocity = Velocity
+						end
 
 						if IsOwner and not Global.AlignsEnabled then
 							if Global.Fling == Part.Name then
@@ -884,7 +886,7 @@ do -- [[ Part Manipulation ]]
 							Part.AssemblyAngularVelocity = BodyAngularVelocity.AngularVelocity
 						end
 
-						if Part.Name == "Head" and not Global.GodMode then
+						if Part.Name == "Head" and not Global.PermaDeath then
 							SelectionBox.SurfaceTransparency = 1
 							SelectionBillboard.Enabled = false
 						elseif IsOwner then
@@ -936,12 +938,16 @@ do -- [[ Part Manipulation ]]
 end
 
 do -- [[ Hide Other Character ]] -- 
-	for i,v in pairs(Global.ShowReal and FakeChildren or RealChildren) do
+	local Hidden = Global.ShowReal and FakeChildren or RealChildren
+	for i,v in pairs(Hidden) do
 		task.spawn(function()
-			if v:IsA("BasePart") or v:IsA("Decal") then
-				v.Transparency = 0.9999999
+			if v:IsA("BasePart") then
+				v.Transparency = 1
+				if v:FindFirstChild("face") then
+					v.face.Transparency = 1
+				end
 			elseif v:IsA("Accessory") or v:IsA("Tool") then
-				v.Handle.Transparency = 0.9999999
+				v.Handle.Transparency = 1
 			end
 		end)
 	end
