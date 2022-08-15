@@ -694,7 +694,7 @@ do -- [[ Set Character States ]] --
 				if RealRig:FindFirstChild("Neck",true) then 
 					RealRig.Humanoid:ChangeState(15)
 					neck.Parent = nil
-					Notify("Permadeath On",6) 
+					Notify("Permadeath enabled in " .. string.sub(tostring(tick()-SpeedTest),1,string.find(tostring(tick()-SpeedTest),".")+5),6) 
 				end
 			end
 		end)
