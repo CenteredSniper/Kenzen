@@ -32,7 +32,8 @@ do -- [[ Default Settings ]] --
 	CheckSetting("PermaDelay",0)
 
 	CheckSetting("Collisions",true)
-
+	
+	CheckSetting("AntiVoid",false)
 	CheckSetting("AutoAnimate",true)
 	CheckSetting("Notifications",true)
 	CheckSetting("GameOptimize",false)
@@ -1529,15 +1530,20 @@ end
 do -- [[ Respawn Events ]] -- 
 	table.insert(Events,RunService.Heartbeat:Connect(function() 
 		if FakeRig.HumanoidRootPart.Position.Y <= workspace.FallenPartsDestroyHeight+3 then
-			pcall(function() 
-				Player.Character = RealRig; 
-				RealRig.Parent = workspace; 
-				if FakeRig then FakeRig:Destroy() end
-				for i,v in pairs(Events) do
-					v:Disconnect()
-				end
-				FakeRig = nil
-			end) 
+			if Global.AntiVoid then
+				local SpawnPoint = workspace:FindFirstChildOfClass("SpawnLocation",true) and workspace:FindFirstChildOfClass("SpawnLocation",true) or CFrame.new(0,20,0)
+				FakeRig:MoveTo(SpawnPoint.Position)
+			else
+				pcall(function() 
+					Player.Character = RealRig; 
+					RealRig.Parent = workspace; 
+					if FakeRig then FakeRig:Destroy() end
+					for i,v in pairs(Events) do
+						v:Disconnect()
+					end
+					FakeRig = nil
+				end) 
+			end
 		end
 	end))
 	table.insert(Events,FakeRig.Humanoid.Died:Connect(function() 
