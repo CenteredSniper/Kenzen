@@ -36,6 +36,7 @@ do -- [[ Default Settings ]] --
 	CheckSetting("PermaDeath",true)
 	CheckSetting("PermaDelay",0)
 	CheckSetting("Headless",false)
+	CheckSetting("Healthless",false)
 
 	CheckSetting("Collisions",true)
 	CheckSetting("TorsoDelayFix",true)
@@ -88,7 +89,7 @@ local Velocity = Global.VelocityVector * Global.Velocity
 
 local PartToReclaim = nil
 
-local TorsoDelay = 0.026
+local TorsoDelay,HealthHide = 0.026,0
 
 local FakeRig,FakeChildren,sethiddenproperty,Notify
 
@@ -917,6 +918,8 @@ do -- [[ Part Manipulation ]]
 							elseif Part.Name == "HumanoidRootPart" and Global.TorsoDelayFix then
 								Part.CFrame = v[1].CFrame * v[2] * CFrame.new(0,TorsoDelay,0)
 								TorsoDelay *= -1
+							elseif Part.Name == "Head" and Global.PermaDeath and Global.Healthless then
+								Part.CFrame = v[1].CFrame * v[2] * CFrame.new(0,HealthHide,0)
 							else
 								Part.CFrame = v[1].CFrame * v[2]
 							end
@@ -1549,13 +1552,25 @@ do -- [[ Animation ]] --
 	end
 end
 
-do -- [[ Movement Velocity ]]
+do -- [[ Movement Velocity + Healthless  ]]
 	if Global.MovementVelocity then 
 		table.insert(Events,RunService.Stepped:Connect(function()
 			local Direction = FakeRig.HumanoidRootPart.Velocity*Global.Velocity
 			Velocity = Direction == Vector3.new() and Global.VelocityVector * Global.Velocity or Direction*(25.06/Direction.Magnitude)
 			for i,v in pairs(BodyVel) do v.Velocity = Velocity end
 		end))
+	end
+	if Global.Healthless and Global.PermaDeath then
+		task.spawn(function()
+			repeat wait() until not RealRig or not RealRig:FindFirstChild("Neck",true)
+			print(1)
+			while RealRig and RealRig:FindFirstChild("Head") do
+				HealthHide = 0
+				wait(5)
+				HealthHide = 200
+				wait(.5+Ping:GetValue()/750)
+			end
+		end)
 	end
 end
 
