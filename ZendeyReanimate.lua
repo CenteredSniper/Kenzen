@@ -25,6 +25,8 @@ do -- [[ Default Settings ]] --
 	CheckSetting("EnableSpin",false)
 
 	CheckSetting("R15ToR6",true)
+	CheckSetting("R15ToR6M2",false)
+	CheckSetting("PartText",true)
 	CheckSetting("PartGUI",false)
 	CheckSetting("ShowReal",false)
 
@@ -33,6 +35,7 @@ do -- [[ Default Settings ]] --
 
 	CheckSetting("Collisions",true)
 	
+	CheckSetting("TorsoDelayFix",true)
 	CheckSetting("AntiVoid",false)
 	CheckSetting("AutoAnimate",true)
 	CheckSetting("Notifications",true)
@@ -150,6 +153,9 @@ do -- [[ Global Variable Fixes ]] --
 			wait(1)
 			Global.AutoReclaim = true
 		end)
+	end
+	if Global.R15ToR6M2 and not Global.R15ToR6 then
+		Global.R15ToR6M2 = false
 	end
 end
 
@@ -709,6 +715,7 @@ do -- [[ Set Character States ]] --
 		RunService.RenderStepped:Wait()
 		workspace.CurrentCamera.CFrame = OriginCameraCFrame
 	end)
+	if Global.R15ToR6M2 then RealRig.Humanoid.BreakJointsOnDeath = false end
 	if RealRig:FindFirstChild("FaceCenterAttachment",true) then RealRig.Head.FaceCenterAttachment:Destroy() end
 	if RealRig:FindFirstChild("Animate") then RealRig.Animate.Disabled = true end
 	for i,v in pairs(RealRig.Humanoid:GetPlayingAnimationTracks()) do v:Stop() end
@@ -718,10 +725,14 @@ do -- [[ Joints ]] --
 	task.spawn(function()
 		for i,v in pairs(RealDescendants) do
 			task.spawn(function()
-				if v.Name ~= "Neck" then
-					if v:IsA("Motor6D") or v:IsA("Weld") and v.Name ~= "AccessoryWeld" or v:IsA("BallSocketConstraint") or v:IsA("HingeConstraint") then
-						v:Destroy() 
+				if v:IsA("Weld") and v.Name ~= "AccessoryWeld" or v:IsA("BallSocketConstraint") or v:IsA("HingeConstraint") then
+					v:Destroy()
+				elseif Global.R15ToR6M2 and v:IsA("Motor6D") and RigType == Enum.HumanoidRigType.R15 then
+					if v.Name == "RightHip" or v.Name == "LeftHip" or v.Name == "RightShoulder" or v.Name == "LeftShoulder" or v.Name == "Root" then
+						v:Destroy()
 					end
+				elseif v:IsA("Motor6D") and v.Name ~= "Neck" then
+					v:Destroy() 
 				end
 			end)
 		end
@@ -853,21 +864,25 @@ do -- [[ Part Manipulation ]]
 					SelectionBox.Transparency = 1; 
 					SelectionBox.Parent = Part
 				end
-
-				local SelectionBillboard = Instance.new("BillboardGui"); do
-					SelectionBillboard.StudsOffset = Vector3.new(0,Part.Size.Y,0)
-					SelectionBillboard.Size = UDim2.new(3,0,1,0)
-					local TextLabel = Instance.new("TextLabel"); do
-						TextLabel.BackgroundTransparency = 1
-						TextLabel.Text = Part.Name
-						TextLabel.TextScaled = true
-						TextLabel.TextColor3 = Color3.new(1,1,1)
-						TextLabel.TextStrokeTransparency = 0
-						TextLabel.Size = UDim2.new(1,0,1,0)
-						TextLabel.Font = Enum.Font.IndieFlower
-						TextLabel.Parent = SelectionBillboard
+				
+				local SelectionBillboard; do
+					if Global.PartText then
+						SelectionBillboard = Instance.new("BillboardGui"); do
+							SelectionBillboard.StudsOffset = Vector3.new(0,Part.Size.Y,0)
+							SelectionBillboard.Size = UDim2.new(3,0,1,0)
+							local TextLabel = Instance.new("TextLabel"); do
+								TextLabel.BackgroundTransparency = 1
+								TextLabel.Text = Part.Name
+								TextLabel.TextScaled = true
+								TextLabel.TextColor3 = Color3.new(1,1,1)
+								TextLabel.TextStrokeTransparency = 0
+								TextLabel.Size = UDim2.new(1,0,1,0)
+								TextLabel.Font = Enum.Font.IndieFlower
+								TextLabel.Parent = SelectionBillboard
+							end
+							SelectionBillboard.Parent = Part
+						end
 					end
-					SelectionBillboard.Parent = Part
 				end
 
 				NetlessHB = Event:Connect(function()
@@ -882,7 +897,7 @@ do -- [[ Part Manipulation ]]
 							if Global.Fling == Part.Name then
 							elseif PartToReclaim then
 								Part.CFrame = PartToReclaim.CFrame
-							elseif Part.Name == "HumanoidRootPart" then
+							elseif Part.Name == "HumanoidRootPart" and Global.TorsoDelayFix then
 								Part.CFrame = v[1].CFrame * v[2] * CFrame.new(0,TorsoDelay,0)
 								TorsoDelay *= -1
 							else
@@ -894,15 +909,12 @@ do -- [[ Part Manipulation ]]
 							Part.AssemblyAngularVelocity = BodyAngularVelocity.AngularVelocity
 						end
 
-						if Part.Name == "Head" and not Global.PermaDeath then
+						if Part.Name == "Head" and not Global.PermaDeath or IsOwner or Part:FindFirstChildOfClass("Motor6D") or Part.Name == "LowerTorso" and RealRig:FindFirstChild("Waist",true) then
 							SelectionBox.SurfaceTransparency = 1
-							SelectionBillboard.Enabled = false
-						elseif IsOwner then
-							SelectionBox.SurfaceTransparency = 1
-							SelectionBillboard.Enabled = false
+							if SelectionBillboard then SelectionBillboard.Enabled = false end
 						else
 							SelectionBox.SurfaceTransparency = 0
-							SelectionBillboard.Enabled = true
+							if SelectionBillboard then SelectionBillboard.Enabled = true end
 						end
 
 						if Global.AllowSleep then 
@@ -1515,8 +1527,6 @@ do -- [[ Animation ]] --
 				end) 
 			else
 				FakeRig.Animate.Disabled = true; FakeRig.Animate.Disabled = false
-				if RealRig:FindFirstChild("Animate") then RealRig.Animate.Disabled = true end
-				for i,v in pairs(RealRig.Humanoid:GetPlayingAnimationTracks()) do v:Stop() end
 			end
 		end)
 	end
