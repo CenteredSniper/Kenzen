@@ -29,12 +29,14 @@ do -- [[ Default Settings ]] --
 	CheckSetting("PartText",true)
 	CheckSetting("PartGUI",false)
 	CheckSetting("ShowReal",false)
+	CheckSetting("DestroyHatWelds",true)
+	CheckSetting("R15AdjustOffsets",true)
 
 	CheckSetting("PermaDeath",true)
 	CheckSetting("PermaDelay",0)
-
-	CheckSetting("Collisions",true)
+	CheckSetting("Headless",false)
 	
+	CheckSetting("Collisions",true)
 	CheckSetting("TorsoDelayFix",true)
 	CheckSetting("AntiVoid",false)
 	CheckSetting("AutoAnimate",true)
@@ -699,11 +701,15 @@ do -- [[ Set Character States ]] --
 					v.Parent = nil
 				end
 			else
-				local neck = RealRig:FindFirstChild("Neck",true)
-				if RealRig:FindFirstChild("Neck",true) then 
-					RealRig.Humanoid:ChangeState(15)
-					neck.Parent = nil
-					Notify("Permadeath enabled in " .. string.sub(tostring(tick()-SpeedTest),1,string.find(tostring(tick()-SpeedTest),".")+5),6) 
+				RealRig.Humanoid:ChangeState(15)
+				if Global.Headless then
+					RealRig.Head:Destroy()
+				else
+					local neck = RealRig:FindFirstChild("Neck",true)
+					if RealRig:FindFirstChild("Neck",true) then 
+						neck.Parent = nil
+						Notify("Permadeath enabled in " .. string.sub(tostring(tick()-SpeedTest),1,string.find(tostring(tick()-SpeedTest),".")+5),6) 
+					end
 				end
 			end
 		end)
@@ -755,33 +761,33 @@ do -- [[ Create Dictionaries ]]
 			if v:IsA("BasePart") then
 				if RigType == Enum.HumanoidRigType.R15 and Global.R15ToR6 then
 					if v.Name == "LeftUpperArm" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Left Arm"),CFrame.new((1-RealRig.LeftUpperArm.Size.X)*2,0.369*(RealRig.LeftUpperArm.Size.Y/1.169),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Left Arm"),Global.R15AdjustOffsets and CFrame.new((1-RealRig.LeftUpperArm.Size.X)*2,0.369*(RealRig.LeftUpperArm.Size.Y/1.169),0) or CFrame.new(0,0.369,0)}
 					elseif v.Name == "LeftLowerArm" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Left Arm"),CFrame.new((1-RealRig.LeftLowerArm.Size.X)*2,-0.224*(RealRig.LeftLowerArm.Size.Y/1.052),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Left Arm"),Global.R15AdjustOffsets and CFrame.new((1-RealRig.LeftLowerArm.Size.X)*2,-0.224*(RealRig.LeftLowerArm.Size.Y/1.052) or CFrame.new(0,-0.224,0),0)}
 					elseif v.Name == "LeftHand" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Left Arm"),CFrame.new((1-RealRig.LeftHand.Size.X)*2,-0.85*(RealRig.LeftHand.Size.Y/0.3),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Left Arm"),Global.R15AdjustOffsets and CFrame.new((1-RealRig.LeftHand.Size.X)*2,-0.85*(RealRig.LeftHand.Size.Y/0.3) or CFrame.new(0,-0.85,0),0)}
 					elseif v.Name == "RightUpperArm" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Right Arm"),CFrame.new(-(1-RealRig.RightUpperArm.Size.X)*2,0.369*(RealRig.RightUpperArm.Size.Y/1.169),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Right Arm"),Global.R15AdjustOffsets and CFrame.new(-(1-RealRig.RightUpperArm.Size.X)*2,0.369*(RealRig.RightUpperArm.Size.Y/1.169) or CFrame.new(0,0.369,0),0)}
 					elseif v.Name == "RightLowerArm" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Right Arm"),CFrame.new(-(1-RealRig.RightLowerArm.Size.X)*2,-0.224*(RealRig.RightLowerArm.Size.Y/1.052),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Right Arm"),Global.R15AdjustOffsets and CFrame.new(-(1-RealRig.RightLowerArm.Size.X)*2,-0.224*(RealRig.RightLowerArm.Size.Y/1.052) or CFrame.new(0,-0.224,0),0)}
 					elseif v.Name == "RightHand" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Right Arm"),CFrame.new(-(1-RealRig.RightHand.Size.X)*2,-0.85*(RealRig.RightHand.Size.Y/0.3),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Right Arm"),Global.R15AdjustOffsets and CFrame.new(-(1-RealRig.RightHand.Size.X)*2,-0.85*(RealRig.RightHand.Size.Y/0.3) or CFrame.new(0,-0.85,0),0)}
 					elseif v.Name == "LeftUpperLeg" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Left Leg"),CFrame.new((1-RealRig.LeftUpperLeg.Size.X)/2,0.579*(RealRig.LeftUpperLeg.Size.Y/1.217),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Left Leg"),Global.R15AdjustOffsets and CFrame.new((1-RealRig.LeftUpperLeg.Size.X)/2,0.579*(RealRig.LeftUpperLeg.Size.Y/1.217) or CFrame.new(0,0.579,0),0)}
 					elseif v.Name == "LeftLowerLeg" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Left Leg"),CFrame.new((1-RealRig.LeftLowerLeg.Size.X)/2,-0.201*(RealRig.LeftLowerLeg.Size.Y/1.193),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Left Leg"),Global.R15AdjustOffsets and CFrame.new((1-RealRig.LeftLowerLeg.Size.X)/2,-0.201*(RealRig.LeftLowerLeg.Size.Y/1.193) or CFrame.new(0,-0.201,0),0)}
 					elseif v.Name == "LeftFoot" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Left Leg"),CFrame.new((1-RealRig.LeftFoot.Size.X)/2,-0.85*(RealRig.LeftFoot.Size.Y/0.3),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Left Leg"),Global.R15AdjustOffsets and CFrame.new((1-RealRig.LeftFoot.Size.X)/2,-0.85*(RealRig.LeftFoot.Size.Y/0.3) or CFrame.new(0,-0.85,0),0)}
 					elseif v.Name == "RightUpperLeg" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Right Leg"),CFrame.new(-(1-RealRig.RightUpperLeg.Size.X)/2,0.579*(RealRig.RightUpperLeg.Size.Y/1.217),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Right Leg"),Global.R15AdjustOffsets and CFrame.new(-(1-RealRig.RightUpperLeg.Size.X)/2,0.579*(RealRig.RightUpperLeg.Size.Y/1.217) or CFrame.new(0,0.579,0),0)}
 					elseif v.Name == "RightLowerLeg" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Right Leg"),CFrame.new(-(1-RealRig.RightLowerLeg.Size.X)/2,-0.201*(RealRig.RightLowerLeg.Size.Y/1.193),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Right Leg"),Global.R15AdjustOffsets and CFrame.new(-(1-RealRig.RightLowerLeg.Size.X)/2,-0.201*(RealRig.RightLowerLeg.Size.Y/1.193) or CFrame.new(0,-0.201,0),0)}
 					elseif v.Name == "RightFoot" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Right Leg"),CFrame.new(-(1-RealRig.RightFoot.Size.X)/2,-0.85*(RealRig.RightFoot.Size.Y/0.3),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Right Leg"),Global.R15AdjustOffsets and CFrame.new(-(1-RealRig.RightFoot.Size.X)/2,-0.85*(RealRig.RightFoot.Size.Y/0.3) or CFrame.new(0,-0.85,0),0)}
 					elseif v.Name == "UpperTorso" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Torso"),CFrame.new(0,0.2*(RealRig.UpperTorso.Size.Y/1.6),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Torso"),Global.R15AdjustOffsets and CFrame.new(0,0.2*(RealRig.UpperTorso.Size.Y/1.6) or CFrame.new(0,0.2,0),0)}
 					elseif v.Name == "LowerTorso" then
-						BaseParts[v] = {FakeRig:FindFirstChild("Torso"),CFrame.new(0,-0.8*(RealRig.LowerTorso.Size.Y/0.4),0)}
+						BaseParts[v] = {FakeRig:FindFirstChild("Torso"),Global.R15AdjustOffsets and CFrame.new(0,-0.8*(RealRig.LowerTorso.Size.Y/0.4) or CFrame.new(0,-0.8,0),0)}
 					elseif v.Name == "HumanoidRootPart" then
 						BaseParts[v] = {FakeRig:FindFirstChild("HumanoidRootPart"),CFrame.new()}
 					elseif v.Name == "Head" then
@@ -800,7 +806,7 @@ do -- [[ Create Dictionaries ]]
 					or Weld.Part1.Name == "RightUpperArm" and FakeRig["Right Arm"]
 					or Weld.Part1.Name == "LeftUpperArm" and FakeRig["Left Arm"]
 					or FakeRig:FindFirstChild(Weld.Part1.Name)
-				if v.Handle:FindFirstChild("AccessoryWeld") then
+				if v.Handle:FindFirstChild("AccessoryWeld") and Global.DestroyHatWelds then
 					v.Handle.AccessoryWeld:Destroy()	
 				end
 				Clone.Parent = FakeRig
@@ -864,7 +870,7 @@ do -- [[ Part Manipulation ]]
 					SelectionBox.Transparency = 1; 
 					SelectionBox.Parent = Part
 				end
-				
+
 				local SelectionBillboard; do
 					if Global.PartText then
 						SelectionBillboard = Instance.new("BillboardGui"); do
