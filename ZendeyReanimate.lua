@@ -16,6 +16,7 @@ do -- [[ Default Settings ]] --
 	CheckSetting("VelocityVector",Vector3.new(1,0,1))
 	CheckSetting("MovementVelocity",false)
 	CheckSetting("WhitelistHead",true)
+	CheckSetting("EnsureClaim",false)
 
 	CheckSetting("SimRadius",true)
 	CheckSetting("AutoReclaim",false)
@@ -35,7 +36,7 @@ do -- [[ Default Settings ]] --
 	CheckSetting("PermaDeath",true)
 	CheckSetting("PermaDelay",0)
 	CheckSetting("Headless",false)
-	
+
 	CheckSetting("Collisions",true)
 	CheckSetting("TorsoDelayFix",true)
 	CheckSetting("AntiVoid",false)
@@ -297,6 +298,16 @@ do -- [[ Notification Service, original by quirky anime boy#5506 ]] --
 		end
 		printconsole("Zendey // "..tostring(title))
 	end
+end
+
+if Global.EnsureClaim then
+	local pos = RealRig.HumanoidRootPart.CFrame
+	RealRig:MoveTo(pos.Position+Vector3.new(0,50,0))
+	wait(0.1)
+	task.spawn(function()
+		wait(0.1)
+		FakeRig.HumanoidRootPart.CFrame = pos
+	end)
 end
 
 do -- [[ Create Fake Rig ]]
