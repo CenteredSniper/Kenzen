@@ -1563,7 +1563,6 @@ do -- [[ Movement Velocity + Healthless  ]]
 	if Global.Healthless and Global.PermaDeath then
 		task.spawn(function()
 			repeat wait() until not RealRig or not RealRig:FindFirstChild("Neck",true)
-			print(1)
 			while RealRig and RealRig:FindFirstChild("Head") do
 				HealthHide = 0
 				wait(5)
