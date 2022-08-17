@@ -161,6 +161,9 @@ do -- [[ Global Variable Fixes ]] --
 	if Global.R15ToR6M2 and not Global.R15ToR6 then
 		Global.R15ToR6M2 = false
 	end
+	if not Global.DestroyHatWelds and RigType == Enum.HumanoidRigType.R6 then
+		Global.DestroyHatWelds = true
+	end
 end
 
 do -- [[ Optimizations ]] -- 
@@ -818,7 +821,7 @@ do -- [[ Create Dictionaries ]]
 					or Weld.Part1.Name == "RightUpperArm" and FakeRig["Right Arm"]
 					or Weld.Part1.Name == "LeftUpperArm" and FakeRig["Left Arm"]
 					or FakeRig:FindFirstChild(Weld.Part1.Name)
-				if v.Handle:FindFirstChild("AccessoryWeld") and Global.DestroyHatWelds and RigType == Enum.HumanoidRigType.R6 then
+				if v.Handle:FindFirstChild("AccessoryWeld") and Global.DestroyHatWelds then
 					v.Handle.AccessoryWeld:Destroy()	
 				end
 				Clone.Parent = FakeRig
