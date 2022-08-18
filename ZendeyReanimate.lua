@@ -1555,7 +1555,7 @@ do -- [[ Animation ]] --
 	end
 end
 
-do -- [[ Movement Velocity + Healthless  ]]
+do -- [[ Movement Velocity + Healthless ]]
 	if Global.MovementVelocity then 
 		table.insert(Events,RunService.Stepped:Connect(function()
 			local Direction = FakeRig.HumanoidRootPart.Velocity*Global.Velocity
@@ -1616,3 +1616,6 @@ do -- [[ Respawn Events ]] --
 end
 
 Notify("Netted in " .. string.sub(tostring(tick()-SpeedTest),1,string.find(tostring(tick()-SpeedTest),".")+5),3)
+Notify(Ping:GetValue() < 50 and "Ping is ".. math.round(Ping:GetValue()) .. "ms, most likely stable" or
+	Ping:GetValue() < 100 and "Ping is " .. math.round(Ping:GetValue()) .. "ms, might jitter but stable" or
+	"Ping is " .. math.round(Ping:GetValue()) .. "ms, possibly unstable/delayed")
