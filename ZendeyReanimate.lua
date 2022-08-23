@@ -173,8 +173,10 @@ do -- [[ Optimizations ]] --
 	settings()["Physics"].DisableCSGv2 = true
 	settings()["Physics"].UseCSGv2 = false
 	settings()["Physics"].ThrottleAdjustTime = math.huge
-
-	settings()["Rendering"].QualityLevel = 1
+	
+	if Global.GameOptimize then
+		settings()["Rendering"].QualityLevel = 1
+	end
 
 	sethiddenproperty(workspace,"InterpolationThrottling",Enum.InterpolationThrottlingMode.Disabled)
 
