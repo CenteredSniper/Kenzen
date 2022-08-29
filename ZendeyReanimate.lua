@@ -371,10 +371,10 @@ do -- [[ Create Fake Rig ]]
 				local WaistBackAttachment = FaceCenterAttachment:Clone(); WaistBackAttachment.Name="WaistBackAttachment" WaistBackAttachment.Position = Vector3.new(0, -1, 0.5); WaistBackAttachment.Parent = Torso
 				local WaistCenterAttachment = FaceCenterAttachment:Clone(); WaistCenterAttachment.Name="WaistCenterAttachment" WaistCenterAttachment.Position = Vector3.new(0, -1, 0); WaistCenterAttachment.Parent = Torso
 				local WaistFrontAttachment = FaceCenterAttachment:Clone(); WaistFrontAttachment.Name="WaistFrontAttachment" WaistFrontAttachment.Position = Vector3.new(0, -1, -0.5); WaistFrontAttachment.Parent = Torso
-
-				local BodyColors = Create("BodyColors",{Parent=FakeCharacter})
-				local Humanoid = Create("Humanoid",{Parent=FakeCharacter})
-
+				
+				Create("LocalScript",{Name="Animate",Parent=FakeCharacter})
+				Create("BodyColors",{Parent=FakeCharacter})
+				Create("Humanoid",{Parent=FakeCharacter})
 
 				Global.R6Rig = FakeCharacter
 			end
@@ -810,32 +810,6 @@ do -- [[ Animation ]] --
 						animTable[name].totalWeight = 0	
 						animTable[name].connections = {}
 
-						-- check for config values
-						local config = Animatee:FindFirstChild(name)
-						if (config ~= nil) then
-							--		print("Loading anims " .. name)
-							table.insert(animTable[name].connections, config.ChildAdded:connect(function(child) configureAnimationSet(name, fileList) end))
-							table.insert(animTable[name].connections, config.ChildRemoved:connect(function(child) configureAnimationSet(name, fileList) end))
-							local idx = 1
-							for _, childPart in pairs(config:GetChildren()) do
-								if (childPart:IsA("Animation")) then
-									table.insert(animTable[name].connections, childPart.Changed:connect(function(property) configureAnimationSet(name, fileList) end))
-									animTable[name][idx] = {}
-									animTable[name][idx].anim = childPart
-									local weightObject = childPart:FindFirstChild("Weight")
-									if (weightObject == nil) then
-										animTable[name][idx].weight = 1
-									else
-										animTable[name][idx].weight = weightObject.Value
-									end
-									animTable[name].count = animTable[name].count + 1
-									animTable[name].totalWeight = animTable[name].totalWeight + animTable[name][idx].weight
-									--			print(name .. " [" .. idx .. "] " .. animTable[name][idx].anim.AnimationId .. " (" .. animTable[name][idx].weight .. ")")
-									idx = idx + 1
-								end
-							end
-						end
-
 						-- fallback to defaults
 						if (animTable[name].count <= 0) then
 							for idx, anim in pairs(fileList) do
@@ -858,10 +832,6 @@ do -- [[ Animation ]] --
 							configureAnimationSet(child.Name, fileList)
 						end	
 					end
-
-					table.insert(Events,Animatee.ChildAdded:connect(scriptChildModified))
-					table.insert(Events,Animatee.ChildRemoved:connect(scriptChildModified))
-
 
 					for name, fileList in pairs(animNames) do 
 						configureAnimationSet(name, fileList)
