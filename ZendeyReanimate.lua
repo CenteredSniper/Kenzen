@@ -345,11 +345,10 @@ do -- [[ Create Fake Rig ]]
 				local LeftArm = Create("Part",{Size=Vector3.new(1, 2, 1),Name="Left Arm",Parent=FakeCharacter})
 				local RightArm = Create("Part",{Size=Vector3.new(1, 2, 1),Name="Right Arm",Parent=FakeCharacter})
 
-				-- CFrame.Angles(0, 1.57080, 0) CFrame.Angles(0, -1.57080, 0)
-				local RightShoulder = Create("Motor6D",{Name="Right Shoulder",MaxVelocity=0.1,C0=CFrame.new(1, 0.5, 0),C1=CFrame.new(-0.5, 0.5, 0),Part0=Torso,Part1=RightArm,Parent=Torso})
-				local LeftShoulder = RightShoulder:Clone(); LeftShoulder.Name="Left Shoulder"; LeftShoulder.C0=CFrame.new(-1, 0.5, 0); LeftShoulder.C1=CFrame.new(0.5, 0.5, 0); LeftShoulder.Part1=LeftArm; LeftShoulder.Parent=Torso
-				local RightHip = RightShoulder:Clone(); RightHip.Name="Right Hip"; RightHip.C0=CFrame.new(1, -1, 0); RightHip.C1=CFrame.new(0.5, 1, 0); RightHip.Part1=RightLeg; RightHip.Parent=Torso
-				local LeftHip = RightShoulder:Clone(); LeftHip.Name="Left Hip"; LeftHip.C0=CFrame.new(-1, -1, 0); LeftHip.C1=CFrame.new(-0.5, 1, 0); LeftHip.Part1=LeftLeg; LeftHip.Parent=Torso
+				local RightShoulder = Create("Motor6D",{Name="Right Shoulder",MaxVelocity=0.1,C0=CFrame.new(1, 0.5, 0) * CFrame.Angles(0, 1.57080, 0),C1=CFrame.new(-0.5, 0.5, 0)* CFrame.Angles(0, 1.57080, 0),Part0=Torso,Part1=RightArm,Parent=Torso})
+				local LeftShoulder = RightShoulder:Clone(); LeftShoulder.Name="Left Shoulder"; LeftShoulder.C0=CFrame.new(-1, 0.5, 0) * CFrame.Angles(0, -1.57080, 0); LeftShoulder.C1=CFrame.new(0.5, 0.5, 0) * CFrame.Angles(0, -1.57080, 0); LeftShoulder.Part1=LeftArm; LeftShoulder.Parent=Torso
+				local RightHip = RightShoulder:Clone(); RightHip.Name="Right Hip"; RightHip.C0=CFrame.new(1, -1, 0) * CFrame.Angles(0, 1.57080, 0); RightHip.C1=CFrame.new(0.5, 1, 0) * CFrame.Angles(0, 1.57080, 0); RightHip.Part1=RightLeg; RightHip.Parent=Torso
+				local LeftHip = RightShoulder:Clone(); LeftHip.Name="Left Hip"; LeftHip.C0=CFrame.new(-1, -1, 0) * CFrame.Angles(0, -1.57080, 0); LeftHip.C1=CFrame.new(-0.5, 1, 0) * CFrame.Angles(0, -1.57080, 0); LeftHip.Part1=LeftLeg; LeftHip.Parent=Torso
 				local Neck = RightShoulder:Clone(); Neck.Name="Neck"; Neck.C0=CFrame.new(0, 1, 0); Neck.C1=CFrame.new(0, -0.5, 0); Neck.Part1=Head; Neck.Parent=Torso
 				local RootJoint = RightShoulder:Clone(); RootJoint.Name="RootJoint"; RootJoint.C0=CFrame.new(); RootJoint.C1=CFrame.new(); RootJoint.Part0=Root; RootJoint.Part1=Torso; RootJoint.Parent=Root
 
@@ -375,6 +374,7 @@ do -- [[ Create Fake Rig ]]
 
 				local BodyColors = Create("BodyColors",{Parent=FakeCharacter})
 				local Humanoid = Create("Humanoid",{Parent=FakeCharacter})
+
 
 				Global.R6Rig = FakeCharacter
 			end
