@@ -173,7 +173,7 @@ do -- [[ Optimizations ]] --
 	settings()["Physics"].DisableCSGv2 = true
 	settings()["Physics"].UseCSGv2 = false
 	settings()["Physics"].ThrottleAdjustTime = math.huge
-	
+
 	if Global.GameOptimize then
 		settings()["Rendering"].QualityLevel = 1
 	end
@@ -323,347 +323,60 @@ do -- [[ Create Fake Rig ]]
 			local FakeCharacter = Global.R6Rig
 
 			if not Global.R6Rig then
-				FakeCharacter = Instance.new("Model")
+				local function Create(Name,Properties)
+					local NewInstance = Instance.new(Name); do
+						for i,v in pairs(Properties) do
+							NewInstance[i] = v
+						end
+					end return NewInstance
+				end
 
-				local Humanoid = Instance.new("Humanoid")
+				FakeCharacter = Create("Model",{})
 
-				local Head = Instance.new("Part")
-				local HeadMesh = Instance.new("SpecialMesh")
-				local face = Instance.new("Decal")
+				local Head = Create("Part",{Size=Vector3.new(2, 1, 1),Name="Head",Parent=FakeCharacter}); do
+					Create("SpecialMesh",{Scale=Vector3.new(1.25, 1.25, 1.25),Parent=Head})
+					Create("Decal",{Texture="rbxasset://textures/face.png",Name="face",Parent=Head})
+					FakeCharacter.PrimaryPart = Head 
+				end
+				local Torso = Create("Part",{Size=Vector3.new(2, 2, 1),Name="Torso",Parent=FakeCharacter})
+				local Root = Torso:Clone(); Root.Transparency = 1; Root.Name = "HumanoidRootPart"; Root.Parent = FakeCharacter
+				local LeftLeg = Create("Part",{Size=Vector3.new(1, 2, 1),Name="Left Leg",Parent=FakeCharacter})
+				local RightLeg = Create("Part",{Size=Vector3.new(1, 2, 1),Name="Right Leg",Parent=FakeCharacter})
+				local LeftArm = Create("Part",{Size=Vector3.new(1, 2, 1),Name="Left Arm",Parent=FakeCharacter})
+				local RightArm = Create("Part",{Size=Vector3.new(1, 2, 1),Name="Right Arm",Parent=FakeCharacter})
 
-				local Torso = Instance.new("Part")
-				local Neck = Instance.new("Motor6D")
+				-- CFrame.Angles(0, 1.57080, 0) CFrame.Angles(0, -1.57080, 0)
+				local RightShoulder = Create("Motor6D",{Name="Right Shoulder",MaxVelocity=0.1,C0=CFrame.new(1, 0.5, 0),C1=CFrame.new(-0.5, 0.5, 0),Part0=Torso,Part1=RightArm,Parent=Torso})
+				local LeftShoulder = RightShoulder:Clone(); LeftShoulder.Name="Left Shoulder"; LeftShoulder.C0=CFrame.new(-1, 0.5, 0); LeftShoulder.C1=CFrame.new(0.5, 0.5, 0); LeftShoulder.Part1=LeftArm; LeftShoulder.Parent=Torso
+				local RightHip = RightShoulder:Clone(); RightHip.Name="Right Hip"; RightHip.C0=CFrame.new(1, -1, 0); RightHip.C1=CFrame.new(0.5, 1, 0); RightHip.Part1=RightLeg; RightHip.Parent=Torso
+				local LeftHip = RightShoulder:Clone(); LeftHip.Name="Left Hip"; LeftHip.C0=CFrame.new(-1, -1, 0); LeftHip.C1=CFrame.new(-0.5, 1, 0); LeftHip.Part1=LeftLeg; LeftHip.Parent=Torso
+				local Neck = RightShoulder:Clone(); Neck.Name="Neck"; Neck.C0=CFrame.new(0, 1, 0); Neck.C1=CFrame.new(0, -0.5, 0); Neck.Part1=Head; Neck.Parent=Torso
+				local RootJoint = RightShoulder:Clone(); RootJoint.Name="RootJoint"; RootJoint.C0=CFrame.new(); RootJoint.C1=CFrame.new(); RootJoint.Part0=Root; RootJoint.Part1=Torso; RootJoint.Parent=Root
 
-				local LeftArm = Instance.new("Part")
-				local LeftShoulder = Instance.new("Motor6D")
+				local FaceCenterAttachment = Create("Attachment",{Axis=Vector3.new(1,0,0),SecondaryAxis=Vector3.new(0,1,0),Name="FaceCenterAttachment",Parent=Head})
+				local FaceFrontAttachment = FaceCenterAttachment:Clone(); FaceFrontAttachment.Name="FaceFrontAttachment" FaceFrontAttachment.Position = Vector3.new(0, 0, -0.6); FaceFrontAttachment.Parent = Head
+				local HairAttachment = FaceCenterAttachment:Clone(); HairAttachment.Name="HairAttachment" HairAttachment.Position = Vector3.new(0, 0.6, 0); HairAttachment.Parent = Head
+				local HatAttachment = FaceCenterAttachment:Clone(); HatAttachment.Name="HatAttachment" HatAttachment.Position = Vector3.new(0, 0.6, 0); HatAttachment.Parent = Head
+				local RootAttachment = FaceCenterAttachment:Clone(); RootAttachment.Name="RootAttachment" RootAttachment.Position = Vector3.new(0, 0, 0); RootAttachment.Parent = Root
+				local RightGripAttachment = FaceCenterAttachment:Clone(); RightGripAttachment.Name="RightGripAttachment" RightGripAttachment.Position = Vector3.new(0, -1, 0); RightGripAttachment.Parent = RightArm
+				local RightShoulderAttachment = FaceCenterAttachment:Clone(); RightShoulderAttachment.Name="RightShoulderAttachment" RightShoulderAttachment.Position = Vector3.new(0, 1, 0); RightShoulderAttachment.Parent = RightArm
+				local LeftGripAttachment = FaceCenterAttachment:Clone(); LeftGripAttachment.Name="LeftGripAttachment" LeftGripAttachment.Position = Vector3.new(0, -1, 0); LeftGripAttachment.Parent = LeftLeg
+				local LeftShoulderAttachment = FaceCenterAttachment:Clone(); LeftShoulderAttachment.Name="LeftShoulderAttachment" LeftShoulderAttachment.Position = Vector3.new(0, 1, 0); LeftShoulderAttachment.Parent = LeftArm
+				local LeftFootAttachment = FaceCenterAttachment:Clone(); LeftFootAttachment.Name="LeftFootAttachment" LeftFootAttachment.Position = Vector3.new(0, -1, 0); LeftFootAttachment.Parent = LeftArm
+				local RightFootAttachment = FaceCenterAttachment:Clone(); RightFootAttachment.Name="RightFootAttachment" RightFootAttachment.Position = Vector3.new(0, -1, 0); RightFootAttachment.Parent = RightLeg
+				local BodyBackAttachment = FaceCenterAttachment:Clone(); BodyBackAttachment.Name="BodyBackAttachment" BodyBackAttachment.Position = Vector3.new(0, 0, 0.5); BodyBackAttachment.Parent = Torso
+				local BodyFrontAttachment = FaceCenterAttachment:Clone(); BodyFrontAttachment.Name="BodyFrontAttachment" BodyFrontAttachment.Position = Vector3.new(0, 0, -0.5); BodyFrontAttachment.Parent = Torso
+				local LeftCollarAttachment = FaceCenterAttachment:Clone(); LeftCollarAttachment.Name="LeftCollarAttachment" LeftCollarAttachment.Position = Vector3.new(-1, 1, 0); LeftCollarAttachment.Parent = Torso
+				local NeckAttachment = FaceCenterAttachment:Clone(); NeckAttachment.Name="NeckAttachment" NeckAttachment.Position = Vector3.new(0, 1, 0); NeckAttachment.Parent = Torso
+				local RightCollarAttachment = FaceCenterAttachment:Clone(); RightCollarAttachment.Name="RightCollarAttachment" RightCollarAttachment.Position = Vector3.new(1, 1, 0); RightCollarAttachment.Parent = Torso
+				local WaistBackAttachment = FaceCenterAttachment:Clone(); WaistBackAttachment.Name="WaistBackAttachment" WaistBackAttachment.Position = Vector3.new(0, -1, 0.5); WaistBackAttachment.Parent = Torso
+				local WaistCenterAttachment = FaceCenterAttachment:Clone(); WaistCenterAttachment.Name="WaistCenterAttachment" WaistCenterAttachment.Position = Vector3.new(0, -1, 0); WaistCenterAttachment.Parent = Torso
+				local WaistFrontAttachment = FaceCenterAttachment:Clone(); WaistFrontAttachment.Name="WaistFrontAttachment" WaistFrontAttachment.Position = Vector3.new(0, -1, -0.5); WaistFrontAttachment.Parent = Torso
 
-				local RightArm = Instance.new("Part")
-				local RightShoulder = Instance.new("Motor6D")
+				local BodyColors = Create("BodyColors",{Parent=FakeCharacter})
+				local Humanoid = Create("Humanoid",{Parent=FakeCharacter})
 
-				local LeftLeg = Instance.new("Part")
-				local LeftHip = Instance.new("Motor6D")
-
-				local RightLeg = Instance.new("Part")
-				local RightHip = Instance.new("Motor6D")
-
-				local RootPart = Instance.new("Part")
-				local RootJoint = Instance.new("Motor6D")
-
-				local FaceCenterAttachment = Instance.new("Attachment")
-				local FaceFrontAttachment = Instance.new("Attachment")
-				local HairAttachment = Instance.new("Attachment")
-				local HatAttachment = Instance.new("Attachment")
-				local LeftShoulderAttachment = Instance.new("Attachment")
-				local RightShoulderAttachment = Instance.new("Attachment")
-				local BodyBackAttachment = Instance.new("Attachment")
-				local BodyFrontAttachment = Instance.new("Attachment")
-				local LeftCollarAttachment = Instance.new("Attachment")
-				local RightCollarAttachment = Instance.new("Attachment")
-				local NeckAttachment = Instance.new("Attachment")
-				local WaistCenterAttachment = Instance.new("Attachment")
-				local WaistFrontAttachment = Instance.new("Attachment")
-				local WaistBackAttachment = Instance.new("Attachment")
-
-				-- not gonna bother naming all of these
-				local Animate = Instance.new("LocalScript")
-				local Idle = Instance.new("StringValue")
-				local Animation31 = Instance.new("Animation")
-				local NumberValue32 = Instance.new("NumberValue")
-				local Animation33 = Instance.new("Animation")
-				local NumberValue34 = Instance.new("NumberValue")
-				local StringValue35 = Instance.new("StringValue")
-				local Animation36 = Instance.new("Animation")
-				local StringValue37 = Instance.new("StringValue")
-				local Animation38 = Instance.new("Animation")
-				local StringValue39 = Instance.new("StringValue")
-				local Animation40 = Instance.new("Animation")
-				local StringValue41 = Instance.new("StringValue")
-				local Animation42 = Instance.new("Animation")
-				local StringValue43 = Instance.new("StringValue")
-				local Animation44 = Instance.new("Animation")
-				local StringValue45 = Instance.new("StringValue")
-				local Animation46 = Instance.new("Animation")
-				local StringValue47 = Instance.new("StringValue")
-				local Animation48 = Instance.new("Animation")
-				local NumberValue49 = Instance.new("NumberValue")
-				local BodyColors50 = Instance.new("BodyColors")
-
-				FakeCharacter.Name = " "
-				FakeCharacter.PrimaryPart = Head
-
-				Head.Name = "Head"
-				Head.Color = Color3.new(0.960784, 0.803922, 0.188235)
-				Head.Size = Vector3.new(2, 1, 1)
-				Head.BrickColor = BrickColor.new("Bright yellow")
-				Head.Locked = true
-				Head.TopSurface = Enum.SurfaceType.Smooth
-				Head.brickColor = BrickColor.new("Bright yellow")
-				Head.FormFactor = Enum.FormFactor.Symmetric
-				Head.formFactor = Enum.FormFactor.Symmetric
-
-				HeadMesh.Scale = Vector3.new(1.25, 1.25, 1.25)
-				face.Name = "face"
-				face.Texture = "http://www.roblox.com/asset/?id=405705854"
-
-				Torso.Name = "Torso"
-				Torso.Color = Color3.new(0.227451, 0.490196, 0.0823529)
-				Torso.Size = Vector3.new(2, 2, 1)
-				Torso.BrickColor = BrickColor.new("Camo")
-				Torso.LeftParamA = 0
-				Torso.LeftParamB = 0
-				Torso.LeftSurface = Enum.SurfaceType.Weld
-				Torso.Locked = true
-				Torso.RightParamA = 0
-				Torso.RightParamB = 0
-				Torso.RightSurface = Enum.SurfaceType.Weld
-				Torso.brickColor = BrickColor.new("Camo")
-				Torso.FormFactor = Enum.FormFactor.Symmetric
-				Torso.formFactor = Enum.FormFactor.Symmetric
-
-				RightShoulder.Name = "Right Shoulder"
-				RightShoulder.MaxVelocity = 0.10000000149011612
-				RightShoulder.C0 = CFrame.new(1, 0.5, 0, 0, 0, 1, 0, 1, -0, -1, 0, 0)
-				RightShoulder.C1 = CFrame.new(-0.5, 0.5, 0, 0, 0, 1, 0, 1, -0, -1, 0, 0)
-				RightShoulder.Part0 = Torso
-				RightShoulder.Part1 = RightArm
-
-				LeftShoulder.Name = "Left Shoulder"
-				LeftShoulder.MaxVelocity = 0.10000000149011612
-				LeftShoulder.C0 = CFrame.new(-1, 0.5, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0)
-				LeftShoulder.C1 = CFrame.new(0.5, 0.5, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0)
-				LeftShoulder.Part0 = Torso
-				LeftShoulder.Part1 = LeftArm
-
-				RightHip.Name = "Right Hip"
-				RightHip.MaxVelocity = 0.10000000149011612
-				RightHip.C0 = CFrame.new(1, -1, 0, 0, 0, 1, 0, 1, -0, -1, 0, 0)
-				RightHip.C1 = CFrame.new(0.5, 1, 0, 0, 0, 1, 0, 1, -0, -1, 0, 0)
-				RightHip.Part0 = Torso
-				RightHip.Part1 = RightLeg
-
-				LeftHip.Name = "Left Hip"
-				LeftHip.MaxVelocity = 0.10000000149011612
-				LeftHip.C0 = CFrame.new(-1, -1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0)
-				LeftHip.C1 = CFrame.new(-0.5, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0)
-				LeftHip.Part0 = Torso
-				LeftHip.Part1 = LeftLeg
-
-				Neck.Name = "Neck"
-				Neck.MaxVelocity = 0.10000000149011612
-				Neck.C0 = CFrame.new(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 1, -0)
-				Neck.C1 = CFrame.new(0, -0.5, 0, -1, 0, 0, 0, 0, 1, 0, 1, -0)
-				Neck.Part0 = Torso
-				Neck.Part1 = Head
-
-				LeftArm.Name = "Left Arm"
-				LeftArm.Color = Color3.new(0.960784, 0.803922, 0.188235)
-				LeftArm.Size = Vector3.new(1, 2, 1)
-				LeftArm.BrickColor = BrickColor.new("Bright yellow")
-				LeftArm.CanCollide = false
-				LeftArm.Locked = true
-				LeftArm.brickColor = BrickColor.new("Bright yellow")
-				LeftArm.FormFactor = Enum.FormFactor.Symmetric
-				LeftArm.formFactor = Enum.FormFactor.Symmetric
-
-				RightArm.Name = "Right Arm"
-				RightArm.Color = Color3.new(0.960784, 0.803922, 0.188235)
-				RightArm.Size = Vector3.new(1, 2, 1)
-				RightArm.BrickColor = BrickColor.new("Bright yellow")
-				RightArm.CanCollide = false
-				RightArm.Locked = true
-				RightArm.brickColor = BrickColor.new("Bright yellow")
-				RightArm.FormFactor = Enum.FormFactor.Symmetric
-				RightArm.formFactor = Enum.FormFactor.Symmetric
-
-				LeftLeg.Name = "Left Leg"
-				LeftLeg.Color = Color3.new(0.0509804, 0.411765, 0.67451)
-				LeftLeg.Size = Vector3.new(1, 2, 1)
-				LeftLeg.BottomSurface = Enum.SurfaceType.Smooth
-				LeftLeg.BrickColor = BrickColor.new("Bright blue")
-				LeftLeg.CanCollide = false
-				LeftLeg.Locked = true
-				LeftLeg.brickColor = BrickColor.new("Bright blue")
-				LeftLeg.FormFactor = Enum.FormFactor.Symmetric
-				LeftLeg.formFactor = Enum.FormFactor.Symmetric
-
-				RightLeg.Name = "Right Leg"
-				RightLeg.Color = Color3.new(0.0509804, 0.411765, 0.67451)
-				RightLeg.Size = Vector3.new(1, 2, 1)
-				RightLeg.BottomSurface = Enum.SurfaceType.Smooth
-				RightLeg.BrickColor = BrickColor.new("Bright blue")
-				RightLeg.CanCollide = false
-				RightLeg.Locked = true
-				RightLeg.brickColor = BrickColor.new("Bright blue")
-				RightLeg.FormFactor = Enum.FormFactor.Symmetric
-				RightLeg.formFactor = Enum.FormFactor.Symmetric
-				Humanoid.LeftLeg = LeftLeg
-				Humanoid.RightLeg = RightLeg
-				Humanoid.Torso = RootPart
-				Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
-
-				RootPart.Name = "HumanoidRootPart"
-				RootPart.Transparency = 1
-				RootPart.Size = Vector3.new(2, 2, 1)
-				RootPart.BottomSurface = Enum.SurfaceType.Smooth
-				RootPart.CanCollide = false
-				RootPart.LeftParamA = 0
-				RootPart.LeftParamB = 0
-				RootPart.Locked = true
-				RootPart.RightParamA = 0
-				RootPart.RightParamB = 0
-				RootPart.TopSurface = Enum.SurfaceType.Smooth
-				RootPart.FormFactor = Enum.FormFactor.Symmetric
-				RootPart.formFactor = Enum.FormFactor.Symmetric
-
-				RootJoint.Name = "RootJoint"
-				RootJoint.MaxVelocity = 0.10000000149011612
-				RootJoint.C0 = CFrame.new(0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, -0)
-				RootJoint.C1 = CFrame.new(0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 1, -0)
-				RootJoint.Part0 = RootPart
-				RootJoint.Part1 = Torso
-
-				Animate.Name = "Animate"
-
-				Idle.Name = "idle"
-
-				FaceFrontAttachment.Position = Vector3.new(0,0,-0.6)
-				FaceFrontAttachment.Name = "FaceFrontAttachment"
-				HairAttachment.Position = Vector3.new(0,0.6,0)
-				HairAttachment.Name = "HairAttachment"
-				HatAttachment.Position = Vector3.new(0,0.6,0)
-				HatAttachment.Name = "HatAttachment"
-				LeftShoulderAttachment.Position = Vector3.new(0,1,0)
-				LeftShoulderAttachment.Name = "LeftShoulderAttachment"
-				RightShoulderAttachment.Position = Vector3.new(0,1,0)
-				RightShoulderAttachment.Name = "RightShoulderAttachment"
-				BodyBackAttachment.Position = Vector3.new(0,0,0.5)
-				BodyBackAttachment.Name = "BodyBackAttachment"
-				BodyFrontAttachment.Position = Vector3.new(0,0,-0.5)
-				BodyFrontAttachment.Name = "BodyFrontAttachment"
-				LeftCollarAttachment.Position = Vector3.new(-1,1,0)
-				LeftCollarAttachment.Name = "LeftCollarAttachment"
-				NeckAttachment.Position = Vector3.new(0,1,0)
-				NeckAttachment.Name = "NeckAttachment"
-				RightCollarAttachment.Position = Vector3.new(1,1,0)
-				RightCollarAttachment.Name = "RightCollarAttachment"
-				WaistBackAttachment.Position = Vector3.new(0,-1,0.5)
-				WaistBackAttachment.Name = "WaistBackAttachment"
-				WaistCenterAttachment.Position = Vector3.new(0,-1,0)
-				WaistCenterAttachment.Name = "WaistCenterAttachment"
-				WaistFrontAttachment.Position = Vector3.new(0,-1,-0.5)
-				WaistFrontAttachment.Name = "WaistFrontAttachment"
-
-				Animation31.Name = "Animation1"
-				Animation31.AnimationId = "http://www.roblox.com/asset/?id=180435571"
-				NumberValue32.Name = "Weight"
-				NumberValue32.Value = 9
-
-				Animation33.Name = "Animation2"
-				Animation33.AnimationId = "http://www.roblox.com/asset/?id=180435792"
-				NumberValue34.Name = "Weight"
-				NumberValue34.Value = 1
-
-				StringValue35.Name = "walk"
-				Animation36.Name = "WalkAnim"
-				Animation36.AnimationId = "http://www.roblox.com/asset/?id=180426354"
-
-				StringValue37.Name = "run"
-				Animation38.Name = "RunAnim"
-				Animation38.AnimationId = "http://www.roblox.com/asset/?id=180426354"
-
-				StringValue39.Name = "jump"
-				Animation40.Name = "JumpAnim"
-				Animation40.AnimationId = "http://www.roblox.com/asset/?id=125750702"
-
-				StringValue41.Name = "climb"
-				Animation42.Name = "ClimbAnim"
-				Animation42.AnimationId = "http://www.roblox.com/asset/?id=180436334"
-
-				StringValue43.Name = "toolnone"
-				Animation44.Name = "ToolNoneAnim"
-				Animation44.AnimationId = "http://www.roblox.com/asset/?id=182393478"
-
-				StringValue45.Name = "fall"
-				Animation46.Name = "FallAnim"
-				Animation46.AnimationId = "http://www.roblox.com/asset/?id=180436148"
-
-				StringValue47.Name = "sit"
-				Animation48.Name = "SitAnim"
-				Animation48.AnimationId = "http://www.roblox.com/asset/?id=178130996"
-				NumberValue49.Name = "ScaleDampeningPercent"
-				NumberValue49.Value = 0.4000000059604645
-
-				BodyColors50.HeadColor = BrickColor.new("Bright yellow")
-				BodyColors50.HeadColor3 = Color3.new(0.960784, 0.803922, 0.188235)
-				BodyColors50.LeftArmColor = BrickColor.new("Bright yellow")
-				BodyColors50.LeftArmColor3 = Color3.new(0.960784, 0.803922, 0.188235)
-				BodyColors50.LeftLegColor3 = Color3.new(0.0509804, 0.411765, 0.67451)
-				BodyColors50.RightArmColor = BrickColor.new("Bright yellow")
-				BodyColors50.RightArmColor3 = Color3.new(0.960784, 0.803922, 0.188235)
-				BodyColors50.RightLegColor3 = Color3.new(0.0509804, 0.411765, 0.67451)
-				BodyColors50.TorsoColor = BrickColor.new("Camo")
-				BodyColors50.TorsoColor3 = Color3.new(0.227451, 0.490196, 0.0823529)
-
-				FaceCenterAttachment.Parent = Head
-				FaceFrontAttachment.Parent = Head
-				HairAttachment.Parent = Head
-				HatAttachment.Parent = Head
-				LeftShoulderAttachment.Parent = LeftArm
-				RightShoulderAttachment.Parent = RightArm
-				BodyBackAttachment.Parent = Torso
-				BodyFrontAttachment.Parent = Torso
-				LeftCollarAttachment.Parent = Torso
-				RightCollarAttachment.Parent = Torso
-				NeckAttachment.Parent = Torso
-				WaistCenterAttachment.Parent = Torso
-				WaistFrontAttachment.Parent = Torso
-				WaistBackAttachment.Parent = Torso
-
-				RootPart.Parent = FakeCharacter
-				Head.Parent = FakeCharacter
-				Torso.Parent = FakeCharacter
-				LeftArm.Parent = FakeCharacter
-				RightArm.Parent = FakeCharacter
-				LeftLeg.Parent = FakeCharacter
-				RightLeg.Parent = FakeCharacter
-
-				HeadMesh.Parent = Head
-				face.Parent = Head
-
-				Neck.Parent = Torso
-				RootJoint.Parent = RootPart
-				LeftShoulder.Parent = Torso
-				RightShoulder.Parent = Torso
-				LeftHip.Parent = Torso
-				RightHip.Parent = Torso
-
-				Animate.Parent = FakeCharacter
-				Idle.Parent = Animate
-				Animation31.Parent = Idle
-				NumberValue32.Parent = Animation31
-				Animation33.Parent = Idle
-				NumberValue34.Parent = Animation33
-				StringValue35.Parent = Animate
-				Animation36.Parent = StringValue35
-				StringValue37.Parent = Animate
-				Animation38.Parent = StringValue37
-				StringValue39.Parent = Animate
-				Animation40.Parent = StringValue39
-				StringValue41.Parent = Animate
-				Animation42.Parent = StringValue41
-				StringValue43.Parent = Animate
-				Animation44.Parent = StringValue43
-				StringValue45.Parent = Animate
-				Animation46.Parent = StringValue45
-				StringValue47.Parent = Animate
-				Animation48.Parent = StringValue47
-				NumberValue49.Parent = Animate
-
-				BodyColors50.Parent = FakeCharacter
-
-				Humanoid.Parent = FakeCharacter
-
-				warn(LeftShoulderAttachment:GetFullName())
+				Global.R6Rig = FakeCharacter
 			end
 			FakeRig = FakeCharacter:Clone()
 		end
