@@ -35,7 +35,7 @@ local function PlayVideo()
 		local name = "Videos/" .. URLName.Value
 		print(name)
 		local file
-		local filesize = 1
+		local filesize = "1 MB"
 		local lowestquality = gui:GetAttribute("LowestQuality") == true
 		warn(lowestquality and "360p" or "720p")
 		if isfile(name) then
@@ -68,8 +68,10 @@ local function PlayVideo()
 				for i,v in pairs(string.split(Response,'<a href="')) do
 					if i == 2 or i == 3 then
 						local link = string.sub(v,1,string.find(v,'"')-1)
-						local filesize = string.sub(v,string.find(v,'MB')-10,string.find(v,'MB')+1)
-						filesize = string.sub(filesize,string.find(filesize,'>')+1)
+						pcall(function()
+							local filesize = string.sub(v,string.find(v,'MB')-10,string.find(v,'MB')+1)
+							filesize = string.sub(filesize,string.find(filesize,'>')+1)
+						end)
 						table.insert(Links,{link,filesize})
 					end
 				end
