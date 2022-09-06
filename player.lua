@@ -35,7 +35,7 @@ local function PlayVideo()
 		local name = "Videos/" .. URLName.Value
 		print(name)
 		local file
-		local filesize = "?"
+		local filesize = 1
 		local lowestquality = gui:GetAttribute("LowestQuality") == true
 		warn(lowestquality and "360p" or "720p")
 		if isfile(name) then
