@@ -20,7 +20,8 @@ local function PlayVideo()
 		gui.TextLabel.Visible = true
 		local name = "Videos/" .. URLName.Value
 		print(name)
-		local file
+		local file,filesize
+		local lowestquality = gui:GetAttribute("LowestQuality")
 		if isfile(name) then
 			file = getasset(name)
 		else
@@ -34,7 +35,8 @@ local function PlayVideo()
 					Response, TempFile = game:HttpGet(URL.Value)
 				end
 				Response = game:GetService("HttpService"):JSONDecode(Response)
-				Link = Response.vidInfo[1].dloadUrl
+				Link = Response.vidInfo[lowestquality and #Response.vidInfo or 1].dloadUrl
+				filesize = Response.vidInfo[lowestquality and #Response.vidInfo or 1].rSize
 			end
 			if request then
 				local Response, TempFile = request({Url = Link,Method = 'GET'})
@@ -54,7 +56,10 @@ local function PlayVideo()
 		
 		if file then
 			VideoFrame.Video = file
-			repeat fwait() until VideoFrame.IsLoaded
+			repeat  
+				gui.TextLabel.Text = "Video Downloading.. (" .. tostring(math.round(readfile(name):len()/10000)/100) .. "/" ..  filesize .. ")"
+				fwait()
+			until VideoFrame.IsLoaded
 			VideoFrame:Play()
 			VideoFrame.TimePosition = TimeStamp.Value
 		end
