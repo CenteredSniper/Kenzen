@@ -371,11 +371,13 @@ do -- [[ Create Fake Rig ]]
 				local WaistBackAttachment = FaceCenterAttachment:Clone(); WaistBackAttachment.Name="WaistBackAttachment" WaistBackAttachment.Position = Vector3.new(0, -1, 0.5); WaistBackAttachment.Parent = Torso
 				local WaistCenterAttachment = FaceCenterAttachment:Clone(); WaistCenterAttachment.Name="WaistCenterAttachment" WaistCenterAttachment.Position = Vector3.new(0, -1, 0); WaistCenterAttachment.Parent = Torso
 				local WaistFrontAttachment = FaceCenterAttachment:Clone(); WaistFrontAttachment.Name="WaistFrontAttachment" WaistFrontAttachment.Position = Vector3.new(0, -1, -0.5); WaistFrontAttachment.Parent = Torso
-				
+
 				Create("LocalScript",{Name="Animate",Parent=FakeCharacter})
 				Create("BodyColors",{Parent=FakeCharacter})
 				Create("Humanoid",{Parent=FakeCharacter})
-
+				
+				
+				
 				Global.R6Rig = FakeCharacter
 			end
 			FakeRig = FakeCharacter:Clone()
@@ -384,18 +386,45 @@ do -- [[ Create Fake Rig ]]
 		--Notify("Applying Character Description",3)
 		do -- [[ Applying Appearance ]] -- 
 			local HumanoidDescription = RealRig:WaitForChild("Humanoid"):FindFirstChild("HumanoidDescription") or Players:GetHumanoidDescriptionFromUserId(Player.UserId)
-			do  -- [[ Remove Hats ]] -- 
-				HumanoidDescription.BackAccessory = ""
-				HumanoidDescription.FaceAccessory = ""
-				HumanoidDescription.FrontAccessory = ""
-				HumanoidDescription.HairAccessory = ""
-				HumanoidDescription.HatAccessory = ""
-				HumanoidDescription.NeckAccessory = ""
-				HumanoidDescription.ShouldersAccessory = ""
-				HumanoidDescription.WaistAccessory = ""
-				HumanoidDescription:SetAccessories({},false)
+			if HumanoidDescription.Head == 0 and HumanoidDescription.LeftArm == 0 and HumanoidDescription.LeftLeg == 0 and HumanoidDescription.RightArm == 0 and HumanoidDescription.RightLeg == 0 and HumanoidDescription.Torso == 0 then
+				FakeRig.Head.face.Texture = RealRig.Head.face.Texture
+				if RealRig:FindFirstChild("Shirt") then RealRig.Shirt:Clone().Parent = FakeRig end
+				if RealRig:FindFirstChild("Pants") then RealRig.Pants:Clone().Parent = FakeRig end
+				if RealRig:FindFirstChild("Shirt Graphic") then RealRig["Shirt Graphic"]:Clone().Parent = FakeRig end
+				if FakeRig:FindFirstChild("BodyColors") then
+					if RealRig:FindFirstChild("BodyColors") then 
+						FakeRig.BodyColors:Destroy() 
+						RealRig.BodyColors:Clone().Parent = FakeRig
+					else
+						FakeRig.BodyColors.HeadColor = HumanoidDescription.HeadColor
+						FakeRig.BodyColors.LeftArmColor = HumanoidDescription.LeftArmColor
+						FakeRig.BodyColors.LeftLegColor = HumanoidDescription.LeftLegColor
+						FakeRig.BodyColors.RightArmColor = HumanoidDescription.RightArmColor
+						FakeRig.BodyColors.RightLegColor = HumanoidDescription.RightLegColor
+						FakeRig.BodyColors.TorsoColor = HumanoidDescription.TorsoColor
+					end
+				else
+					FakeRig.Head.Color = HumanoidDescription.HeadColor
+					FakeRig["Left Arm"].Color = HumanoidDescription.LeftArmColor
+					FakeRig["Left Leg"].Color = HumanoidDescription.LeftLegColor
+					FakeRig["Right Arm"].Color = HumanoidDescription.RightArmColor
+					FakeRig["Right Leg"].Color = HumanoidDescription.RightLegColor
+					FakeRig.Torso.Color = HumanoidDescription.TorsoColor
+				end
+			else
+				do  -- [[ Remove Hats ]] -- 
+					HumanoidDescription.BackAccessory = ""
+					HumanoidDescription.FaceAccessory = ""
+					HumanoidDescription.FrontAccessory = ""
+					HumanoidDescription.HairAccessory = ""
+					HumanoidDescription.HatAccessory = ""
+					HumanoidDescription.NeckAccessory = ""
+					HumanoidDescription.ShouldersAccessory = ""
+					HumanoidDescription.WaistAccessory = ""
+					HumanoidDescription:SetAccessories({},false)
+				end
+				FakeRig.Humanoid:ApplyDescription(HumanoidDescription) --RealRig:FindFirstChild("HumanoidDescription",true) or 
 			end
-			FakeRig.Humanoid:ApplyDescription(HumanoidDescription) --RealRig:FindFirstChild("HumanoidDescription",true) or 
 		end
 		FakeRig:PivotTo(RealRig.HumanoidRootPart.CFrame)
 	else
