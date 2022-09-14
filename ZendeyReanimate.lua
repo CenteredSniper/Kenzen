@@ -623,6 +623,9 @@ do -- [[ Part Manipulation ]]
 				Part.Massless = true
 				Part.CustomPhysicalProperties = PhysicalProperties.new(0,0,0,0,0)
 				Part.RootPriority = 127
+				if Global.GameOptimize then
+				    Part.Size = Vector3.new(0,0,0)
+				end
 
 				local SelectionBox = Instance.new("SelectionBox"); do
 					SelectionBox.Adornee = Part; 
