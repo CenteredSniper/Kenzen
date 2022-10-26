@@ -45,7 +45,7 @@ do -- [[ Default Settings ]] --
 	CheckSetting("Notifications",true)
 	CheckSetting("GameOptimize",false)
 	CheckSetting("AlignsEnabled",false)
-	CheckSetting("ArtificialHeartBeat",{"PreRender","PreAnimation","Stepped","Heartbeat"})
+	CheckSetting("ArtificialHeartBeat",{"PreRender","PreAnimation","PreSimulation","PostSimulation"})
 end
 
 do -- [[ Checks ]] --
@@ -59,7 +59,7 @@ do -- [[ Checks ]] --
 		loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/GameOptimizer/main/src.lua", true))()
 	end
 	if Global.ArtificialHeartBeat == true then
-		Global.ArtificialHeartBeat = {"PreRender","PreAnimation","Stepped","Heartbeat"}
+		Global.ArtificialHeartBeat = {"PreRender","PreAnimation","PreSimulation","PostSimulation"}
 	end
 end
 
@@ -94,8 +94,9 @@ local TorsoDelay,HealthHide = 0.026,0
 local FakeRig,FakeChildren,sethiddenproperty,Notify
 
 do -- [[ Enabling Extra Runservice Signals ]] --
+	--[[ Disabled because roblox enabled these flags now
 	pcall(function() setfflag("NewRunServiceSignals", "true") end) 
-	pcall(function() setfflag("NewRunServiceSignals", true) end) 
+	pcall(function() setfflag("NewRunServiceSignals", true) end) ]]
 end
 
 do -- [[ Artificial Heartbeat, original by 4eyedfool ]] --
