@@ -576,7 +576,7 @@ do -- [[ Create Dictionaries ]]
 			elseif v:IsA("Tool") and v:FindFirstChild("Handle") then
 				local Clone = v:Clone()
 				Accessories[v:WaitForChild("Handle")] = {Clone:WaitForChild("Handle"),CFrame.new()}
-				Clone.Parent = Player:WaitForChild("Backpack"); Clone.Parent = Clone
+				Clone.Parent = Player:WaitForChild("Backpack")
 			end
 		end)
 	end
