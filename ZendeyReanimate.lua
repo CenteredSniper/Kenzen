@@ -376,9 +376,9 @@ do -- [[ Create Fake Rig ]]
 				Create("LocalScript",{Name="Animate",Parent=FakeCharacter})
 				Create("BodyColors",{Parent=FakeCharacter})
 				Create("Humanoid",{Parent=FakeCharacter})
-				
-				
-				
+
+
+
 				Global.R6Rig = FakeCharacter
 			end
 			FakeRig = FakeCharacter:Clone()
@@ -432,7 +432,8 @@ do -- [[ Create Fake Rig ]]
 		Player.Character.Archivable = true
 		FakeRig = Player.Character:Clone()
 		Player.Character.Archivable = false
-		FakeRig:WaitForChild("Humanoid"):RemoveAccessories()
+		for i,v in pairs(FakeRig:GetChildren()) do if v:IsA("Accessory") or v:IsA("Tool") then v:Destroy() end end
+		--FakeRig:WaitForChild("Humanoid"):RemoveAccessories()
 		FakeRig.Parent = workspace
 	end
 end
@@ -559,17 +560,23 @@ do -- [[ Create Dictionaries ]]
 			elseif v:IsA("Accessory") and v:FindFirstChild("Handle") then
 				local Clone = v:Clone()
 				Accessories[v:WaitForChild("Handle")] = {Clone:WaitForChild("Handle"),CFrame.new()}
-				local Weld = Clone:WaitForChild("Handle"):FindFirstChild("AccessoryWeld")
-				Weld.Part1 = Weld.Part1.Name == "UpperTorso" and FakeRig.Torso
-					or Weld.Part1.Name == "LowerTorso" and FakeRig.Torso
-					or Weld.Part1.Name == "Head" and FakeRig.Head
-					or Weld.Part1.Name == "RightUpperArm" and FakeRig["Right Arm"]
-					or Weld.Part1.Name == "LeftUpperArm" and FakeRig["Left Arm"]
-					or FakeRig:FindFirstChild(Weld.Part1.Name)
+				local Weld = Clone:WaitForChild("Handle"):FindFirstChild("AccessoryWeld");
+				if Weld then
+					Weld.Part1 = Weld.Part1.Name == "UpperTorso" and FakeRig.Torso
+						or Weld.Part1.Name == "LowerTorso" and FakeRig.Torso
+						or Weld.Part1.Name == "Head" and FakeRig.Head
+						or Weld.Part1.Name == "RightUpperArm" and FakeRig["Right Arm"]
+						or Weld.Part1.Name == "LeftUpperArm" and FakeRig["Left Arm"]
+						or FakeRig:FindFirstChild(Weld.Part1.Name)
+				end
 				if v.Handle:FindFirstChild("AccessoryWeld") and Global.DestroyHatWelds then
 					v.Handle.AccessoryWeld:Destroy()	
 				end
 				Clone.Parent = FakeRig
+			elseif v:IsA("Tool") and v:FindFirstChild("Handle") then
+				local Clone = v:Clone()
+				Accessories[v:WaitForChild("Handle")] = {Clone:WaitForChild("Handle"),CFrame.new()}
+				Clone.Parent = Player:WaitForChild("Backpack"); Clone.Parent = Clone
 			end
 		end)
 	end
@@ -625,7 +632,7 @@ do -- [[ Part Manipulation ]]
 				Part.CustomPhysicalProperties = PhysicalProperties.new(0,0,0,0,0)
 				Part.RootPriority = 127
 				if Global.GameOptimize then
-				    Part.Size = Vector3.new(0,0,0)
+					Part.Size = Vector3.new(0,0,0)
 				end
 
 				local SelectionBox = Instance.new("SelectionBox"); do
@@ -671,6 +678,8 @@ do -- [[ Part Manipulation ]]
 								TorsoDelay *= -1
 							elseif Part.Name == "Head" and Global.PermaDeath and Global.Healthless then
 								Part.CFrame = v[1].CFrame * v[2] * CFrame.new(0,HealthHide,0)
+							elseif Part.Parent:IsA("Tool") and v[1].Parent.Parent ~= FakeRig then
+								Part.CFrame = FakeRig:FindFirstChild("HumanoidRootPart").CFrame + Vector3.new(0,-4,0)
 							else
 								Part.CFrame = v[1].CFrame * v[2]
 							end
