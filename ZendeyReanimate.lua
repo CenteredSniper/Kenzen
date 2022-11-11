@@ -562,11 +562,11 @@ do -- [[ Create Dictionaries ]]
 				Accessories[v:WaitForChild("Handle")] = {Clone:WaitForChild("Handle"),CFrame.new()}
 				local Weld = Clone:WaitForChild("Handle"):FindFirstChild("AccessoryWeld");
 				if Weld then
-					Weld.Part1 = Weld.Part1.Name == "UpperTorso" and FakeRig.Torso
-						or Weld.Part1.Name == "LowerTorso" and FakeRig.Torso
-						or Weld.Part1.Name == "Head" and FakeRig.Head
-						or Weld.Part1.Name == "RightUpperArm" and FakeRig["Right Arm"]
-						or Weld.Part1.Name == "LeftUpperArm" and FakeRig["Left Arm"]
+					Weld.Part1 = Weld.Part1.Name == "UpperTorso" and Global.R15ToR6 and FakeRig.Torso
+						or Weld.Part1.Name == "LowerTorso" and Global.R15ToR6 and FakeRig.Torso
+						or Weld.Part1.Name == "Head" and Global.R15ToR6 and FakeRig.Head
+						or Weld.Part1.Name == "RightUpperArm" and Global.R15ToR6 and FakeRig["Right Arm"]
+						or Weld.Part1.Name == "LeftUpperArm" and Global.R15ToR6 and FakeRig["Left Arm"]
 						or FakeRig:FindFirstChild(Weld.Part1.Name)
 				end
 				if v.Handle:FindFirstChild("AccessoryWeld") and Global.DestroyHatWelds then
