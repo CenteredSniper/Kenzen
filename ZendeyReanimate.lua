@@ -1,6 +1,39 @@
 -- [[ https://discord.gg/8EZcyvtDcq // ProductionTakeOne#3330 & nul#3174 ]] --
 -- [[ Zendey Reanimate // By ProductionTakeOne#3330 // Additional support from nul#3174 and Iamverybored#9941 ]] --
 
+-- cloneref compatibility --
+local cloneref = cloneref or function(ref)
+    return ref
+end
+local safecloneref = function(ref)
+    if not type(ref) == "userdata" then
+        return nil
+    else
+        local success, err = pcall(function()
+            tostring(ref)
+        end)
+        if type(ref) == "userdata" and success then
+            return cloneref(ref)
+        else
+            return nil
+        end
+    end
+end
+
+-- speedy cloneref'd getservice cache --
+local CachedServices = {}
+local function GetService(s)
+    if not CachedServices[s] then
+        local temp = safecloneref(game:GetService(tostring(s)))
+        if temp then
+            CachedServices[s] = temp
+            return CachedServices[s]
+        end
+    else
+        return CachedServices[s]
+    end
+end
+
 local SpeedTest = tick()
 
 local Global = getgenv and getgenv() or shared
@@ -63,12 +96,12 @@ do -- [[ Checks ]] --
 	end
 end
 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
-local Player = Players.LocalPlayer
+local Players = GetService("Players")
+local RunService = GetService("RunService")
+local TweenService = GetService("TweenService")
+local Player = getlocalplayer and getlocalplayer() or Players.LocalPlayer
 
-local RealRig = Player.Character
+local RealRig = getcharacter and getcharacter() or Player.Character or Player.CharacterAdded:Wait()
 local RigType = RealRig:WaitForChild("Humanoid").RigType
 local RealChildren = RealRig:GetChildren()
 local RealDescendants = RealRig:GetDescendants()
@@ -77,7 +110,7 @@ local setfflag = setfflag or function(flag,bool) game:DefineFastFlag(flag,bool) 
 local isnetworkowner = isnetworkowner or function(Part) return Part.ReceiveAge == 0 end
 local printconsole = printconsole or printuiconsole or print
 
-local Ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]
+local Ping = GetService("Stats").Network.ServerStatsItem["Data Ping"]
 
 local Events = {}
 local BaseParts = {}
@@ -101,7 +134,7 @@ end
 
 do -- [[ Artificial Heartbeat, original by 4eyedfool ]] --
 	if not Event then
-		local BindEvent = Instance.new("BindableEvent")
+		local BindEvent = safecloneref(Instance.new("BindableEvent"))
 		local Tick = tick()
 		for _,RunEvent in pairs(Global.ArtificialHeartBeat) do
 			RunService[RunEvent]:Connect(function()
@@ -188,20 +221,22 @@ do -- [[ Optimizations ]] --
 	Player.ReplicationFocus = workspace -- probably replicates parts faster
 end
 
+math.randomseed(tick())
+
 do -- [[ Network ]]
-	Player.MaximumSimulationRadius=2022
-	sethiddenproperty(Player,"SimulationRadius",2022)
+	Player.MaximumSimulationRadius=math.random(1e9, 2e9)*math.random(1, 25)
+	sethiddenproperty(Player,"SimulationRadius",math.random(1e9, 2e9)*math.random(1, 25))
 	table.insert(Events,RunService.Stepped:Connect(function()
-		Player.MaximumSimulationRadius=2022
-		sethiddenproperty(Player,"SimulationRadius",2022)
+		Player.MaximumSimulationRadius=math.random(1e9, 2e9)*math.random(1, 25)
+		sethiddenproperty(Player,"SimulationRadius",math.random(1e9, 2e9)*math.random(1, 25))
 	end))
 end
 
 do -- [[ Notification Service, original by quirky anime boy#5506 ]] --
 	local notification
 	do
-		local CoreGui = game:GetService("CoreGui")
-		local Debris = game:GetService("Debris")
+		local CoreGui = GetService("CoreGui")
+		local Debris = GetService("Debris")
 
 		notification = function(Arguments)
 			task.spawn(function()
@@ -209,15 +244,15 @@ do -- [[ Notification Service, original by quirky anime boy#5506 ]] --
 				local Duration = Arguments.Duration or 5
 
 				-- Instances:
-
-				local ScreenGui = CoreGui:FindFirstChild("Error") or Instance.new("ScreenGui", CoreGui)
-				local ErrorMessage = (Instance.new("Frame"))
-				local TextSizeConstraint = (Instance.new("UISizeConstraint"))
-				local AsspectRatioConstraint = (Instance.new("UIAspectRatioConstraint"))
-				local ErrorText = (Instance.new("TextLabel"))
-				local TextSizeConstraint_2 = (Instance.new("UITextSizeConstraint"))
-				local SizeConstraint = (Instance.new("UISizeConstraint"))
-				local ErrorIcon = (Instance.new("ImageLabel"))
+				local SecureContaienr = gethui and gethui() or gethiddengui and gethiddengui() or CoreGui:FindFirstChild("RobloxGui") or CoreGui:FindFirstChildOfClass("ScreenGui") or CoreGui:FindFirstChildOfClass("Folder") or CoreGui
+				local ScreenGui = SecureContainer:FindFirstChild("Error") or Instance.new("ScreenGui", SecureContainer)
+				local ErrorMessage = safecloneref(Instance.new("Frame"))
+				local TextSizeConstraint = safecloneref(Instance.new("UISizeConstraint"))
+				local AsspectRatioConstraint = safecloneref(Instance.new("UIAspectRatioConstraint"))
+				local ErrorText = safecloneref(Instance.new("TextLabel"))
+				local TextSizeConstraint_2 = safecloneref(Instance.new("UITextSizeConstraint"))
+				local SizeConstraint = safecloneref(Instance.new("UISizeConstraint"))
+				local ErrorIcon = safecloneref(Instance.new("ImageLabel"))
 				local AsspectRatioConstraint_2 = (Instance.new("UIAspectRatioConstraint"))
 
 				--Properties:
@@ -228,7 +263,7 @@ do -- [[ Notification Service, original by quirky anime boy#5506 ]] --
 					Tween:Play()
 				end
 
-				ScreenGui.Parent = CoreGui
+				ScreenGui.Parent = SecureContainer
 				ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 				ScreenGui.Name = "Error"
 
@@ -325,7 +360,7 @@ do -- [[ Create Fake Rig ]]
 
 			if not Global.R6Rig then
 				local function Create(Name,Properties)
-					local NewInstance = Instance.new(Name); do
+					local NewInstance = safecloneref(Instance.new(Name)); do
 						for i,v in pairs(Properties) do
 							NewInstance[i] = v
 						end
@@ -590,21 +625,21 @@ do -- [[ Part Manipulation ]]
 				local IsOwner = true
 
 				if Global.AlignsEnabled then
-					local Attach0 = Instance.new("Attachment"); do
+					local Attach0 = safecloneref(Instance.new("Attachment")); do
 						Attach0.Parent = Part
 					end
-					local Attach1 = Instance.new("Attachment"); do
+					local Attach1 = safecloneref(Instance.new("Attachment")); do
 						Attach1.CFrame = v[2]
 						Attach1.Parent = v[1]
 					end
-					local Position = Instance.new("AlignPosition"); do
+					local Position = safecloneref(Instance.new("AlignPosition")); do
 						Position.Attachment0 = Attach0 
 						Position.Attachment1 = Attach1
 						Position.MaxForce = math.huge; 
 						Position.Responsiveness = 200;
 						Position.Parent = Part
 					end
-					local Orientation = Instance.new("AlignOrientation"); do
+					local Orientation = safecloneref(Instance.new("AlignOrientation")); do
 						Orientation.Attachment0 = Attach0 
 						Orientation.Attachment1 = Attach1
 						Orientation.MaxTorque = math.huge; 
@@ -612,13 +647,13 @@ do -- [[ Part Manipulation ]]
 						Orientation.Parent = Part
 					end
 				else
-					local BodyVelocity = Instance.new("BodyVelocity"); do
+					local BodyVelocity = safecloneref(Instance.new("BodyVelocity")); do
 						BodyVelocity.MaxForce = Vector3.new(1,1,1) * math.huge; 
 						BodyVelocity.P = math.huge; 
 						BodyVelocity.Velocity = Part.Name == "Head" and Global.WhitelistHead and RigType == Enum.HumanoidRigType.R6 and Vector3.new() or Velocity;
 						BodyVelocity.Parent = Part;
 					end
-					BodyAngularVelocity = Instance.new("BodyAngularVelocity"); do
+					BodyAngularVelocity = safecloneref(Instance.new("BodyAngularVelocity")); do
 						BodyAngularVelocity.MaxTorque = Vector3.new(1,1,1) * math.huge;
 						BodyAngularVelocity.P = math.huge; 
 						BodyAngularVelocity.AngularVelocity = Part.Name == Global.Fling and Global.EnableSpin and Vector3.new(2147483646,2147483646,2147483646) or Vector3.new(0,0,0)
@@ -635,7 +670,7 @@ do -- [[ Part Manipulation ]]
 					Part.Size = Vector3.new(0,0,0)
 				end
 
-				local SelectionBox = Instance.new("SelectionBox"); do
+				local SelectionBox = safecloneref(Instance.new("SelectionBox")); do
 					SelectionBox.Adornee = Part; 
 					SelectionBox.Transparency = 1; 
 					SelectionBox.Parent = Part
@@ -643,7 +678,7 @@ do -- [[ Part Manipulation ]]
 
 				local SelectionBillboard; do
 					if Global.PartText then
-						SelectionBillboard = Instance.new("BillboardGui"); do
+						SelectionBillboard = safecloneref(Instance.new("BillboardGui")); do
 							SelectionBillboard.StudsOffset = Vector3.new(0,Part.Size.Y,0)
 							SelectionBillboard.Size = UDim2.new(3,0,1,0)
 							local TextLabel = Instance.new("TextLabel"); do
