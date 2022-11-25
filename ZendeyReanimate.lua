@@ -212,13 +212,15 @@ do -- [[ Optimizations ]] --
 		settings()["Rendering"].QualityLevel = 1
 	end
 
-	sethiddenproperty(workspace,"InterpolationThrottling",Enum.InterpolationThrottlingMode.Disabled)
-
 	sethiddenproperty(workspace,"PhysicsSteppingMethod",Enum.PhysicsSteppingMethod.Fixed)
 	sethiddenproperty(workspace,"PhysicsSimulationRateReplicator",Enum.PhysicsSimulationRate.Fixed240Hz)
 	sethiddenproperty(workspace,"PhysicsSimulationRate",Enum.PhysicsSimulationRate.Fixed240Hz)
+	sethiddenproperty(workspace, "SignalBehavior", "Immediate")
 
 	Player.ReplicationFocus = workspace -- probably replicates parts faster
+	workspace.InterpolationThrottling = Enum.InterpolationThrottlingMode.Disabled
+	workspace.Retargeting = "Disabled"
+    	
 end
 
 math.randomseed(tick())
