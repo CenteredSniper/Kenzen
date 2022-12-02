@@ -1,39 +1,6 @@
 -- [[ https://discord.gg/8EZcyvtDcq // ProductionTakeOne#3330 & nul#3174 ]] --
 -- [[ Zendey Reanimate // By ProductionTakeOne#3330 // Additional support from nul#3174 and Iamverybored#9941 ]] --
 
--- cloneref compatibility --
-local cloneref = cloneref or function(ref)
-    return ref
-end
-local safecloneref = function(ref)
-    if not type(ref) == "userdata" then
-        return nil
-    else
-        local success, err = pcall(function()
-            tostring(ref)
-        end)
-        if type(ref) == "userdata" and success then
-            return cloneref(ref)
-        else
-            return nil
-        end
-    end
-end
-
--- speedy cloneref'd getservice cache --
-local CachedServices = {}
-local function GetService(s)
-    if not CachedServices[s] then
-        local temp = safecloneref(game:GetService(tostring(s)))
-        if temp then
-            CachedServices[s] = temp
-            return CachedServices[s]
-        end
-    else
-        return CachedServices[s]
-    end
-end
-
 local SpeedTest = tick()
 
 local Global = getgenv and getgenv() or shared
@@ -96,6 +63,37 @@ do -- [[ Checks ]] --
 	end
 end
 
+local safecloneref,GetService; do
+	local CachedServices = {}
+
+	safecloneref = function(ref)
+		if type(ref) ~= "userdata" then
+			return nil
+		else
+			local success, err = pcall(function()
+				tostring(ref)
+			end)
+			if type(ref) == "userdata" and success then
+				return cloneref and cloneref(ref) or ref
+			else
+				return nil
+			end
+		end
+	end
+
+	GetService = function(s)
+		if not CachedServices[s] then
+			local temp = safecloneref(game:GetService(tostring(s)))
+			if temp then
+				CachedServices[s] = temp
+				return CachedServices[s]
+			end
+		else
+			return CachedServices[s]
+		end
+	end
+end
+
 local Players = GetService("Players")
 local RunService = GetService("RunService")
 local TweenService = GetService("TweenService")
@@ -125,12 +123,6 @@ local PartToReclaim = nil
 local TorsoDelay,HealthHide = 0.026,0
 
 local FakeRig,FakeChildren,sethiddenproperty,Notify
-
-do -- [[ Enabling Extra Runservice Signals ]] --
-	--[[ Disabled because roblox enabled these flags now
-	pcall(function() setfflag("NewRunServiceSignals", "true") end) 
-	pcall(function() setfflag("NewRunServiceSignals", true) end) ]]
-end
 
 do -- [[ Artificial Heartbeat, original by 4eyedfool ]] --
 	if not Event then
@@ -220,7 +212,7 @@ do -- [[ Optimizations ]] --
 	Player.ReplicationFocus = workspace -- probably replicates parts faster
 	workspace.InterpolationThrottling = Enum.InterpolationThrottlingMode.Disabled
 	workspace.Retargeting = "Disabled"
-    	
+
 end
 
 math.randomseed(tick())
