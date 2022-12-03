@@ -44,6 +44,7 @@ do -- [[ Default Settings ]] --
 	CheckSetting("AutoAnimate",true)
 	CheckSetting("Notifications",true)
 	CheckSetting("GameOptimize",false)
+	CheckSetting("MultiThread",true)
 	CheckSetting("AlignsEnabled",false)
 	CheckSetting("ArtificialHeartBeat",{"PreRender","PreAnimation","PreSimulation","PostSimulation"})
 end
@@ -114,6 +115,7 @@ local Events = {}
 local BaseParts = {}
 local Accessories = {}
 local BodyVel = {}
+local ArtificialSingleEvents,SteppedSingleEvents = {},{}
 
 local Event = Global.Event
 local Velocity = Global.VelocityVector * Global.Velocity
@@ -136,6 +138,20 @@ do -- [[ Artificial Heartbeat, original by 4eyedfool ]] --
 		end 
 		Event = BindEvent.Event
 		Global.Event = BindEvent.Event
+	end
+	do -- SingleThreadding
+		if not Global.MultiThread then
+			table.insert(Events,Event:Connect(function()
+				for i,v in pairs(ArtificialSingleEvents) do
+					v[1](unpack(v[2]))
+				end
+			end))
+			table.insert(Events,RunService.PreSimulation:Connect(function()
+				for i,v in pairs(SteppedSingleEvents) do
+					v[1](unpack(v[2]))
+				end
+			end))
+		end
 	end
 end
 
@@ -212,7 +228,6 @@ do -- [[ Optimizations ]] --
 	Player.ReplicationFocus = workspace -- probably replicates parts faster
 	workspace.InterpolationThrottling = Enum.InterpolationThrottlingMode.Disabled
 	workspace.Retargeting = "Disabled"
-
 end
 
 math.randomseed(tick())
@@ -220,10 +235,18 @@ math.randomseed(tick())
 do -- [[ Network ]]
 	Player.MaximumSimulationRadius=math.random(1e9, 2e9)*math.random(1, 25)
 	sethiddenproperty(Player,"SimulationRadius",math.random(1e9, 2e9)*math.random(1, 25))
-	table.insert(Events,RunService.Stepped:Connect(function()
-		Player.MaximumSimulationRadius=math.random(1e9, 2e9)*math.random(1, 25)
-		sethiddenproperty(Player,"SimulationRadius",math.random(1e9, 2e9)*math.random(1, 25))
-	end))
+	if Global.MultiThread then
+		table.insert(Events,RunService.Stepped:Connect(function()
+			Player.MaximumSimulationRadius=math.random(1e9, 2e9)*math.random(1, 25)
+			sethiddenproperty(Player,"SimulationRadius",math.random(1e9, 2e9)*math.random(1, 25))
+		end))
+	else
+		table.insert(SteppedSingleEvents,{function()
+			Player.MaximumSimulationRadius=math.random(1e9, 2e9)*math.random(1, 25)
+			sethiddenproperty(Player,"SimulationRadius",math.random(1e9, 2e9)*math.random(1, 25))
+		end,{}})
+	end
+	
 end
 
 do -- [[ Notification Service, original by quirky anime boy#5506 ]] --
@@ -238,8 +261,16 @@ do -- [[ Notification Service, original by quirky anime boy#5506 ]] --
 				local Duration = Arguments.Duration or 5
 
 				-- Instances:
-				local SecureContaienr = gethui and gethui() or gethiddengui and gethiddengui() or CoreGui:FindFirstChild("RobloxGui") or CoreGui:FindFirstChildOfClass("ScreenGui") or CoreGui:FindFirstChildOfClass("Folder") or CoreGui
-				local ScreenGui = SecureContainer:FindFirstChild("Error") or Instance.new("ScreenGui", SecureContainer)
+				local SecureContainer = gethui and gethui() or gethiddengui and gethiddengui() or CoreGui:FindFirstChild("RobloxGui") or CoreGui:FindFirstChildOfClass("ScreenGui") or CoreGui:FindFirstChildOfClass("Folder") or CoreGui
+				local ScreenGui = Global.NotificationGUI or SecureContainer:FindFirstChild("Error"); if not ScreenGui then
+					ScreenGui = Instance.new("ScreenGui"); do 
+						Global.NotificationGUI = ScreenGui
+						ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+						ScreenGui.Name = "Error"
+						ScreenGui.Parent = SecureContainer
+					end
+				end
+					
 				local ErrorMessage = safecloneref(Instance.new("Frame"))
 				local TextSizeConstraint = safecloneref(Instance.new("UISizeConstraint"))
 				local AsspectRatioConstraint = safecloneref(Instance.new("UIAspectRatioConstraint"))
@@ -256,10 +287,6 @@ do -- [[ Notification Service, original by quirky anime boy#5506 ]] --
 					local Tween = TweenService:Create(v,TweenInfo.new(0.5,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Position = UDim2.new(ErrorMessage.Position.X.Scale, 0, .1, (i*v.AbsoluteSize.Y*1.2))})
 					Tween:Play()
 				end
-
-				ScreenGui.Parent = SecureContainer
-				ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-				ScreenGui.Name = "Error"
 
 				ErrorMessage.Name = "ErrorMessage"
 				ErrorMessage.Parent = ScreenGui
@@ -689,78 +716,105 @@ do -- [[ Part Manipulation ]]
 						end
 					end
 				end
-
-				NetlessHB = Event:Connect(function()
-					if Part and Part.Parent and v[1] and v[1].Parent then
-						if Part.Name == "Head" and Global.WhitelistHead and RigType == Enum.HumanoidRigType.R6 then
-						else
-							Part:ApplyImpulse(Velocity) -- https://fflag.eryn.io/history/PCDesktopClient/DFFlagSimApplyImpulseTakeOwnership
-							Part.Velocity = Velocity
-						end
-
-						if IsOwner and not Global.AlignsEnabled then
-							if Global.Fling == Part.Name then
-							elseif PartToReclaim then
-								Part.CFrame = PartToReclaim.CFrame
-							elseif Part.Name == "HumanoidRootPart" and Global.TorsoDelayFix then
-								Part.CFrame = v[1].CFrame * v[2] * CFrame.new(0,TorsoDelay,0)
-								TorsoDelay *= -1
-							elseif Part.Name == "Head" and Global.PermaDeath and Global.Healthless then
-								Part.CFrame = v[1].CFrame * v[2] * CFrame.new(0,HealthHide,0)
-							elseif Part.Parent:IsA("Tool") and v[1].Parent.Parent ~= FakeRig then
-								Part.CFrame = FakeRig:FindFirstChild("HumanoidRootPart").CFrame + Vector3.new(0,-4,0)
+				
+				do -- NetlessHB
+					local TempFunction = function(Part,v,BodyAngularVelocity,SelectionBillboard,SelectionBox)
+						if Part and Part.Parent and v[1] and v[1].Parent then
+							if Part.Name == "Head" and Global.WhitelistHead and RigType == Enum.HumanoidRigType.R6 then
 							else
-								Part.CFrame = v[1].CFrame * v[2]
+								Part:ApplyImpulse(Velocity) -- https://fflag.eryn.io/history/PCDesktopClient/DFFlagSimApplyImpulseTakeOwnership
+								Part.Velocity = Velocity
 							end
-						end
 
-						if BodyAngularVelocity then
-							Part.AssemblyAngularVelocity = BodyAngularVelocity.AngularVelocity
-						end
+							if IsOwner and not Global.AlignsEnabled then
+								if Global.Fling == Part.Name then
+								elseif PartToReclaim then
+									Part.CFrame = PartToReclaim.CFrame
+								elseif Part.Name == "HumanoidRootPart" and Global.TorsoDelayFix then
+									Part.CFrame = v[1].CFrame * v[2] * CFrame.new(0,TorsoDelay,0)
+									TorsoDelay *= -1
+								elseif Part.Name == "Head" and Global.PermaDeath and Global.Healthless then
+									Part.CFrame = v[1].CFrame * v[2] * CFrame.new(0,HealthHide,0)
+								elseif Part.Parent:IsA("Tool") and v[1].Parent.Parent ~= FakeRig then
+									Part.CFrame = FakeRig:FindFirstChild("HumanoidRootPart").CFrame + Vector3.new(0,-4,0)
+								else
+									Part.CFrame = v[1].CFrame * v[2]
+								end
+							end
 
-						if Part.Name == "Head" and not Global.PermaDeath or IsOwner or Part:FindFirstChildOfClass("Motor6D") or Part.Name == "LowerTorso" and RealRig:FindFirstChild("Waist",true) then
-							SelectionBox.SurfaceTransparency = 1
-							if SelectionBillboard then SelectionBillboard.Enabled = false end
+							if BodyAngularVelocity then
+								Part.AssemblyAngularVelocity = BodyAngularVelocity.AngularVelocity
+							end
+
+							if Part.Name == "Head" and not Global.PermaDeath or IsOwner or Part:FindFirstChildOfClass("Motor6D") or Part.Name == "LowerTorso" and RealRig:FindFirstChild("Waist",true) then
+								SelectionBox.SurfaceTransparency = 1
+								if SelectionBillboard then SelectionBillboard.Enabled = false end
+							else
+								SelectionBox.SurfaceTransparency = 0
+								if SelectionBillboard then SelectionBillboard.Enabled = true end
+							end
+
+							if Global.AllowSleep then 
+								sethiddenproperty(Part, "NetworkIsSleeping", false) 
+							end
 						else
-							SelectionBox.SurfaceTransparency = 0
-							if SelectionBillboard then SelectionBillboard.Enabled = true end
+							NetlessHB:Disconnect()
 						end
-
-						if Global.AllowSleep then 
-							sethiddenproperty(Part, "NetworkIsSleeping", false) 
-						end
-					else
-						NetlessHB:Disconnect()
 					end
-				end)
-
-				Collisions = RunService.Stepped:Connect(function()
-					if Part and Part.Parent then
-						Part.CanCollide = false
-						if not Global.Collisions and v[1] and v[1].Parent then
-							v[1].CanCollide = false
-						end
+					if Global.MultiThread then
+						NetlessHB = Event:Connect(function()
+							TempFunction(Part,v,BodyAngularVelocity,SelectionBillboard,SelectionBox)
+						end)
 					else
-						Collisions:Disconnect()
+						table.insert(ArtificialSingleEvents,{TempFunction,{Part,v,BodyAngularVelocity,SelectionBillboard,SelectionBox}})
 					end
-				end)
-
-				IsOwnerHB = RunService.Stepped:Connect(function()
-					if Part and Part.Parent then
-						IsOwner = isnetworkowner(Part)
-						if Global.AutoReclaim and not IsOwner and not PartToReclaim and Part.Name ~= "Head" then
-							PartToReclaim = Part
-							repeat wait() until isnetworkowner(Part) or not Part or not Part.Parent
-							PartToReclaim = nil
+				end
+				
+				do -- Collisions
+					local TempFunction = function(Part)
+						if Part and Part.Parent then
+							Part.CanCollide = false
+							if not Global.Collisions and v[1] and v[1].Parent then
+								v[1].CanCollide = false
+							end
+						else
+							Collisions:Disconnect()
 						end
-					else
-						IsOwnerHB:Disconnect()
 					end
-				end)
+					if Global.MultiThread then
+						Collisions = RunService.Stepped:Connect(function() 
+							TempFunction(Part)
+						end)
+					else
+						table.insert(SteppedSingleEvents,{TempFunction,{Part}})
+					end
+				end
+				
+				do -- IsOwnerHB
+					local TempFunction = function(Part)
+						if Part and Part.Parent then
+							IsOwner = isnetworkowner(Part)
+							if Global.AutoReclaim and not IsOwner and not PartToReclaim and Part.Name ~= "Head" then
+								PartToReclaim = Part
+								repeat wait() until isnetworkowner(Part) or not Part or not Part.Parent
+								PartToReclaim = nil
+							end
+						else
+							IsOwnerHB:Disconnect()
+						end
+					end
+					if Global.MultiThread then
+						IsOwnerHB = RunService.Stepped:Connect(function() 
+							TempFunction(Part)
+						end)
+					else
+						table.insert(SteppedSingleEvents,{TempFunction,{Part}})
+					end
+				end
 
-				table.insert(Events,IsOwnerHB)
-				table.insert(Events,NetlessHB)
-				table.insert(Events,Collisions)
+				if IsOwnerHB then table.insert(Events,IsOwnerHB) end
+				if NetlessHB then table.insert(Events,NetlessHB) end
+				if Collisions then table.insert(Events,Collisions) end
 			end)
 		end
 	end
@@ -1313,11 +1367,20 @@ end
 
 do -- [[ Movement Velocity + Healthless ]]
 	if Global.MovementVelocity then 
-		table.insert(Events,RunService.Stepped:Connect(function()
-			local Direction = FakeRig.HumanoidRootPart.Velocity*Global.Velocity
-			Velocity = Direction == Vector3.new() and Global.VelocityVector * Global.Velocity or Direction*(25.06/Direction.Magnitude)
-			for i,v in pairs(BodyVel) do v.Velocity = Velocity end
-		end))
+		if Global.MultiThread then
+			table.insert(Events,RunService.Stepped:Connect(function()
+				local Direction = FakeRig.HumanoidRootPart.Velocity*Global.Velocity
+				Velocity = Direction == Vector3.new() and Global.VelocityVector * Global.Velocity or Direction*(25.06/Direction.Magnitude)
+				for i,v in pairs(BodyVel) do v.Velocity = Velocity end
+			end))
+		else
+			table.insert(SteppedSingleEvents,{function()
+				local Direction = FakeRig.HumanoidRootPart.Velocity*Global.Velocity
+				Velocity = Direction == Vector3.new() and Global.VelocityVector * Global.Velocity or Direction*(25.06/Direction.Magnitude)
+				for i,v in pairs(BodyVel) do v.Velocity = Velocity end
+			end,{}})
+		end
+		
 	end
 	if Global.Healthless and Global.PermaDeath then
 		task.spawn(function()
@@ -1333,24 +1396,46 @@ do -- [[ Movement Velocity + Healthless ]]
 end
 
 do -- [[ Respawn Events ]] -- 
-	table.insert(Events,RunService.Heartbeat:Connect(function() 
-		if FakeRig.HumanoidRootPart.Position.Y <= workspace.FallenPartsDestroyHeight+3 then
-			if Global.AntiVoid then
-				local SpawnPoint = workspace:FindFirstChildOfClass("SpawnLocation",true) and workspace:FindFirstChildOfClass("SpawnLocation",true) or CFrame.new(0,20,0)
-				FakeRig:MoveTo(SpawnPoint.Position)
-			else
-				pcall(function() 
-					Player.Character = RealRig; 
-					RealRig.Parent = workspace; 
-					if FakeRig then FakeRig:Destroy() end
-					for i,v in pairs(Events) do
-						v:Disconnect()
-					end
-					FakeRig = nil
-				end) 
+	if Global.MultiThread then
+		table.insert(Events,RunService.Heartbeat:Connect(function() 
+			if FakeRig.HumanoidRootPart.Position.Y <= workspace.FallenPartsDestroyHeight+3 then
+				if Global.AntiVoid then
+					local SpawnPoint = workspace:FindFirstChildOfClass("SpawnLocation",true) and workspace:FindFirstChildOfClass("SpawnLocation",true) or CFrame.new(0,20,0)
+					FakeRig:MoveTo(SpawnPoint.Position)
+				else
+					pcall(function() 
+						Player.Character = RealRig; 
+						RealRig.Parent = workspace; 
+						if FakeRig then FakeRig:Destroy() end
+						for i,v in pairs(Events) do
+							v:Disconnect()
+						end
+						FakeRig = nil
+					end) 
+				end
 			end
-		end
-	end))
+		end))
+	else
+		table.insert(SteppedSingleEvents,{function() 
+			if FakeRig.HumanoidRootPart.Position.Y <= workspace.FallenPartsDestroyHeight+3 then
+				if Global.AntiVoid then
+					local SpawnPoint = workspace:FindFirstChildOfClass("SpawnLocation",true) and workspace:FindFirstChildOfClass("SpawnLocation",true) or CFrame.new(0,20,0)
+					FakeRig:MoveTo(SpawnPoint.Position)
+				else
+					pcall(function() 
+						Player.Character = RealRig; 
+						RealRig.Parent = workspace; 
+						if FakeRig then FakeRig:Destroy() end
+						for i,v in pairs(Events) do
+							v:Disconnect()
+						end
+						FakeRig = nil
+					end) 
+				end
+			end
+		end,{}})
+	end
+	
 	table.insert(Events,FakeRig.Humanoid.Died:Connect(function() 
 		pcall(function() 
 			Player.Character = RealRig; 
