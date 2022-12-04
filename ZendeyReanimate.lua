@@ -1370,13 +1370,13 @@ do -- [[ Movement Velocity + Healthless ]]
 		if Global.MultiThread then
 			table.insert(Events,RunService.Stepped:Connect(function()
 				local Direction = FakeRig.HumanoidRootPart.Velocity*Global.Velocity
-				Velocity = Direction == Vector3.new() and Global.VelocityVector * Global.Velocity or Direction*(25.06/Direction.Magnitude)
+				Velocity = Direction == Vector3.new() and Global.VelocityVector * Global.Velocity or Direction*(25.5/Direction.Magnitude)
 				for i,v in pairs(BodyVel) do v.Velocity = Velocity end
 			end))
 		else
 			table.insert(SteppedSingleEvents,{function()
 				local Direction = FakeRig.HumanoidRootPart.Velocity*Global.Velocity
-				Velocity = Direction == Vector3.new() and Global.VelocityVector * Global.Velocity or Direction*(25.06/Direction.Magnitude)
+				Velocity = Direction == Vector3.new() and Global.VelocityVector * Global.Velocity or Direction*(25.5/Direction.Magnitude)
 				for i,v in pairs(BodyVel) do v.Velocity = Velocity end
 			end,{}})
 		end
