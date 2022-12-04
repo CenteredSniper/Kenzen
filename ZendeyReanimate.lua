@@ -3,6 +3,8 @@
 
 local SpeedTest = tick()
 
+local TQWER = 0
+
 local Global = getgenv and getgenv() or shared
 
 do -- [[ Default Settings ]] -- 
@@ -194,8 +196,8 @@ do -- [[ Global Variable Fixes ]] --
 		end 
 	end
 	if Global.AutoReclaim then
-		task.spawn(function()
-			Global.AutoReclaim = false
+		Global.AutoReclaim = false
+		task.defer(function()
 			wait(1)
 			Global.AutoReclaim = true
 		end)
@@ -246,7 +248,7 @@ do -- [[ Network ]]
 			sethiddenproperty(Player,"SimulationRadius",math.random(1e9, 2e9)*math.random(1, 25))
 		end,{}})
 	end
-	
+
 end
 
 do -- [[ Notification Service, original by quirky anime boy#5506 ]] --
@@ -256,7 +258,7 @@ do -- [[ Notification Service, original by quirky anime boy#5506 ]] --
 		local Debris = GetService("Debris")
 
 		notification = function(Arguments)
-			task.spawn(function()
+			task.defer(function()
 				local Text = Arguments.Text or "lorem ipsum"
 				local Duration = Arguments.Duration or 5
 
@@ -270,7 +272,7 @@ do -- [[ Notification Service, original by quirky anime boy#5506 ]] --
 						ScreenGui.Parent = SecureContainer
 					end
 				end
-					
+
 				local ErrorMessage = safecloneref(Instance.new("Frame"))
 				local TextSizeConstraint = safecloneref(Instance.new("UISizeConstraint"))
 				local AsspectRatioConstraint = safecloneref(Instance.new("UIAspectRatioConstraint"))
@@ -353,13 +355,13 @@ do -- [[ Notification Service, original by quirky anime boy#5506 ]] --
 		end
 	end
 	Notify = function(title,duration)
+		printconsole("Zendey // "..tostring(title))
 		if Global.Notifications then
 			notification({
 				Text = title,
 				Duration = duration
 			})
 		end
-		printconsole("Zendey // "..tostring(title))
 	end
 end
 
@@ -367,7 +369,7 @@ if Global.EnsureClaim then
 	local pos = RealRig.HumanoidRootPart.CFrame
 	RealRig:MoveTo(pos.Position+Vector3.new(0,50,0))
 	wait(0.1)
-	task.spawn(function()
+	task.defer(function()
 		wait(0.1)
 		FakeRig.HumanoidRootPart.CFrame = pos
 	end)
@@ -488,9 +490,11 @@ do -- [[ Create Fake Rig ]]
 		Player.Character.Archivable = true
 		FakeRig = Player.Character:Clone()
 		Player.Character.Archivable = false
+		
 		for i,v in pairs(FakeRig:GetChildren()) do if v:IsA("Accessory") or v:IsA("Tool") then v:Destroy() end end
 		--FakeRig:WaitForChild("Humanoid"):RemoveAccessories()
 		FakeRig.Parent = workspace
+		
 	end
 end
 
@@ -510,7 +514,7 @@ end
 
 do -- [[ Set Character States ]] -- 
 	if Global.PermaDeath then
-		task.spawn(function()
+		task.defer(function()
 			--task.wait(Players.RespawnTime+Ping:GetValue()/750)
 			wait(Players.RespawnTime+Global.PermaDelay+Ping:GetValue()/750)
 			if Global.R6HatCollision then
@@ -534,7 +538,7 @@ do -- [[ Set Character States ]] --
 	RealRig.Humanoid:ChangeState(16)
 	FakeRig.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
 	workspace.CurrentCamera.CameraSubject = FakeRig.Humanoid
-	task.spawn(function()
+	task.defer(function()
 		RunService.RenderStepped:Wait()
 		workspace.CurrentCamera.CFrame = OriginCameraCFrame
 	end)
@@ -545,9 +549,9 @@ do -- [[ Set Character States ]] --
 end
 
 do -- [[ Joints ]] -- 
-	task.spawn(function()
+	task.defer(function()
 		for i,v in pairs(RealDescendants) do
-			task.spawn(function()
+			task.defer(function()
 				if v:IsA("Weld") and v.Name ~= "AccessoryWeld" or v:IsA("BallSocketConstraint") or v:IsA("HingeConstraint") then
 					v:Destroy()
 				elseif Global.R15ToR6M2 and v:IsA("Motor6D") and RigType == Enum.HumanoidRigType.R15 then
@@ -560,7 +564,7 @@ do -- [[ Joints ]] --
 			end)
 		end
 	end)
-	task.spawn(function()
+	task.defer(function()
 		wait()
 		if RigType == Enum.HumanoidRigType.R15 and Global.R15ToR6 then
 			table.insert(Events,FakeRig.DescendantRemoving:Connect(function(p)
@@ -641,7 +645,7 @@ end
 do -- [[ Part Manipulation ]]
 	for _,v in pairs({BaseParts,Accessories}) do
 		for Part,v in pairs(v) do
-			task.spawn(function()
+			task.defer(function()
 				local NetlessHB,IsOwnerHB,Collisions,BodyAngularVelocity
 				local IsOwner = true
 
@@ -716,7 +720,7 @@ do -- [[ Part Manipulation ]]
 						end
 					end
 				end
-				
+
 				do -- NetlessHB
 					local TempFunction = function(Part,v,BodyAngularVelocity,SelectionBillboard,SelectionBox)
 						if Part and Part.Parent and v[1] and v[1].Parent then
@@ -769,7 +773,7 @@ do -- [[ Part Manipulation ]]
 						table.insert(ArtificialSingleEvents,{TempFunction,{Part,v,BodyAngularVelocity,SelectionBillboard,SelectionBox}})
 					end
 				end
-				
+
 				do -- Collisions
 					local TempFunction = function(Part)
 						if Part and Part.Parent then
@@ -789,7 +793,7 @@ do -- [[ Part Manipulation ]]
 						table.insert(SteppedSingleEvents,{TempFunction,{Part}})
 					end
 				end
-				
+
 				do -- IsOwnerHB
 					local TempFunction = function(Part)
 						if Part and Part.Parent then
@@ -817,13 +821,14 @@ do -- [[ Part Manipulation ]]
 				if Collisions then table.insert(Events,Collisions) end
 			end)
 		end
+		
 	end
 end
 
 do -- [[ Hide Other Character ]] -- 
 	local Hidden = Global.ShowReal and FakeChildren or RealChildren
 	for i,v in pairs(Hidden) do
-		task.spawn(function()
+		task.defer(function()
 			if v:IsA("BasePart") then
 				v.Transparency = 1
 				if v:FindFirstChild("face") then
@@ -838,7 +843,7 @@ end
 
 do -- [[ Animation ]] -- 
 	if Global.AutoAnimate then
-		task.spawn(function() 
+		task.defer(function() 
 			if RigType == Enum.HumanoidRigType.R15 and Global.R15ToR6 then
 				pcall(function() 
 					local Figure = FakeRig
@@ -1380,10 +1385,10 @@ do -- [[ Movement Velocity + Healthless ]]
 				for i,v in pairs(BodyVel) do v.Velocity = Velocity end
 			end,{}})
 		end
-		
+
 	end
 	if Global.Healthless and Global.PermaDeath then
-		task.spawn(function()
+		task.defer(function()
 			repeat wait() until not RealRig or not RealRig:FindFirstChild("Neck",true)
 			while RealRig and RealRig:FindFirstChild("Head") do
 				HealthHide = 0
@@ -1435,7 +1440,7 @@ do -- [[ Respawn Events ]] --
 			end
 		end,{}})
 	end
-	
+
 	table.insert(Events,FakeRig.Humanoid.Died:Connect(function() 
 		pcall(function() 
 			Player.Character = RealRig; 
