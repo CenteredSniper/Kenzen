@@ -683,7 +683,7 @@ do -- [[ Part Manipulation ]]
 					table.insert(BodyVel,BodyVelocity)
 				end
 
-				Part:ApplyImpulse(Velocity)
+				--Part:ApplyImpulse(Velocity) -- https://fflag.eryn.io/history/PCDesktopClient/DFFlagSimApplyImpulseTakeOwnership
 				Part.Massless = true
 				Part.CustomPhysicalProperties = PhysicalProperties.new(0,0,0,0,0)
 				Part.RootPriority = 127
@@ -722,7 +722,7 @@ do -- [[ Part Manipulation ]]
 						if Part and Part.Parent and v[1] and v[1].Parent then
 							if Part.Name == "Head" and Global.WhitelistHead and RigType == Enum.HumanoidRigType.R6 then
 							else
-								Part:ApplyImpulse(Velocity) -- https://fflag.eryn.io/history/PCDesktopClient/DFFlagSimApplyImpulseTakeOwnership
+								--Part:ApplyImpulse(Velocity) -- https://fflag.eryn.io/history/PCDesktopClient/DFFlagSimApplyImpulseTakeOwnership
 								Part.Velocity = Velocity
 							end
 
