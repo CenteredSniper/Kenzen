@@ -250,12 +250,12 @@ do -- [[ Network ]]
 end
 
 do -- [[ Notification Service, original by quirky anime boy#5506 ]] --
-	local notification
-	do
+	local notification = Global.ErrorNotify
+	if not notification then
 		local CoreGui = GetService("CoreGui")
 		local Debris = GetService("Debris")
 
-		notification = function(Arguments)
+		Global.ErrorNotify = function(Arguments)
 			task.defer(function()
 				local Text = Arguments.Text or "lorem ipsum"
 				local Duration = Arguments.Duration or 5
@@ -488,11 +488,11 @@ do -- [[ Create Fake Rig ]]
 		Player.Character.Archivable = true
 		FakeRig = Player.Character:Clone()
 		Player.Character.Archivable = false
-		
+
 		for i,v in pairs(FakeRig:GetChildren()) do if v:IsA("Accessory") or v:IsA("Tool") then v:Destroy() end end
 		--FakeRig:WaitForChild("Humanoid"):RemoveAccessories()
 		FakeRig.Parent = workspace
-		
+
 	end
 end
 
@@ -819,7 +819,7 @@ do -- [[ Part Manipulation ]]
 				if Collisions then table.insert(Events,Collisions) end
 			end)
 		end
-		
+
 	end
 end
 
