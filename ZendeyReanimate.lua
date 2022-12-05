@@ -3,8 +3,6 @@
 
 local SpeedTest = tick()
 
-local TQWER = 0
-
 local Global = getgenv and getgenv() or shared
 
 do -- [[ Default Settings ]] -- 
