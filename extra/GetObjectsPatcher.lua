@@ -1,6 +1,6 @@
 local Global = getgenv and getgenv() or shared or _G
 
-if not Global.GetObjectsPatch then
+if not Global.GetObjects then
 	local cloneref = cloneref or function(ref) return ref end
 	local clonefunction = clonefunction or function(func) return func end
 	local protectedcall = clonefunction(pcall)
@@ -17,7 +17,7 @@ if not Global.GetObjectsPatch then
 	
 	Global.GetObjects = NewGetObjects -- feel obligated to add this
 	
-	do
+	if Global.HookGetObjects and not Global.GetObjectsPatch then
 		local OldGetObjects
 
 		if pcall(function() tostring(game.GetObjects) end) then
@@ -38,7 +38,6 @@ if not Global.GetObjectsPatch then
 			end
 			return OldNameCall(Self, ...)
 		end))
-		
 		Global.GetObjectsPatch = true
 	end
 end
