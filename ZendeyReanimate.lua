@@ -256,7 +256,7 @@ do -- [[ Notification Service, original by quirky anime boy#5506 ]] --
 		local CoreGui = GetService("CoreGui")
 		local Debris = GetService("Debris")
 
-		Global.ErrorNotify = function(Arguments)
+		notification = function(Arguments)
 			task.defer(function()
 				local Text = Arguments.Text or "lorem ipsum"
 				local Duration = Arguments.Duration or 5
@@ -352,6 +352,7 @@ do -- [[ Notification Service, original by quirky anime boy#5506 ]] --
 				Tween:Play()
 			end)
 		end
+		Global.ErrorNotify = notification
 	end
 	Notify = function(title,duration)
 		printconsole("Zendey // "..tostring(title))
