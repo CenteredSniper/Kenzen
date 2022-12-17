@@ -37,6 +37,7 @@ do -- [[ Default Settings ]] --
 	CheckSetting("PermaDelay",0)
 	CheckSetting("Headless",false)
 	CheckSetting("Healthless",false)
+	CheckSetting("RejectCharacterDeletionsPatch",false)
 
 	CheckSetting("Collisions",true)
 	CheckSetting("TorsoDelayFix",true)
@@ -515,21 +516,25 @@ do -- [[ Set Character States ]] --
 		task.defer(function()
 			--task.wait(Players.RespawnTime+Ping:GetValue()/750)
 			wait(Players.RespawnTime+Global.PermaDelay+Ping:GetValue()/750)
-			if Global.R6HatCollision then
+			if Global.R6HatCollision and not Global.RejectCharacterDeletionsPatch then
 				for i,v in pairs({RealRig.HumanoidRootPart,RealRig.Torso,RealRig["Body Colors"]}) do
 					v.Parent = nil
 				end
 			else
 				RealRig.Humanoid:ChangeState(15)
-				if Global.Headless then
+				if Global.RejectCharacterDeletionsPatch then
+					RealRig.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, true)
+					RealRig.Humanoid:TakeDamage(9e9 + 9e9 + 9e9 + 9e9); RealRig.Humanoid.Health = 0
+					if firesignal then firesignal(RealRig.Humanoid.Died) end
+				elseif Global.Headless then
 					RealRig.Head:Destroy()
 				else
 					local neck = RealRig:FindFirstChild("Neck",true)
 					if RealRig:FindFirstChild("Neck",true) then 
 						neck.Parent = nil
-						Notify("Permadeath enabled in " .. string.sub(tostring(tick()-SpeedTest),1,string.find(tostring(tick()-SpeedTest),".")+5),6) 
 					end
 				end
+				Notify("Permadeath enabled in " .. string.sub(tostring(tick()-SpeedTest),1,string.find(tostring(tick()-SpeedTest),".")+5),6) 
 			end
 		end)
 	end
@@ -540,28 +545,30 @@ do -- [[ Set Character States ]] --
 		RunService.RenderStepped:Wait()
 		workspace.CurrentCamera.CFrame = OriginCameraCFrame
 	end)
-	if Global.R15ToR6M2 then RealRig.Humanoid.BreakJointsOnDeath = false end
-	if RealRig:FindFirstChild("FaceCenterAttachment",true) then RealRig.Head.FaceCenterAttachment:Destroy() end
+	if Global.R15ToR6M2 and not Global.RejectCharacterDeletionsPatch then RealRig.Humanoid.BreakJointsOnDeath = false end
+	if RealRig:FindFirstChild("FaceCenterAttachment",true) and not Global.RejectCharacterDeletionsPatch then RealRig.Head.FaceCenterAttachment:Destroy() end
 	if RealRig:FindFirstChild("Animate") then RealRig.Animate.Disabled = true end
 	for i,v in pairs(RealRig.Humanoid:GetPlayingAnimationTracks()) do v:Stop() end
 end
 
 do -- [[ Joints ]] -- 
-	task.defer(function()
-		for i,v in pairs(RealDescendants) do
-			task.defer(function()
-				if v:IsA("Weld") and v.Name ~= "AccessoryWeld" or v:IsA("BallSocketConstraint") or v:IsA("HingeConstraint") then
-					v:Destroy()
-				elseif Global.R15ToR6M2 and v:IsA("Motor6D") and RigType == Enum.HumanoidRigType.R15 then
-					if v.Name == "RightHip" or v.Name == "LeftHip" or v.Name == "RightShoulder" or v.Name == "LeftShoulder" or v.Name == "Root" then
+	if not Global.RejectCharacterDeletionsPatch then
+		task.defer(function()
+			for i,v in pairs(RealDescendants) do
+				task.defer(function()
+					if v:IsA("Weld") and v.Name ~= "AccessoryWeld" or v:IsA("BallSocketConstraint") or v:IsA("HingeConstraint") then
 						v:Destroy()
+					elseif Global.R15ToR6M2 and v:IsA("Motor6D") and RigType == Enum.HumanoidRigType.R15 then
+						if v.Name == "RightHip" or v.Name == "LeftHip" or v.Name == "RightShoulder" or v.Name == "LeftShoulder" or v.Name == "Root" then
+							v:Destroy()
+						end
+					elseif v:IsA("Motor6D") and v.Name ~= "Neck" then
+						v:Destroy() 
 					end
-				elseif v:IsA("Motor6D") and v.Name ~= "Neck" then
-					v:Destroy() 
-				end
-			end)
-		end
-	end)
+				end)
+			end
+		end)
+	end
 	task.defer(function()
 		wait()
 		if RigType == Enum.HumanoidRigType.R15 and Global.R15ToR6 then
@@ -627,7 +634,7 @@ do -- [[ Create Dictionaries ]]
 						or Weld.Part1.Name == "LeftUpperArm" and Global.R15ToR6 and FakeRig["Left Arm"]
 						or FakeRig:FindFirstChild(Weld.Part1.Name)
 				end
-				if v.Handle:FindFirstChild("AccessoryWeld") and Global.DestroyHatWelds then
+				if v.Handle:FindFirstChild("AccessoryWeld") and Global.DestroyHatWelds and not Global.RejectCharacterDeletionsPatch then
 					v.Handle.AccessoryWeld:Destroy()	
 				end
 				Clone.Parent = FakeRig
