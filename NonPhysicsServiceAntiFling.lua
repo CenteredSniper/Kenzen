@@ -1,28 +1,43 @@
+local Global = Global or getgenv and getgenv() or shared
+
+Global.AFCollisions = Global.AFCollisions or true
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
-
 -- Prevents flinging from others
-local function CharacterAdded(Character)
-	for i,v in pairs(Character:GetChildren()) do
-		if v:IsA("BasePart") then
-			v.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0)
-			local Stepped; Stepped = RunService.PreSimulation:Connect(function()
-				if v and v.Parent then
-					if v.AssemblyAngularVelocity.Magnitude > 50 or v.AssemblyLinearVelocity.Magnitude > 100 then
+local function AddPart(v,Character)
+	if v:IsA("BasePart") then
+		v.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0)
+		local Stepped; Stepped = RunService.PreSimulation:Connect(function()
+			if v and v.Parent then
+				if v.AssemblyAngularVelocity.Magnitude > 50 or v.AssemblyLinearVelocity.Magnitude > 100 then
+					if Global.AFCollisions then
 						v.CanCollide = false
-						v.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
-						v.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-						v.Material = Enum.Material.ForceField -- to seperate fling parts
-						v.Transparency = 0
+					else
+						for i,v in pairs(Character:GetDescendants()) do
+							if v:IsA("BasePart") then
+								v.CanCollide = false
+							end
+						end
 					end
-				else
-					Stepped:Disconnect()
+					v.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+					v.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+					v.Material = Enum.Material.ForceField -- to seperate fling parts
+					v.Transparency = 0
 				end
-			end)
-		end
+			else
+				Stepped:Disconnect()
+			end
+		end)
 	end
+end
+
+
+local function CharacterAdded(Character)
+	Character.DescendantAdded:Connect(function(v) AddPart(v,Character) end)
+	for i,v in pairs(Character:GetDescendants()) do AddPart(v,Character) end
 end
 
 local function PlayerFunc(Plr)
@@ -34,7 +49,7 @@ end
 
 -- Return to Position
 
-local Event = Global and Global.Event or getgenv and getgenv().Event or shared and shared.Event or RunService.PostSimulation
+local Event = Global.Event or RunService.PostSimulation
 
 local function AntiTP(Character)
 	local Root = Character:WaitForChild("HumanoidRootPart")
