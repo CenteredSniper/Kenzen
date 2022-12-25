@@ -28,6 +28,7 @@ local function AddPart(v,Character)
 					v.Transparency = 0
 				else
 					v.Material = Enum.Material.Plastic
+					v.Transparency = v.Name == "HumanoidRootPart" and 1 or 0
 				end
 			else
 				Stepped:Disconnect()
