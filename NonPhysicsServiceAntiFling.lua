@@ -58,7 +58,7 @@ local function AntiTP(Character)
 	local Root = Character:WaitForChild("HumanoidRootPart")
 	local PreviousPosition = Root.CFrame
 	Event:Connect(function()
-		if (Root.Position - Root.Position).Magnitude < -2 or (Root.Position - Root.Position).Magnitude > 2 then
+		if (Root.Position - PreviousPosition.Position).Magnitude < -2 or (Root.Position - PreviousPosition.Position).Magnitude > 2 then
 			Root.CFrame = PreviousPosition
 			Root.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
 			Root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
