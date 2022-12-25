@@ -26,6 +26,8 @@ local function AddPart(v,Character)
 					v.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
 					v.Material = Enum.Material.ForceField -- to seperate fling parts
 					v.Transparency = 0
+				else
+					v.Material = Enum.Material.Plastic
 				end
 			else
 				Stepped:Disconnect()
