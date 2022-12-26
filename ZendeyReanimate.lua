@@ -55,7 +55,7 @@ do -- [[ Checks ]] --
 		game.Loaded:Wait()
 	end
 	if workspace:FindFirstChild(" " .. game.PlaceVersion .. "𝚉𝚎𝚗𝚍𝚎𝚢") then 
-		error("Already Reanimated?") 
+		return
 	end
 	if Global.GameOptimize and pcall(function() loadstring("")() end) then
 		loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/L8X/GameOptimizer/main/src.lua", true))()
