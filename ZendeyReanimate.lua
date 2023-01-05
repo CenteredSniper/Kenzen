@@ -624,21 +624,25 @@ do -- [[ Create Dictionaries ]]
 					BaseParts[v] = {FakeRig:FindFirstChild(v.Name),CFrame.new()}
 				end
 			elseif v:IsA("Accessory") and v:FindFirstChild("Handle") then
-				local Clone = v:Clone()
-				Accessories[v:WaitForChild("Handle")] = {Clone:WaitForChild("Handle"),CFrame.new()}
-				local Weld = Clone:WaitForChild("Handle"):FindFirstChild("AccessoryWeld");
-				if Weld then
-					Weld.Part1 = Weld.Part1.Name == "UpperTorso" and Global.R15ToR6 and FakeRig.Torso
-						or Weld.Part1.Name == "LowerTorso" and Global.R15ToR6 and FakeRig.Torso
-						or Weld.Part1.Name == "Head" and Global.R15ToR6 and FakeRig.Head
-						or Weld.Part1.Name == "RightUpperArm" and Global.R15ToR6 and FakeRig["Right Arm"]
-						or Weld.Part1.Name == "LeftUpperArm" and Global.R15ToR6 and FakeRig["Left Arm"]
-						or FakeRig:FindFirstChild(Weld.Part1.Name)
+				if v.Handle:FindFirstChildOfClass("WrapLayer") then
+					v:Destroy()
+				else
+					local Clone = v:Clone()
+					Accessories[v:WaitForChild("Handle")] = {Clone:WaitForChild("Handle"),CFrame.new()}
+					local Weld = Clone:WaitForChild("Handle"):FindFirstChild("AccessoryWeld");
+					if Weld then
+						Weld.Part1 = Weld.Part1.Name == "UpperTorso" and Global.R15ToR6 and FakeRig.Torso
+							or Weld.Part1.Name == "LowerTorso" and Global.R15ToR6 and FakeRig.Torso
+							or Weld.Part1.Name == "Head" and Global.R15ToR6 and FakeRig.Head
+							or Weld.Part1.Name == "RightUpperArm" and Global.R15ToR6 and FakeRig["Right Arm"]
+							or Weld.Part1.Name == "LeftUpperArm" and Global.R15ToR6 and FakeRig["Left Arm"]
+							or FakeRig:FindFirstChild(Weld.Part1.Name)
+					end
+					if v.Handle:FindFirstChild("AccessoryWeld") and Global.DestroyHatWelds and not Global.RejectCharacterDeletionsPatch then
+						v.Handle.AccessoryWeld:Destroy()	
+					end
+					Clone.Parent = FakeRig	
 				end
-				if v.Handle:FindFirstChild("AccessoryWeld") and Global.DestroyHatWelds and not Global.RejectCharacterDeletionsPatch then
-					v.Handle.AccessoryWeld:Destroy()	
-				end
-				Clone.Parent = FakeRig
 			elseif v:IsA("Tool") and v:FindFirstChild("Handle") then
 				local Clone = v:Clone()
 				Accessories[v:WaitForChild("Handle")] = {Clone:WaitForChild("Handle"),CFrame.new()}
