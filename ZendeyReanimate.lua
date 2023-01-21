@@ -12,7 +12,7 @@ do -- [[ Default Settings ]] --
 		end
 	end
 
-	CheckSetting("Velocity",-17.72)
+	CheckSetting("Velocity",-17.73)
 	CheckSetting("VelocityVector",Vector3.new(1,0,1))
 	CheckSetting("MovementVelocity",false)
 	CheckSetting("WhitelistHead",true)
@@ -1382,20 +1382,22 @@ end
 
 do -- [[ Movement Velocity + Healthless ]]
 	if Global.MovementVelocity then 
+		local function AccurateMagnitude(Vector)
+			return math.sqrt(Vector.X*Vector.X+Vector.Y*Vector.Y+Vector.Z*Vector.Z)
+		end 
 		if Global.MultiThread then
 			table.insert(Events,RunService.Stepped:Connect(function()
 				local Direction = FakeRig.HumanoidRootPart.Velocity*Global.Velocity
-				Velocity = Direction == Vector3.new() and Global.VelocityVector * Global.Velocity or Direction*(25.5/Direction.Magnitude)
+				Velocity = Direction == Vector3.new() and Global.VelocityVector * Global.Velocity or Direction*(AccurateMagnitude(Global.Velocity*Global.VelocityVector)/AccurateMagnitude(Direction))
 				for i,v in pairs(BodyVel) do v.Velocity = Velocity end
 			end))
 		else
 			table.insert(SteppedSingleEvents,{function()
 				local Direction = FakeRig.HumanoidRootPart.Velocity*Global.Velocity
-				Velocity = Direction == Vector3.new() and Global.VelocityVector * Global.Velocity or Direction*(25.5/Direction.Magnitude)
+				Velocity = Direction == Vector3.new() and Global.VelocityVector * Global.Velocity or Direction*(AccurateMagnitude(Global.Velocity*Global.VelocityVector)/AccurateMagnitude(Direction))
 				for i,v in pairs(BodyVel) do v.Velocity = Velocity end
 			end,{}})
 		end
-
 	end
 	if Global.Healthless and Global.PermaDeath then
 		task.defer(function()
