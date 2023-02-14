@@ -513,6 +513,7 @@ do -- [[ Set CloneRig and RealRig Globals ]]
 end
 
 do -- [[ Set Character States ]] -- 
+	--[[ DISABLED DUE TO NEW ROBLOX PATCH
 	if Global.PermaDeath then
 		task.defer(function()
 			--task.wait(Players.RespawnTime+Ping:GetValue()/750)
@@ -539,6 +540,7 @@ do -- [[ Set Character States ]] --
 			end
 		end)
 	end
+	]]
 	RealRig.Humanoid:ChangeState(16)
 	FakeRig.Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
 	workspace.CurrentCamera.CameraSubject = FakeRig.Humanoid
