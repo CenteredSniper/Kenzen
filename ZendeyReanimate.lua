@@ -33,11 +33,7 @@ do -- [[ Default Settings ]] --
 	CheckSetting("DestroyHatWelds",true)
 	CheckSetting("R15AdjustOffsets",true)
 
-	CheckSetting("PermaDeath",true)
-	CheckSetting("PermaDelay",0)
-	CheckSetting("Headless",false)
-	CheckSetting("Healthless",false)
-	CheckSetting("RejectCharacterDeletionsPatch",false)
+	CheckSetting("FakePermaDeath",false)
 
 	CheckSetting("Collisions",true)
 	CheckSetting("TorsoDelayFix",true)
@@ -749,8 +745,10 @@ do -- [[ Part Manipulation ]]
 								elseif Part.Name == "HumanoidRootPart" and Global.TorsoDelayFix then
 									Part.CFrame = v[1].CFrame * v[2] * CFrame.new(0,TorsoDelay,0)
 									TorsoDelay *= -1
-								elseif Part.Name == "Head" and Global.PermaDeath and Global.Healthless then
-									Part.CFrame = v[1].CFrame * v[2] * CFrame.new(0,HealthHide,0)
+								--elseif Part.Name == "Head" and Global.PermaDeath and Global.Healthless then
+								--	Part.CFrame = v[1].CFrame * v[2] * CFrame.new(0,HealthHide,0)
+								elseif Part.Name == "Torso" and Global.FakePermaDeath then
+									Part.CFrame = v[1].CFrame * v[2] * CFrame.Angles(0,0,math.rad(180))
 								elseif Part.Parent:IsA("Tool") and v[1].Parent.Parent ~= FakeRig then
 									Part.CFrame = FakeRig:FindFirstChild("HumanoidRootPart").CFrame + Vector3.new(0,-4,0)
 								else
@@ -762,7 +760,7 @@ do -- [[ Part Manipulation ]]
 								Part.AssemblyAngularVelocity = BodyAngularVelocity.AngularVelocity
 							end
 
-							if Part.Name == "Head" and not Global.PermaDeath or IsOwner or Part:FindFirstChildOfClass("Motor6D") or Part.Name == "LowerTorso" and RealRig:FindFirstChild("Waist",true) then
+							if IsOwner or Part:FindFirstChildOfClass("Motor6D") or Part.Name == "Head" or Part.Name == "LowerTorso" and RealRig:FindFirstChild("Waist",true) then -- Part.Name == "Head" and not Global.PermaDeath or 
 								SelectionBox.SurfaceTransparency = 1
 								if SelectionBillboard then SelectionBillboard.Enabled = false end
 							else
@@ -1400,7 +1398,7 @@ do -- [[ Movement Velocity + Healthless ]]
 				for i,v in pairs(BodyVel) do v.Velocity = Velocity end
 			end,{}})
 		end
-	end
+	end--[[
 	if Global.Healthless and Global.PermaDeath then
 		task.defer(function()
 			repeat wait() until not RealRig or not RealRig:FindFirstChild("Neck",true)
@@ -1411,7 +1409,7 @@ do -- [[ Movement Velocity + Healthless ]]
 				wait(.5+Ping:GetValue()/750)
 			end
 		end)
-	end
+	end ]]
 end
 
 do -- [[ Respawn Events ]] -- 
