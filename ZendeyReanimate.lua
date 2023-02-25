@@ -19,7 +19,6 @@ do -- [[ Default Settings ]] --
 	CheckSetting("EnsureClaim",false)
 
 	CheckSetting("SimRadius",true)
-	CheckSetting("AutoReclaim",false)
 	CheckSetting("AntiSleep",true)
 
 	CheckSetting("Fling","")
@@ -745,8 +744,8 @@ do -- [[ Part Manipulation ]]
 								elseif Part.Name == "HumanoidRootPart" and Global.TorsoDelayFix then
 									Part.CFrame = v[1].CFrame * v[2] * CFrame.new(0,TorsoDelay,0)
 									TorsoDelay *= -1
-								--elseif Part.Name == "Head" and Global.PermaDeath and Global.Healthless then
-								--	Part.CFrame = v[1].CFrame * v[2] * CFrame.new(0,HealthHide,0)
+									--elseif Part.Name == "Head" and Global.PermaDeath and Global.Healthless then
+									--	Part.CFrame = v[1].CFrame * v[2] * CFrame.new(0,HealthHide,0)
 								elseif Part.Name == "Torso" and Global.FakePermaDeath then
 									Part.CFrame = v[1].CFrame * v[2] * CFrame.Angles(0,0,math.rad(180))
 								elseif Part.Parent:IsA("Tool") and v[1].Parent.Parent ~= FakeRig then
