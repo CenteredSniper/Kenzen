@@ -1374,6 +1374,57 @@ do -- [[ Animation ]] --
 				end) 
 			else
 				FakeRig.Animate.Disabled = true; FakeRig.Animate.Disabled = false
+				if Global.CopyAnimations then
+					local StoredAnimations = {}
+					local FakeHum,RealHum = FakeRig:WaitForChild("Humanoid"),RealRig:WaitForChild("Humanoid")
+					if Global.MultiThread then
+						table.insert(Events,Event:Connect(function()
+							local NewStore = {}
+							for i,v in pairs(FakeHum:GetPlayingAnimationTracks()) do
+								if not StoredAnimations[v.Animation.AnimationId] then
+									--warn(v.Animation.AnimationId)
+									table.insert(NewStore,v.Animation.AnimationId)
+									StoredAnimations[v.Animation.AnimationId] = RealHum:LoadAnimation(v.Animation); do
+										StoredAnimations[v.Animation.AnimationId].Priority = v.Priority
+										StoredAnimations[v.Animation.AnimationId].Looped = v.Looped
+										StoredAnimations[v.Animation.AnimationId].TimePosition = v.TimePosition
+										StoredAnimations[v.Animation.AnimationId]:Play()
+									end
+								end
+							end
+							for i,v in pairs(StoredAnimations) do
+								if NewStore[1] and not table.find(NewStore,i) then
+									v:Stop()
+									v:Destroy()
+									StoredAnimations[i] = nil
+								end
+							end
+						end))
+					else
+						table.insert(ArtificialSingleEvents,{function()
+							local NewStore = {}
+							for i,v in pairs(FakeHum:GetPlayingAnimationTracks()) do
+								if not StoredAnimations[v.Animation.AnimationId] then
+									table.insert(NewStore,v.Animation.AnimationId)
+									StoredAnimations[v.Animation.AnimationId] = RealHum:LoadAnimation(v.Animation); do
+										StoredAnimations[v.Animation.AnimationId].Priority = v.Priority
+										StoredAnimations[v.Animation.AnimationId].Speed = v.Speed
+										StoredAnimations[v.Animation.AnimationId].Looped = v.Looped
+										StoredAnimations[v.Animation.AnimationId].TimePosition = v.TimePosition
+										StoredAnimations[v.Animation.AnimationId]:Play()
+									end
+								end
+							end
+							for i,v in pairs(StoredAnimations) do
+								if not table.find(NewStore,i) then
+									v:Stop()
+									v:Destroy()
+									StoredAnimations[i] = nil
+								end
+							end
+						end,{}})
+					end
+				end
 			end
 		end)
 	end
