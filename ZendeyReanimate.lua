@@ -38,6 +38,7 @@ do -- [[ Default Settings ]] --
 	CheckSetting("TorsoDelayFix",true)
 	CheckSetting("AntiVoid",false)
 	CheckSetting("AutoAnimate",true)
+	--CheckSetting("CopyAnimations",true)
 	CheckSetting("Notifications",true)
 	CheckSetting("GameOptimize",false)
 	CheckSetting("MultiThread",true)
@@ -1373,7 +1374,7 @@ do -- [[ Animation ]] --
 					end
 				end) 
 			else
-				FakeRig.Animate.Disabled = true; FakeRig.Animate.Disabled = false
+				FakeRig.Animate.Disabled = true; FakeRig.Animate.Disabled = false --[[
 				if Global.CopyAnimations then
 					local StoredAnimations = {}
 					local FakeHum,RealHum = FakeRig:WaitForChild("Humanoid"),RealRig:WaitForChild("Humanoid")
@@ -1382,14 +1383,15 @@ do -- [[ Animation ]] --
 							local NewStore = {}
 							for i,v in pairs(FakeHum:GetPlayingAnimationTracks()) do
 								if not StoredAnimations[v.Animation.AnimationId] then
-									--warn(v.Animation.AnimationId)
 									table.insert(NewStore,v.Animation.AnimationId)
-									StoredAnimations[v.Animation.AnimationId] = RealHum:LoadAnimation(v.Animation); do
-										StoredAnimations[v.Animation.AnimationId].Priority = v.Priority
-										StoredAnimations[v.Animation.AnimationId].Looped = v.Looped
-										StoredAnimations[v.Animation.AnimationId].TimePosition = v.TimePosition
-										StoredAnimations[v.Animation.AnimationId]:Play()
-									end
+									task.delay(Ping:GetValue()/1000,function()
+										StoredAnimations[v.Animation.AnimationId] = RealHum:LoadAnimation(v.Animation); do
+											StoredAnimations[v.Animation.AnimationId].Priority = v.Priority
+											StoredAnimations[v.Animation.AnimationId].Looped = v.Looped
+											--StoredAnimations[v.Animation.AnimationId].TimePosition = v.TimePosition
+											StoredAnimations[v.Animation.AnimationId]:Play(0)
+										end
+									end)
 								end
 							end
 							for i,v in pairs(StoredAnimations) do
@@ -1411,7 +1413,7 @@ do -- [[ Animation ]] --
 										StoredAnimations[v.Animation.AnimationId].Speed = v.Speed
 										StoredAnimations[v.Animation.AnimationId].Looped = v.Looped
 										StoredAnimations[v.Animation.AnimationId].TimePosition = v.TimePosition
-										StoredAnimations[v.Animation.AnimationId]:Play()
+										StoredAnimations[v.Animation.AnimationId]:Play(0)
 									end
 								end
 							end
@@ -1424,7 +1426,7 @@ do -- [[ Animation ]] --
 							end
 						end,{}})
 					end
-				end
+				end ]]
 			end
 		end)
 	end
