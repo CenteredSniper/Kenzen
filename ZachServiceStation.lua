@@ -19,7 +19,7 @@ end
 
 local Player = game:GetService("Players").LocalPlayer
 
-local PlayerAction = GetToPath(Player.Character,"HumanoidRootPart.InfoUI.Holder.PlayerAction")
+local PlayerAction = GetToPath(Player.Character,"HumanoidRootPart.InfoUI.Holder.PlayerAction"); PlayerAction.Text = ""
 local Amount = GetToPath(Player,"PlayerGui.GameUI.Stamina.Bar.Amount")
 local CashPrompt = GetToPath(Player,"PlayerGui.paycheck.Check.Prompt.Claim")
 local ReportPrompt = GetToPath(Player,"PlayerGui.GameUI.Billing")
@@ -81,7 +81,7 @@ if Settings.AutoClean and fireproximityprompt then
 			end
 		end)
 	end
-	
+
 	for i,v in pairs(GetToPath(workspace,"Solar.Panels"):GetChildren()) do
 		local Prompt = GetToPath(v,"Stand.CleanPosition.Clean")
 		if Prompt.Enabled then
@@ -94,14 +94,14 @@ if Settings.AutoClean and fireproximityprompt then
 			end
 		end)
 	end
-	
+
 	for i,Stain in pairs(GetToPath(workspace,"Stains"):GetChildren()) do
 		if Stain:FindFirstChild("Clean") then
 			--FireProximity(GetToPath(Stain,"Clean"))
 			table.insert(Queue,GetToPath(Stain,"Clean"))
 		end
 	end
-	
+
 	GetToPath(workspace,"Stains").ChildAdded:Connect(function(Stain)
 		task.wait(1.5) -- delay just incase
 		if Stain:FindFirstChild("Clean") then
