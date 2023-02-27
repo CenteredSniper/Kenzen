@@ -81,6 +81,12 @@ if Settings.AutoClean and fireproximityprompt then
 			end
 		end)
 	end
+	
+	GetToPath(Player,"PlayerGui.NotificationUI.Notifications.ActiveNotifications").ChildAdded:Connect(function(Notification)
+		if GetToPath(Notification,"Primary.1.HeaderHolder.Header").Text == "Limit Reached" then
+			table.remove(Queue,1)
+		end
+	end)
 
 	for i,v in pairs(GetToPath(workspace,"Solar.Panels"):GetChildren()) do
 		local Prompt = GetToPath(v,"Stand.CleanPosition.Clean")
