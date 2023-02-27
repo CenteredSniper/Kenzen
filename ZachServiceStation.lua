@@ -78,9 +78,9 @@ if Settings.AutoClean and fireproximityprompt then
 		end
 		GetToPath(v,"Items").ChildAdded:Connect(function(Item)
 			task.wait(2)
-			if Item:FindFirstChild("Scan",true) then
-				table.insert(Queue,Item:FindFirstChild("Scan",true))
-			end
+			local Scan = Item:FindFirstChild("Scan",true)
+			repeat fwait() Scan = Item:FindFirstChild("Scan",true) until Scan
+			table.insert(Queue,Scan)
 		end)
 	end
 	
