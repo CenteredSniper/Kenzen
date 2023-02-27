@@ -33,8 +33,8 @@ local function FireProximity(Proximity)
 	repeat fwait() until PlayerAction.Text == ""
 	local Tick = tick()
 	fireproximityprompt(Proximity,3)
-	repeat fwait() until PlayerAction.Text ~= "" or Abort or tick() - Tick >= 8
-	repeat fwait() until PlayerAction.Text == "" or Abort or tick() - Tick >= 8
+	repeat fwait() until PlayerAction.Text ~= "" or Abort or tick() - Tick >= 16
+	repeat fwait() until PlayerAction.Text == "" or Abort or tick() - Tick >= 16
 	Abort = false
 	task.wait(.15)
 end
