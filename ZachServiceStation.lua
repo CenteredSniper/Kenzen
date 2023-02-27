@@ -31,10 +31,12 @@ local Abort = false
 
 local function FireProximity(Proximity)
 	repeat fwait() until PlayerAction.Text == ""
+	local Tick = tick()
 	fireproximityprompt(Proximity,3)
-	repeat fwait() until PlayerAction.Text ~= "" or Abort
-	repeat fwait() until PlayerAction.Text == "" or Abort
+	repeat fwait() until PlayerAction.Text ~= "" or Abort or tick() - Tick >= 8
+	repeat fwait() until PlayerAction.Text == "" or Abort or tick() - Tick >= 8
 	Abort = false
+	task.wait(.15)
 end
 
 local function FireButton(GUIButton)
@@ -83,7 +85,7 @@ if Settings.AutoClean and fireproximityprompt then
 			table.insert(Queue,Scan)
 		end)
 	end
-	
+
 	GetToPath(Player,"PlayerGui.NotificationUI.Notifications.ActiveNotifications").ChildAdded:Connect(function(Notification)
 		if GetToPath(Notification,"Primary.1.HeaderHolder.Header").Text == "Limit Reached" then
 			Abort = true
