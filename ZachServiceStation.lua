@@ -27,12 +27,14 @@ local Soda = GetToPath(workspace,"Vendors.Vendor_BloxBull_1.Root.Button.BuyBloxB
 
 local Queue = {}
 local fwait = fwait or task.wait
+local Abort = false
 
 local function FireProximity(Proximity)
 	repeat fwait() until PlayerAction.Text == ""
 	fireproximityprompt(Proximity,3)
-	repeat fwait() until PlayerAction.Text ~= ""
-	repeat fwait() until PlayerAction.Text == ""
+	repeat fwait() until PlayerAction.Text ~= "" or Abort
+	repeat fwait() until PlayerAction.Text == "" or Abort
+	Abort = false
 end
 
 local function FireButton(GUIButton)
@@ -84,7 +86,7 @@ if Settings.AutoClean and fireproximityprompt then
 	
 	GetToPath(Player,"PlayerGui.NotificationUI.Notifications.ActiveNotifications").ChildAdded:Connect(function(Notification)
 		if GetToPath(Notification,"Primary.1.HeaderHolder.Header").Text == "Limit Reached" then
-			table.remove(Queue,1)
+			Abort = true
 		end
 	end)
 
