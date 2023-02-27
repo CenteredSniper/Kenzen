@@ -29,9 +29,10 @@ local Queue = {}
 local fwait = fwait or task.wait
 
 local function FireProximity(Proximity)
+	repeat fwait() until PlayerAction.Text == ""
 	fireproximityprompt(Proximity,3)
-	repeat PlayerAction.Changed:Wait() until PlayerAction.Text ~= ""
-	repeat PlayerAction.Changed:Wait() until PlayerAction.Text == ""
+	repeat fwait() until PlayerAction.Text ~= ""
+	repeat fwait() until PlayerAction.Text == ""
 end
 
 local function FireButton(GUIButton)
