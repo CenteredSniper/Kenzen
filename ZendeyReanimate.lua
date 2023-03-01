@@ -1516,6 +1516,17 @@ do -- [[ Respawn Events ]] --
 			FakeRig = nil
 		end) 
 	end))
+	table.insert(Events,RealRig.Humanoid.Died:Connect(function() 
+		pcall(function() 
+			Player.Character = RealRig; 
+			RealRig.Parent = workspace; 
+			if FakeRig then FakeRig:Destroy() end
+			for i,v in pairs(Events) do
+				v:Disconnect()
+			end
+			FakeRig = nil
+		end) 
+	end))
 	table.insert(Events,Player.CharacterAdded:Connect(function() 
 		if FakeRig then FakeRig:Destroy() end
 		for i,v in pairs(Events) do
