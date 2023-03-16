@@ -1,6 +1,10 @@
 -- [[ https://discord.gg/8EZcyvtDcq // ProductionTakeOne#3330 & nul#3174 ]] --
 -- [[ Zendey Reanimate // By ProductionTakeOne#3330 // Additional support from nul#3174 and Iamverybored#9941 ]] --
 
+if gethiddenproperty and gethiddenproperty(workspace,"RejectCharacterDeletions") == Enum.RejectCharacterDeletion.Enabled then
+	return -- game is patched
+end
+
 local SpeedTest = tick()
 
 local Global = getgenv and getgenv() or shared
