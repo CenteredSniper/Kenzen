@@ -1,5 +1,5 @@
 -- [[ https://discord.gg/8EZcyvtDcq // ProductionTakeOne#3330 & nul#3174 ]] --
--- [[ Zendey Reanimate // By ProductionTakeOne#3330 // Additional support from nul#3174 and Iamverybored#9941 ]] --
+-- [[ Zendey Reanimate // By TimedMarch#3330 // Additional support from nul#3174 and Iamverybored#9941 ]] --
 
 if not gethiddenproperty and true or gethiddenproperty(workspace,"RejectCharacterDeletions") == Enum.RejectCharacterDeletions.Enabled then
 	return -- game is patched
