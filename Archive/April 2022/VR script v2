@@ -1,0 +1,275 @@
+--[[ // METADATA
+
+Last Modified: 4/28/2022 4:02PM
+Author: ???
+
+--]]
+
+local MovementVelocity = true -- CAN MAKE PARTS FALL
+local Velocity = Vector3.new(-25.05,-25.05,-25.05)
+
+local Controls = {
+	["ScaleIn"] = Enum.KeyCode.ButtonL1,
+	["ScaleOut"] = Enum.KeyCode.ButtonL2,
+	["Movement"] = Enum.KeyCode.ButtonR1,
+	["FlingArm"] = Enum.KeyCode.ButtonR2,
+}
+
+-- // Variables
+local VR = game:GetService("VRService")
+if not VR.VREnabled then error("No VR?") return end
+
+local RunService = game:GetService('RunService')
+local StarterGui = game:GetService('StarterGui')
+local InputService = game:GetService("UserInputService")
+local Players = game:GetService('Players')
+
+local Player = Players.LocalPlayer
+local Character = Player.Character
+
+local Head = Character.Head
+local LArm = Character.Humanoid.RigType == Enum.HumanoidRigType.R15 and {["LeftUpperArm"] = CFrame.new(0,0.369,0),["LeftLowerArm"] = CFrame.new(0,-0.224,0),["LeftHand"] = CFrame.new(0,-0.85,0)} or Character["Right Arm"]
+local RArm = Character.Humanoid.RigType == Enum.HumanoidRigType.R15 and {["RightUpperArm"] = CFrame.new(0,0.369,0),["RightLowerArm"] = CFrame.new(0,-0.224,0),["RightHand"] = CFrame.new(0,-0.85,0)} or Character["Right Arm"]
+local Root = Character.HumanoidRootPart
+
+local Camera = workspace.CurrentCamera
+
+local HeadCFrame = Camera.CFrame
+local LArmCFrame = Camera.CFrame
+local RArmCFrame = Camera.CFrame
+
+local R1Down = false
+
+local PermaDeath,Torso
+local SelectionBox,FakePart
+
+local Connections = {}
+
+-- // Settings
+StarterGui:SetCore("VRLaserPointerMode", 0)
+StarterGui:SetCore("VREnableControllerModels", false)
+Camera.CameraType = "Scriptable"
+Camera.HeadScale = 5
+
+settings().Rendering.EagerBulkExecution = true
+settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
+settings().Physics.AllowSleep = false
+settings().Physics.ForceCSGv2 = false
+settings().Physics.DisableCSGv2 = true
+settings().Physics.UseCSGv2 = false
+settings().Physics.ThrottleAdjustTime = math.huge
+Players.LocalPlayer.MaximumSimulationRadius=1000
+workspace.InterpolationThrottling = "Disabled"
+sethiddenproperty(Players.LocalPlayer,"SimulationRadius",1000)
+
+-- // Functions
+local function NetClaim(part)
+	if typeof(part) == "table" then
+		for i,v in pairs(part) do
+			local RPart = Character[i]
+			local PartHB,PartCollision
+
+			local BodyVelocity = Instance.new("BodyVelocity",RPart)
+			BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge); BodyVelocity.P = math.huge; BodyVelocity.Velocity = Velocity
+			local BodyAngularVelocity = Instance.new("BodyAngularVelocity",RPart)
+			BodyAngularVelocity.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); BodyAngularVelocity.P = math.huge; BodyAngularVelocity.AngularVelocity = Vector3.new(0,0,0)
+
+			RPart:ApplyImpulse(Velocity)
+
+			PartHB = RunService.Heartbeat:connect(function()
+				if RPart and RPart.Parent then
+					RPart:ApplyImpulse(Velocity)
+					BodyVelocity.Velocity = Velocity
+				else
+					PartHB:Disconnect()
+				end
+			end)
+			PartCollision = RunService.Stepped:connect(function()
+				if RPart and RPart.Parent then
+					RPart.CanCollide = false
+				else
+					PartCollision:Disconnect()
+				end
+			end)
+		end
+	else
+		local PartHB,PartCollision
+
+		local BodyVelocity = Instance.new("BodyVelocity",part)
+		BodyVelocity.MaxForce = Vector3.new(math.huge,math.huge,math.huge); BodyVelocity.P = math.huge; BodyVelocity.Velocity = Velocity
+		local BodyAngularVelocity = Instance.new("BodyAngularVelocity",part)
+		BodyAngularVelocity.MaxTorque = Vector3.new(math.huge,math.huge,math.huge); BodyAngularVelocity.P = math.huge; BodyAngularVelocity.AngularVelocity = Vector3.new(0,0,0)
+
+		part:ApplyImpulse(Velocity)
+
+		PartHB = RunService.Heartbeat:connect(function()
+			if part and part.Parent then
+				part:ApplyImpulse(Velocity)
+				BodyVelocity.Velocity = Velocity
+			else
+				PartHB:Disconnect()
+			end
+		end)
+		PartCollision = RunService.Stepped:connect(function()
+			if part and part.Parent then
+				part.CanCollide = false
+			else
+				PartCollision:Disconnect()
+			end
+		end)
+	end
+end
+
+local function DisplayChat(Plr)
+	Plr.Chatted:connect(function(Message)
+		game:GetService("Chat"):Chat(Plr.Character.Head,Message)
+	end)
+end
+
+local function CFramePart(Part,CFr)
+	if typeof(Part) == "table" then
+		for i,v in pairs(Part) do
+			local RPart = Character:FindFirstChild(i)
+			if RPart and isnetworkowner(RPart) or RPart and RPart.Anchored then
+				RPart.CFrame = CFr * v
+			end
+		end
+	else
+		if Part and isnetworkowner(Part) or Part and Part.Anchored then
+			Part.CFrame = CFr
+		end
+	end
+end
+
+-- // Connections
+Connections["BodyMove"] = InputService.UserCFrameChanged:Connect(function(Input,Move)
+	if Input == Enum.UserCFrame.Head then
+		HeadCFrame = Camera.CFrame*(CFrame.new(Move.p*(Camera.HeadScale-1))*Move)
+	elseif Input == Enum.UserCFrame.LeftHand then
+		LArmCFrame = Camera.CFrame*(CFrame.new(Move.p*(Camera.HeadScale-1))*Move) * CFrame.Angles(math.rad(90),0,0)
+	elseif Input == Enum.UserCFrame.RightHand then
+		RArmCFrame = Camera.CFrame*(CFrame.new(Move.p*(Camera.HeadScale-1))*Move) * CFrame.Angles(math.rad(90),0,0)
+	end
+end)
+
+Connections["InputBegan"] = InputService.InputBegan:Connect(function(key)
+	if key.KeyCode == Controls["ScaleIn"] then
+		if Camera.HeadScale > 2 then
+			Camera.HeadScale = Camera.HeadScale - 1
+		end
+	elseif key.KeyCode == Controls["ScaleOut"] then
+		if Camera.HeadScale < 7 then
+			Camera.HeadScale = Camera.HeadScale + 1
+		end
+	end
+end)
+Connections["InputChanged"] = InputService.InputChanged:Connect(function(key)
+	if key.KeyCode == Controls["Movement"] then
+		if key.Position.Z > 0.8 then
+			R1Down = true
+
+		else
+			R1Down = false
+
+		end
+	elseif key.KeyCode == Controls["FlingArm"] then
+		if key.Position.Z > 0.8 then
+			if typeof(RArm) == "table" then
+				for i,v in pairs(RArm) do
+					local RPart = Character:FindFirstChild(i)
+					if RPart then
+						RPart.BodyAngularVelocity.AngularVelocity = Vector3.new(2147483647,2147483647,2147483647)
+					end
+				end
+			else
+				RArm.BodyAngularVelocity.AngularVelocity = Vector3.new(2147483647,2147483647,2147483647)
+			end
+			SelectionBox.SurfaceTransparency = 0
+		else
+			if typeof(RArm) == "table" then
+				for i,v in pairs(RArm) do
+					local RPart = Character:FindFirstChild(i)
+					if RPart then
+						RPart.BodyAngularVelocity.AngularVelocity = Vector3.new(0,0,0)
+					end
+				end
+			else
+				RArm.BodyAngularVelocity.AngularVelocity = Vector3.new(0,0,0)
+			end
+			SelectionBox.SurfaceTransparency = 1
+		end
+	end
+end)
+
+Connections["Simradius"] = RunService.Stepped:connect(function()
+	Players.LocalPlayer.MaximumSimulationRadius=1000
+	sethiddenproperty(Players.LocalPlayer,"SimulationRadius",1000)
+	if R1Down and MovementVelocity then
+		Velocity = Vector3.new(-40,-40,-40) * Head.CFrame.LookVector
+	end
+end)
+
+Connections["Heartbeat"] = RunService.Heartbeat:connect(function()
+	if R1Down then
+		Camera.CFrame = Camera.CFrame:Lerp(Camera.CoordinateFrame+(Head.CFrame).LookVector * Camera.HeadScale/2, 0.5)
+	end
+	CFramePart(Head,HeadCFrame)
+	CFramePart(LArm,LArmCFrame)
+	CFramePart(RArm,RArmCFrame)
+	CFramePart(Root,HeadCFrame * CFrame.new(0,-1.5,0))
+
+	CFramePart(FakePart,RArmCFrame)
+end)
+
+Connections["PlayerAdded"] = Players.PlayerAdded:Connect(DisplayChat)
+for i,v in pairs(Players:GetPlayers()) do DisplayChat(v) end
+
+-- // Main Script
+if typeof(RArm) == "table" then
+	FakePart = Instance.new("Part")
+	FakePart.CanCollide = false
+	FakePart.Size = Vector3.new(1,2,1)
+	FakePart.Anchored = true
+	FakePart.Transparency = 1
+	FakePart.Name = "FlingSelection"
+	FakePart.Parent = Character
+else
+	FakePart = RArm
+end
+SelectionBox = Instance.new("SelectionBox"); SelectionBox.Transparency = 1; SelectionBox.SurfaceColor3 = Color3.new(1,0,0); SelectionBox.Adornee = FakePart
+Torso = Character:FindFirstChild("Torso") or Character:FindFirstChild("UpperTorso")
+Torso.Anchored = true
+
+NetClaim(Head); NetClaim(LArm); NetClaim(RArm); NetClaim(Root)
+
+Character.Archivable = true
+PermaDeath = Character:Clone()
+PermaDeath.Parent = workspace
+
+task.wait(0/1)
+
+Character.Parent = PermaDeath
+Player.Character = PermaDeath
+
+task.wait(Players.RespawnTime + game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()/500)
+
+Character:BreakJoints()
+Torso:Destroy()
+Head.Transparency = 1
+
+PermaDeath.Humanoid.Died:Connect(function() 
+	pcall(function() 
+		for i,v in pairs(Connections) do
+			v:Disconnect()
+		end
+		PermaDeath:Destroy()
+	end) 
+end) 
+Connections["CharacterAdded"] = Player.CharacterAdded:Connect(function(Char)
+	pcall(function() 
+		PermaDeath:Destroy()
+		for i,v in pairs(Connections) do
+			v:Disconnect()
+		end
+	end)
+end) 
