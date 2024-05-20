@@ -1,0 +1,744 @@
+
+--[[
+	SaveInstance V3.3 - Swift
+	
+	THIS IS A SAVEINSTANCE CORE NOT A SAVEINSTANCE SCRIPT. THINK OF THIS AS A MOCK OF THE BUILT IN FUNCTION. ALL THIS DOES IT MAKE THE FUNCTION
+	YOU NEED A COPIER SCRIPT THAT CALLS _G.SInstance(Instance, Name) FOR THIS TO WORK.
+	
+	You have three options of saveinstance that you can change by setting "saveMethod".
+	1 - Using the "writefile" function if you support it
+	2 - Using a webhost like v2
+	3 - Using the new create model method
+	
+	NEW: If you just want to save the place right away, go to the "SAVE PLACE UI OPTIONS".
+		 Get one of your place's id and set "savePlaceId" to it. This is where your place will be exported to.
+	
+	Made by Pi and sad Moon :c
+--]]
+
+-- ========== MAIN SETTINGS ==========
+local saveMethod = 1 -- 1 = writefile, 2 = host, 3 = createmodel
+local debugMessages = false -- Debug messages
+local useGetgenv = true -- Attempts to install the SaveInstance() and SavePlace() function to the global env
+local APIOverride = "" -- The JSON Api of Roblox if you have no TrustCheck
+
+-- ========== FOR HOST OPTION ==========
+-- You need your host with the php set up on it for this to work. Make sure read/write permissions are enabled for php.
+-- You don't need it if you have a writefile function. Actually no setup if you have writefile ahaha.
+
+local host = "http://slowcomplicatedafmethod.com/Master.php" -- Your php file
+local splitSize = 800000 -- If your host supports bigger post size then change this (1mb default)
+
+-- ========== SAVE PLACE UI OPTIONS ==========
+local savePlaceId = 0 -- Put the PlaceID of ONE OF THE PLACES THAT YOU OWN here from https://www.roblox.com/develop which will be updated by this script.
+local savePlaceExtra = true -- Nil Instances, PlayerGui, etc
+local savePlaceScripts = true -- If you have decompiler
+local savePlaceTerrain = true -- Opens Terrain Chunk Selector
+local savePlaceTerrainShowChunks = true -- Shows the selection boxes which are your selected chunks
+local savePlaceNilInstances = true -- Nil Instances
+local savePlaceUseWriteFile = false -- Writes the place file to your disk instead if you have a writefile function
+
+-- ========== DO NOT MODIFY BELOW ==========
+local consoleFunc = printconsole or writeconsole or print
+
+local function debugMsg(msg)
+	if debugMessages and consoleFunc then
+		consoleFunc(msg)
+	end
+end
+
+if saveMethod == 1 and not writefile then debugMsg("no writefile, switching to method 3") saveMethod = 3 end
+if savePlaceUseWriteFile and not writefile then debugMsg("no writefile for place save, turning off") savePlaceUseWriteFile = false end
+
+local http = game:GetService("HttpService")
+local API = {}
+local APIJson
+local LPlayer = game:GetService("Players").LocalPlayer
+local selectingTerrain = false
+local terrainChunks = {}
+local terrainChunksTemp = {}
+local terrainBeen = {}
+local pendingTerrain = {}
+local placeMode = false
+
+local instanceCount = 0
+local saveString = ""
+local totalInstances = 1
+
+local savedProps = {}
+local instanceRefs = {}
+local storedInstances = {}
+local splits = 0
+
+local globalName = ""
+local extraFolder = Instance.new("Folder")
+extraFolder.Name = "_IMPORTANT_AND_EXTRA_INSTANCES_"
+
+local terrainLoader = Instance.new("Script",extraFolder)
+terrainLoader.Name = "LoadTerrain"
+local terrainData = Instance.new("ModuleScript",terrainLoader)
+terrainData.Name = "Data"
+
+local ignoreProps = {
+	["Instance"] = {
+		["Archivable"] = true,
+		["DataCost"] = true,
+		["ClassName"] = true,
+		["RobloxLocked"] = true,
+		["Parent"] = true
+	},
+	["Workspace"] = {
+		["DistributedGameTime"] = true
+	},
+	["BasePart"] = {
+		["Position"] = true,
+		["Rotation"] = true
+	}
+}
+
+local propAlt = {
+	["Sound"] = {
+		["MaxDistance"] = "xmlRead_MaxDistance_3"
+	}
+}
+
+local success,err = ypcall(function()
+	if APIOverride and APIOverride ~= "" then
+		APIJson = APIOverride
+	else
+		APIJson = game:HttpGetAsync("http://anaminus.github.io/rbx/json/api/latest.json")
+	end
+end)
+
+if err then
+	if script:FindFirstChild("API") then
+		APIJson = require(script.API)
+	end
+end
+
+APIJson = http:JSONDecode(APIJson)
+
+for i,v in pairs(APIJson) do
+	if v.type == "Class" then
+		API[v.Name] = v
+		API[v.Name].Properties = {}
+	elseif v.type == "Property" then
+		local dontuse = false
+		for i2,v2 in pairs(v.tags) do
+			if v2 == "deprecated" or v2 == "hidden" or v2 == "readonly" then
+				dontuse = true
+			end
+		end
+		if ignoreProps[v.Class] and ignoreProps[v.Class][v.Name] then dontuse = true end
+		if propAlt[v.Class] and propAlt[v.Class][v.Name] then v.AltName = propAlt[v.Class][v.Name] end
+		if not dontuse then
+			table.insert(API[v.Class].Properties,v)
+		end
+	end
+end
+
+local function getProperties(obj)
+	if savedProps[obj.ClassName] then return savedProps[obj.ClassName] end
+	
+	local tempProps = {}
+	local currentClass = obj.ClassName
+	
+	while currentClass do
+		for i,v in pairs(API[currentClass].Properties) do
+			table.insert(tempProps,v)
+		end
+		currentClass = API[currentClass].Superclass
+	end
+	
+	table.sort(tempProps,function(a,b)
+		return (a.AltName or a.Name) < (b.AltName or b.Name)
+	end)
+	savedProps[obj.ClassName] = tempProps
+	return tempProps
+end
+
+local function appendToHost()
+	game:HttpPostAsync(host,table.concat(storedInstances)) --http:PostAsync(host,http:JSONEncode({Option = "Append",Name = globalName,Data = table.concat(storedInstances)}))
+	splits = splits + 1
+	debugMsg("SaveAmounts: "..tostring(splits).." Progress = "..tostring(instanceCount/totalInstances*100).."%")
+end
+
+local function submitSave()
+	game:HttpPostAsync(host,http:JSONEncode({Option = "Submit",Name = globalName}))
+end
+
+local function clearAll()
+	game:HttpPostAsync(host,http:JSONEncode({Option = "Clear"}))
+end
+
+local function checkRef(obj)
+	local check = instanceRefs[obj]
+	if check then
+		return tostring(check)
+	end
+	instanceRefs[obj] = instanceCount
+	return tostring(instanceCount)
+end
+
+local function setRef(obj)
+	if obj == nil then return "null" end
+	local check = instanceRefs[obj]
+	if check then
+		return "RBX"..tostring(check)
+	end
+	instanceCount = instanceCount + 1
+	instanceRefs[obj] = instanceCount
+	return "RBX"..tostring(instanceCount)
+end
+
+local function cleanUglyAf(str)
+	if #str == 0 then return "" end
+	
+	local firstChar = str:sub(1,1)
+	local firstByte = string.byte(firstChar)
+	
+	if firstByte >= 32 and firstByte <= 126 then
+		return firstChar..cleanUglyAf(str:sub(2))
+	elseif firstByte == 9 or firstByte == 10 then
+		return firstChar..cleanUglyAf(str:sub(2))
+	else
+		return cleanUglyAf(str:sub(2))
+	end
+end
+
+function CreateInstance(cls,props)
+	local inst = Instance.new(cls)
+	for i,v in pairs(props) do
+		inst[i] = v
+	end
+	return inst
+end
+
+local function createTerrainGui()
+	local TerrainGui = CreateInstance("Frame",{Style=0,Active=false,AnchorPoint=Vector2.new(0,0),BackgroundColor3=Color3.new(0.10980392992496,0.16470588743687,0.22352942824364),BackgroundTransparency=0,BorderColor3=Color3.new(0.10588236153126,0.16470588743687,0.20784315466881),BorderSizePixel=1,ClipsDescendants=false,Draggable=false,Position=UDim2.new(0,0,0.5,0),Rotation=0,Selectable=false,Size=UDim2.new(0,150,0,150),SizeConstraint=0,Visible=false,ZIndex=1,Name="Main",})
+	local TerrainGui2 = CreateInstance("TextLabel",{Font=4,FontSize=5,Text="Terrain Chunk Selection",TextColor3=Color3.new(1,1,1),TextScaled=false,TextSize=14,TextStrokeColor3=Color3.new(0,0,0),TextStrokeTransparency=1,TextTransparency=0,TextWrapped=false,TextXAlignment=2,TextYAlignment=1,Active=false,AnchorPoint=Vector2.new(0,0),BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,BorderColor3=Color3.new(0.10588236153126,0.16470588743687,0.20784315466881),BorderSizePixel=1,ClipsDescendants=false,Draggable=false,Position=UDim2.new(0,0,0,0),Rotation=0,Selectable=false,Size=UDim2.new(1,0,0,20),SizeConstraint=0,Visible=true,ZIndex=1,Name="Title",Parent = TerrainGui})
+	local TerrainGui3 = CreateInstance("TextLabel",{Font=3,FontSize=5,Text="Use your mouse to click on all the terrain to save. When you are finished, press done.",TextColor3=Color3.new(1,1,1),TextScaled=false,TextSize=14,TextStrokeColor3=Color3.new(0,0,0),TextStrokeTransparency=1,TextTransparency=0,TextWrapped=true,TextXAlignment=2,TextYAlignment=1,Active=false,AnchorPoint=Vector2.new(0,0),BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,BorderColor3=Color3.new(0.10588236153126,0.16470588743687,0.20784315466881),BorderSizePixel=1,ClipsDescendants=false,Draggable=false,Position=UDim2.new(0,0,0,25),Rotation=0,Selectable=false,Size=UDim2.new(1,0,0,50),SizeConstraint=0,Visible=true,ZIndex=1,Name="Desc",Parent = TerrainGui})
+	local TerrainGui4 = CreateInstance("TextLabel",{Font=4,FontSize=5,Text="Chunks: 0",TextColor3=Color3.new(1,1,1),TextScaled=false,TextSize=14,TextStrokeColor3=Color3.new(0,0,0),TextStrokeTransparency=1,TextTransparency=0,TextWrapped=true,TextXAlignment=2,TextYAlignment=1,Active=false,AnchorPoint=Vector2.new(0,0),BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,BorderColor3=Color3.new(0.10588236153126,0.16470588743687,0.20784315466881),BorderSizePixel=1,ClipsDescendants=false,Draggable=false,Position=UDim2.new(0,0,0,80),Rotation=0,Selectable=false,Size=UDim2.new(1,0,0,20),SizeConstraint=0,Visible=true,ZIndex=1,Name="Chunks",Parent = TerrainGui})
+	local TerrainGui5 = CreateInstance("TextButton",{Font=4,FontSize=6,Text="Done",TextColor3=Color3.new(1,1,1),TextScaled=false,TextSize=18,TextStrokeColor3=Color3.new(0,0,0),TextStrokeTransparency=1,TextTransparency=0,TextWrapped=false,TextXAlignment=2,TextYAlignment=1,AutoButtonColor=true,Modal=false,Selected=false,Style=0,Active=true,AnchorPoint=Vector2.new(0,0),BackgroundColor3=Color3.new(0.17254902422428,0.22745099663734,0.28627452254295),BackgroundTransparency=0,BorderColor3=Color3.new(0.10588236153126,0.16470588743687,0.20784315466881),BorderSizePixel=1,ClipsDescendants=false,Draggable=false,Position=UDim2.new(0,5,1,-30),Rotation=0,Selectable=true,Size=UDim2.new(1,-10,0,25),SizeConstraint=0,Visible=true,ZIndex=1,Name="Done",Parent = TerrainGui})
+	return TerrainGui
+end
+
+local terrainGui = createTerrainGui()
+terrainGui.Parent = game:GetService("CoreGui").RobloxGui
+
+local ignorePlaceClasses = {
+	["CoreGui"] = true,
+	["Players"] = true,
+	["Chat"] = true,
+	["StarterPlayerScripts"] = true,
+	["StarterCharacterScripts"] = true
+}
+
+local function placeInstCheck(inst)
+	return not ignorePlaceClasses[inst.ClassName] and not game:GetService("Players"):GetPlayerFromCharacter(inst) and inst ~= workspace.CurrentCamera
+end
+
+local propFunc = {
+	["bool"] = function(inst,prop)
+		saveString = saveString..'\n<bool name="'..prop..'">'..tostring(inst[prop])..'</bool>'
+	end,
+	["float"] = function(inst,prop)
+		saveString = saveString..'\n<float name="'..prop..'">'..tostring(inst[prop])..'</float>'
+	end,
+	["int"] = function(inst,prop)
+		saveString = saveString..'\n<int name="'..prop..'">'..tostring(inst[prop])..'</int>'
+	end,
+	["double"] = function(inst,prop)
+		saveString = saveString..'\n<float name="'..prop..'">'..tostring(inst[prop])..'</float>'
+	end,
+	["string"] = function(inst,prop)
+		local cleanName = inst[prop]
+		cleanName = string.gsub(cleanName,"&","&amp;")
+		cleanName = string.gsub(cleanName,"<","&lt;")
+		cleanName = string.gsub(cleanName,">","&gt;")
+		saveString = saveString..'\n<string name="'..prop..'">'..cleanName..'</string>'
+	end,
+	["BrickColor"] = function(inst,prop)
+		saveString = saveString..'\n<int name="'..prop..'">'..tostring(inst[prop].Number)..'</int>'
+	end,
+	["Vector2"] = function(inst,prop)
+		saveString = saveString..'\n<Vector2 name="'..prop..'">'
+		saveString = saveString..'\n<X>'..inst[prop].x..'</X>'
+		saveString = saveString..'\n<Y>'..inst[prop].y..'</Y>'
+		saveString = saveString..'\n</Vector2>'
+	end,
+	["Vector3"] = function(inst,prop)
+		saveString = saveString..'\n<Vector3 name="'..prop..'">'
+		saveString = saveString..'\n<X>'..inst[prop].x..'</X>'
+		saveString = saveString..'\n<Y>'..inst[prop].y..'</Y>'
+		saveString = saveString..'\n<Z>'..inst[prop].z..'</Z>'
+		saveString = saveString..'\n</Vector3>'
+	end,
+	["CoordinateFrame"] = function(inst,prop)
+		local X,Y,Z,R00,R01,R02,R10,R11,R12,R20,R21,R22 = inst[prop]:components()
+		saveString = saveString..'\n<CoordinateFrame name="'..prop..'">'
+		saveString = saveString..'\n<X>'..X..'</X>'
+		saveString = saveString..'\n<Y>'..Y..'</Y>'
+		saveString = saveString..'\n<Z>'..Z..'</Z>'
+		saveString = saveString..'\n<R00>'..R00..'</R00>'
+		saveString = saveString..'\n<R01>'..R01..'</R01>'
+		saveString = saveString..'\n<R02>'..R02..'</R02>'
+		saveString = saveString..'\n<R10>'..R10..'</R10>'
+		saveString = saveString..'\n<R11>'..R11..'</R11>'
+		saveString = saveString..'\n<R12>'..R12..'</R12>'
+		saveString = saveString..'\n<R20>'..R20..'</R20>'
+		saveString = saveString..'\n<R21>'..R21..'</R21>'
+		saveString = saveString..'\n<R22>'..R22..'</R22>'
+		saveString = saveString..'\n</CoordinateFrame>'
+	end,
+	["Content"] = function(inst,prop)
+		local cleanName = tostring(inst[prop])
+		cleanName = string.gsub(cleanName,"&","&amp;")
+		cleanName = string.gsub(cleanName,"<","&lt;")
+		cleanName = string.gsub(cleanName,">","&gt;")
+		saveString = saveString..'\n<Content name="'..prop..'"><url>'..cleanName..'</url></Content>'
+	end,
+	["UDim2"] = function(inst,prop)
+		saveString = saveString..'\n<UDim2 name="'..prop..'">'
+		saveString = saveString..'\n<XS>'..inst[prop].X.Scale..'</XS>'
+		saveString = saveString..'\n<XO>'..inst[prop].X.Offset..'</XO>'
+		saveString = saveString..'\n<YS>'..inst[prop].Y.Scale..'</YS>'
+		saveString = saveString..'\n<YO>'..inst[prop].Y.Offset..'</YO>'
+		saveString = saveString..'\n</UDim2>'
+	end,
+	["Color3"] = function(inst,prop)
+		saveString = saveString..'\n<Color3 name="'..prop..'">'
+		saveString = saveString..'\n<R>'..inst[prop].r..'</R>'
+		saveString = saveString..'\n<G>'..inst[prop].g..'</G>'
+		saveString = saveString..'\n<B>'..inst[prop].b..'</B>'
+		saveString = saveString..'\n</Color3>'
+	end,
+	["NumberRange"] = function(inst,prop)
+		saveString = saveString..'\n<NumberRange name="'..prop..'">'..tostring(inst[prop].Min).." "..tostring(inst[prop].Max).." "..'</NumberRange>'
+	end,
+	["NumberSequence"] = function(inst,prop)
+		saveString = saveString..'\n<NumberSequence name="'..prop..'">'
+		for i,v in pairs(inst[prop].Keypoints) do
+			saveString = saveString..tostring(v.Time).." "..tostring(v.Value).." "..tostring(v.Envelope).." "
+		end
+		saveString = saveString..'</NumberSequence>'
+	end,
+	["ColorSequence"] = function(inst,prop)
+		saveString = saveString..'\n<ColorSequence name="'..prop..'">'
+		for i,v in pairs(inst[prop].Keypoints) do
+			saveString = saveString..tostring(v.Time).." "..tostring(v.Value.r).." "..tostring(v.Value.g).." "..tostring(v.Value.b).." 0 "
+		end
+		saveString = saveString..'</ColorSequence>'
+	end,
+	["Rect2D"] = function(inst,prop)
+		saveString = saveString..'\n<Rect2D name="'..prop..'">'
+		saveString = saveString..'\n<min>'
+		saveString = saveString..'\n<X>'..tostring(inst[prop].Min.X)..'</X>'
+		saveString = saveString..'\n<Y>'..tostring(inst[prop].Min.Y)..'</Y>'
+		saveString = saveString..'\n</min>'
+		saveString = saveString..'\n<max>'
+		saveString = saveString..'\n<X>'..tostring(inst[prop].Max.X)..'</X>'
+		saveString = saveString..'\n<Y>'..tostring(inst[prop].Max.Y)..'</Y>'
+		saveString = saveString..'\n</max>'
+		saveString = saveString..'\n</Rect2D>'
+	end,
+	["ProtectedString"] = function(inst,prop)
+		local prostr = inst[prop]
+		if placeMode and decompile and (inst:IsA("LocalScript") or inst:IsA("ModuleScript")) and savePlaceScripts and inst.Source == "" then prostr = decompile(inst) end
+		if inst == terrainData then prostr = "return [==["..table.concat(terrainChunks,"|").."]==]" terrainChunks = {} end
+		saveString = saveString..'\n<ProtectedString name="'..prop..'"><![CDATA['..prostr..']]></ProtectedString>'
+	end,
+	["Object"] = function(inst,prop)
+		saveString = saveString..'\n<Ref name="'..prop..'">'..setRef(inst[prop])..'</Ref>'
+	end,
+	["PhysicalProperties"] = function(inst,prop)
+		if inst[prop] then
+			saveString = saveString..'\n<PhysicalProperties name="'..prop..'">\n<CustomPhysics>true</CustomPhysics>'
+			saveString = saveString..'\n<Density>'..tostring(inst[prop].Density)..'</Density>'
+			saveString = saveString..'\n<Friction>'..tostring(inst[prop].Friction)..'</Friction>'
+			saveString = saveString..'\n<Elasticity>'..tostring(inst[prop].Elasticity)..'</Elasticity>'
+			saveString = saveString..'\n<FrictionWeight>'..tostring(inst[prop].FrictionWeight)..'</FrictionWeight>'
+			saveString = saveString..'\n<ElasticityWeight>'..tostring(inst[prop].ElasticityWeight)..'</ElasticityWeight>'
+			saveString = saveString..'\n</PhysicalProperties>'
+		else
+			saveString = saveString..'\n<PhysicalProperties name="'..prop..'">\n<CustomPhysics>false</CustomPhysics>\n</PhysicalProperties>'
+		end
+	end
+}
+
+local specialClassCases = {
+	["UnionOperation"] = function(inst)
+		if not ypcall(function()local lolaf = inst.AssetId end) then return end
+		propFunc["Content"](inst,"AssetId")
+		propFunc["Vector3"](inst,"InitialSize")
+	end,
+	["MeshPart"] = function(inst)
+		if not ypcall(function()local lolaf = inst.InitialSize end) then return end
+		propFunc["Vector3"](inst,"InitialSize")
+	end,
+	["Workspace"] = function(inst)
+		if inst:PGSIsEnabled() then
+			saveString = saveString..'\n<bool name="PGSPhysicsSolverEnabled">true</bool>'
+		else
+			saveString = saveString..'\n<bool name="PGSPhysicsSolverEnabled">false</bool>'
+		end
+		if ypcall(function()local lolaf = inst.FallenPartsDestroyHeight end) then
+			 propFunc["double"](inst,"FallenPartsDestroyHeight")
+		end
+	end
+}
+
+local function writeInstance(inst,altData)
+	if API[inst.ClassName] and (placeMode and placeInstCheck(inst) or not placeMode) then
+		if saveMethod == 2 and string.len(table.concat(storedInstances)) >= splitSize then
+            appendToHost()
+            storedInstances = {}
+        end
+		instanceCount = instanceCount + 1
+		local props = getProperties(inst)
+		saveString = saveString..'\n<Item class="'..inst.ClassName..'" referent="RBX'..checkRef(inst)..'">'
+		saveString = saveString.."\n<Properties>"
+		for _,prop in pairs(props) do
+			ypcall(function()
+				local propF = propFunc[prop.ValueType]
+				if propF then
+					if not prop.AltName then
+						propF(inst,prop.Name)
+					else
+						table.insert(storedInstances,saveString)
+						saveString = ""
+						propF(inst,prop.Name)
+						saveString = string.gsub(saveString,prop.Name,prop.AltName)
+					end
+				elseif inst[prop.Name].Value then
+					saveString = saveString..'\n<token name="'..(prop.AltName or prop.Name)..'">'..inst[prop.Name].Value..'</token>'
+				end
+				table.insert(storedInstances,saveString)
+				saveString = ""
+			end)
+		end
+		if specialClassCases[inst.ClassName] then
+			specialClassCases[inst.ClassName](inst)
+		end
+		saveString = saveString.."\n</Properties>"
+		if inst == extraFolder then
+			if getnilinstances and savePlaceNilInstances then
+				local nilFolder = Instance.new("Folder",extraFolder)
+				nilFolder.Name = "Nil Instances"
+				
+				local nilledInstances = {}
+				for i,v in pairs(getnilinstances()) do
+					if v.Name ~= "_DexTrash_" and v ~= extraFolder then
+						table.insert(nilledInstances,v)
+					end
+				end
+				writeInstance(nilFolder,nilledInstances)
+			end
+			
+			if savePlaceExtra then
+				local playerFolder = Instance.new("Folder",extraFolder)
+				playerFolder.Name = "Instances In Player"
+				writeInstance(playerFolder,LPlayer:GetChildren())
+			
+				local playerGuiFolder = Instance.new("Folder",extraFolder)
+				playerGuiFolder.Name = "Instances In PlayerGui"
+				writeInstance(playerGuiFolder,LPlayer:FindFirstChildOfClass("PlayerGui"):GetChildren())
+			
+				local cameraFolder = Instance.new("Folder",extraFolder)
+				cameraFolder.Name = "Instances In Camera"
+				writeInstance(cameraFolder,workspace.CurrentCamera:GetChildren())
+			
+				local chatFolder = Instance.new("Folder",extraFolder)
+				chatFolder.Name = "Instances In Chat"
+				writeInstance(chatFolder,game:GetService("Chat"):GetChildren())
+			
+				local SPSFolder = Instance.new("Folder",extraFolder)
+				SPSFolder.Name = "Instances In StarterPlayerScripts"
+				writeInstance(SPSFolder,game:GetService("StarterPlayer"):FindFirstChildOfClass("StarterPlayerScripts"):GetChildren())
+			
+				local SCSFolder = Instance.new("Folder",extraFolder)
+				SCSFolder.Name = "Instances In StarterCharacterScripts"
+				writeInstance(SCSFolder,game:GetService("StarterPlayer"):FindFirstChildOfClass("StarterCharacterScripts"):GetChildren())
+			end			
+			
+			local unionFixer = Instance.new("Script",extraFolder)
+			unionFixer.Name = "Fix Union Collisions - READ"
+			unionFixer.Source = '--[[\n	THIS GUIDE WILL HELP YOU FIX THE COLLISIONS WITH UNIONS AND MESHPARTS IN THE MAP.\n	\n	Run this script in the command bar to select all the Unions and MeshParts in the map.\n	\n	After that, go to the properties frame and set the CollisionFidelity property to "Hull"\n	\n	Then, set them back to "Default"\n	\n	You have fixed all union collisions.\n	\n	\n	- Credit to Jester for original instructions\n--]]\n\nlocal unions = {}\n\nfunction getUnions(root)\n	for i,v in pairs(root:GetChildren()) do\n		if v:IsA("UnionOperation") or v:IsA("MeshPart") then\n			table.insert(unions,v)\n		end\n		getUnions(v)\n	end\nend\n\ngetUnions(workspace)\n\ngame.Selection:Set(unions)'
+			writeInstance(unionFixer)		
+		elseif altData then
+			for i,v in pairs(altData) do
+				writeInstance(v)
+			end
+		else
+			for i,v in pairs(inst:GetChildren()) do
+				writeInstance(v)
+			end
+		end
+		saveString = saveString.."\n</Item>"
+		table.insert(storedInstances,saveString)
+		saveString = ""
+	end
+end
+
+local function removeExtension(str)
+    if string.find(str,".rbxm") then
+        return string.sub(str,1,string.find(str,".rbxm")-1)
+    elseif string.find(str,".rbxmx") then
+        return string.sub(str,1,string.find(str,".rbxmx")-1)
+    else
+        return str
+    end
+end
+
+local function countTotal(obj)
+	for i,v in pairs(obj:GetChildren()) do
+		totalInstances = totalInstances + 1
+		countTotal(v)
+	end
+end
+
+local function createModel(name,data)
+	local url = "https://data.roblox.com/Data/Upload.ashx?assetid=0&type=Model&name="..name.."&description=&genreTypeId=1&ispublic=False&allowComments=False"
+	local id = game:HttpPostAsync(url,data)	
+	debugMsg("Your "..name.." Instance was saved to the id: "..id)
+end
+
+function func_SInstance(inst,name,terrainRegions)
+	placeMode = false
+	name = removeExtension(name)
+	if saveMethod == 2 then
+		clearAll()
+	end
+	instanceCount = 0
+	totalInstances = 1
+	if saveMethod == 2 then countTotal(inst) end
+	instanceRefs = {}
+	storedInstances = {}
+	globalName = name
+	splits = 0
+	saveString = [[<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+<External>null</External>
+<External>nil</External>]]
+	
+	if not ypcall(function()local lolaf = Instance.new("UnionOperation").AssetId end) then
+		debugMsg("RUNNING WITH NO UNSCRIPTABLE PATCH")
+	else
+		debugMsg("RUNNING WITH UNSCRIPTABLE PATCH c:")
+	end
+	
+	writeInstance(inst)
+	table.insert(storedInstances,"\n</roblox>")
+	if saveMethod == 1 then
+		writefile(name..".rbxmx",table.concat(storedInstances))
+	elseif saveMethod == 2 then
+		appendToHost()
+		submitSave()
+	elseif saveMethod == 3 then
+		createModel(name,table.concat(storedInstances))
+	end
+	if saveMethod == 2 then debugMsg("Saved with "..tostring(splits).." splits.") end
+	storedInstances = {}
+end
+
+function DoSPlace(name)
+	placeMode = true
+	instanceCount = 0
+	instanceRefs = {}
+	storedInstances = {}
+	
+	saveString = [[<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+<External>null</External>
+<External>nil</External>]]
+	for i,v in pairs(game:GetChildren()) do
+		writeInstance(v)
+	end
+	writeInstance(extraFolder)
+	if savePlaceTerrain then writeInstance(terrainLoader) end
+	table.insert(storedInstances,"\n</roblox>")
+	if savePlaceUseWriteFile then
+		if writefile then
+			local filterChars = {"/","\\",":","?","\"","<",">","|"}
+			local gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+			for i,v in pairs(filterChars) do
+				gameName = string.gsub(gameName,v,"")
+			end
+			writefile(name or tostring(game.PlaceId).." - "..gameName..".rbxlx",table.concat(storedInstances))
+			return true
+		end
+		return false
+	else
+		return game:HttpPostAsync("https://data.roblox.com/Data/Upload.ashx?assetid="..tostring(savePlaceId).."&type=Place",table.concat(storedInstances))
+	end
+end
+
+function func_SPlace(name)
+	debugMsg("SaveInstance V3 - Swift: Now saving place "..tostring(game.PlaceId))
+	if savePlaceTerrain then
+		terrainLoader.Source = 'local regions = {}\n\nfor w in string.gmatch(require(game:FindFirstChild("LoadTerrain").Data),"[^|]+") do\n    table.insert(regions,game:GetService("HttpService"):JSONDecode(w))\nend\n\nlocal chunkSize = 64\n\nlocal function makeRegion(str)\n    local t = {}\n    for w in string.gmatch(str,"[^,]+") do\n        table.insert(t,tonumber(w))\n    end\n    local regionPos = Vector3.new(t[1],t[2],t[3])\n    local newRegion = Region3.new(regionPos + Vector3.new(-chunkSize/2,-chunkSize/2,-chunkSize/2), regionPos + Vector3.new(chunkSize/2,chunkSize/2,chunkSize/2))\n    return newRegion\nend\n\nlocal function makeTable(o)\n    local t = {}\n    for i = 1,chunkSize/4 do\n        t[i] = {}\n        for j = 1,chunkSize/4 do\n            t[i][j] = {}\n            for k = 1,chunkSize/4 do\n                if not o then\n                    t[i][j][k] = Enum.Material.Air\n                else\n                    t[i][j][k] = 0\n                end\n            end\n        end\n    end\n    return t\nend\n\nlocal function getPos(str)\n    local t = {}\n    for w in string.gmatch(str,"[^,]+") do\n        table.insert(t,tonumber(w))\n    end\n    return t[1],t[2],t[3]\nend\n\nlocal materialMap = {}\nmaterialMap[1] = Enum.Material.Plastic\nmaterialMap[2] = Enum.Material.Wood\nmaterialMap[3] = Enum.Material.Slate\nmaterialMap[4] = Enum.Material.Concrete\nmaterialMap[5] = Enum.Material.CorrodedMetal\nmaterialMap[6] = Enum.Material.DiamondPlate\nmaterialMap[7] = Enum.Material.Foil\nmaterialMap[8] = Enum.Material.Grass\nmaterialMap[9] = Enum.Material.Ice\nmaterialMap[10] = Enum.Material.Marble\nmaterialMap[11] = Enum.Material.Granite\nmaterialMap[12] = Enum.Material.Brick\nmaterialMap[13] = Enum.Material.Pebble\nmaterialMap[14] = Enum.Material.Sand\nmaterialMap[15] = Enum.Material.Fabric\nmaterialMap[16] = Enum.Material.SmoothPlastic\nmaterialMap[17] = Enum.Material.Metal\nmaterialMap[18] = Enum.Material.WoodPlanks\nmaterialMap[19] = Enum.Material.Cobblestone\nmaterialMap[20] = Enum.Material.Air\nmaterialMap[21] = Enum.Material.Water\nmaterialMap[22] = Enum.Material.Rock\nmaterialMap[23] = Enum.Material.Glacier\nmaterialMap[24] = Enum.Material.Snow\nmaterialMap[25] = Enum.Material.Sandstone\nmaterialMap[26] = Enum.Material.Mud\nmaterialMap[27] = Enum.Material.Basalt\nmaterialMap[28] = Enum.Material.Ground\nmaterialMap[29] = Enum.Material.CrackedLava\nmaterialMap[30] = Enum.Material.Neon\nmaterialMap[31] = Enum.Material.Asphalt\nmaterialMap[32] = Enum.Material.LeafyGrass\nmaterialMap[33] = Enum.Material.Salt\nmaterialMap[34] = Enum.Material.Limestone\nmaterialMap[35] = Enum.Material.Pavement\n\nlocal function toMaterial(num)\n    return materialMap[num]\nend\n\nprint("Loading Terrain")\n\nfor c,chunk in pairs(regions) do\n    for i,v in pairs(chunk) do\n        local region = makeRegion(i)\n\n        local m = makeTable()\n        local o = makeTable(true)\n\n        for i2,v2 in pairs(v) do		\n            local x,y,z = getPos(v2[1])\n            m[x][y][z] = toMaterial(v2[2])\n            o[x][y][z] = v2[3]\n        end\n\n        workspace.Terrain:WriteVoxels(region,4,m,o)\n    end\n    print("Terrain Chunk: "..tostring(c))\n    wait()\nend\n\ngame:FindFirstChild("LoadTerrain"):Destroy()\nprint("Finished Loading Terrain - Save The Place")'
+		selectingTerrain = true
+		terrainGui.Chunks.Text = "Chunks: 0"
+		terrainGui.Visible = true
+		repeat wait() until not selectingTerrain
+	end
+	local stopwatch = tick()
+	local id = DoSPlace(name)
+	local message = "Courtney ;("
+	if savePlaceUseWriteFile then
+		message = (id and "The place has been saved to a file." or "Place didn't save :c no writefile or error")
+	else
+		message = (id and "The place has been saved. Open it from the develop page on Roblox." or "Place didn't save :c something went wrong tell me")
+	end
+	debugMsg(message)
+	debugMsg("Saving took "..tostring(tick()-stopwatch).."s.")
+	storedInstances = {}
+end
+
+if useGetgenv and getgenv then
+	getgenv().saveobject = func_SInstance
+	getgenv().SavePlace = func_SPlace
+else
+	_G.SInstance = func_SInstance
+	_G.SPlace = func_SPlace
+end
+
+-- Terrain Stuff
+local mouse = LPlayer:GetMouse()
+local chunkSize = 64
+local chunks = 0
+local materialConv = {}
+materialConv[Enum.Material.Plastic] = 1
+materialConv[Enum.Material.Wood] = 2
+materialConv[Enum.Material.Slate] = 3
+materialConv[Enum.Material.Concrete] = 4
+materialConv[Enum.Material.CorrodedMetal] = 5
+materialConv[Enum.Material.DiamondPlate] = 6
+materialConv[Enum.Material.Foil] = 7
+materialConv[Enum.Material.Grass] = 8
+materialConv[Enum.Material.Ice] = 9
+materialConv[Enum.Material.Marble] = 10
+materialConv[Enum.Material.Granite] = 11
+materialConv[Enum.Material.Brick] = 12
+materialConv[Enum.Material.Pebble] = 13
+materialConv[Enum.Material.Sand] = 14
+materialConv[Enum.Material.Fabric] = 15
+materialConv[Enum.Material.SmoothPlastic] = 16
+materialConv[Enum.Material.Metal] = 17
+materialConv[Enum.Material.WoodPlanks] = 18
+materialConv[Enum.Material.Cobblestone] = 19
+materialConv[Enum.Material.Air] = 20
+materialConv[Enum.Material.Water] = 21
+materialConv[Enum.Material.Rock] = 22
+materialConv[Enum.Material.Glacier] = 23
+materialConv[Enum.Material.Snow] = 24
+materialConv[Enum.Material.Sandstone] = 25
+materialConv[Enum.Material.Mud] = 26
+materialConv[Enum.Material.Basalt] = 27
+materialConv[Enum.Material.Ground] = 28
+materialConv[Enum.Material.CrackedLava] = 29
+materialConv[Enum.Material.Neon] = 30
+materialConv[Enum.Material.Asphalt] = 31
+materialConv[Enum.Material.LeafyGrass] = 32
+materialConv[Enum.Material.Salt] = 33
+materialConv[Enum.Material.Limestone] = 34
+materialConv[Enum.Material.Pavement] = 35
+
+local function createMarker(pos,ne)
+	if savePlaceTerrainShowChunks then
+		local mark = Instance.new("Part",workspace.CurrentCamera)
+		mark.Name = "TerTop"
+		mark.Anchored = true
+		mark.Transparency = 1
+		mark.CanCollide = false
+		mark.Size = Vector3.new(chunkSize,chunkSize,chunkSize)
+		mark.CFrame = CFrame.new(pos)
+	
+		local box = Instance.new("SelectionBox",mark)
+		box.Adornee = mark
+	end
+	
+	terrainChunksTemp[tostring(pos)] = ne
+	terrainBeen[tostring(pos)] = true
+	chunks = chunks + 1
+	if chunks % 10 == 0 then
+		table.insert(terrainChunks,game:GetService("HttpService"):JSONEncode(terrainChunksTemp))
+		terrainChunksTemp = {}
+	end
+	terrainGui.Chunks.Text = "Chunks: "..tostring(chunks)
+end
+
+local function fillTerrain(start)
+	if terrainBeen[tostring(start)] or not selectingTerrain then return end
+	local checkRegion = Region3.new(start + Vector3.new(-chunkSize/2,-chunkSize/2,-chunkSize/2), start + Vector3.new(chunkSize/2,chunkSize/2,chunkSize/2))
+	checkRegion:ExpandToGrid(4)
+	local m,o = workspace.Terrain:ReadVoxels(checkRegion,4)
+	local nonempty = {}	
+	
+	local size = m.Size
+	local airCount = 0
+	for x = 1,size.X do
+		for y = 1,size.Y do
+			for z = 1,size.Z do
+				if m[x][y][z] == Enum.Material.Air then
+					airCount = airCount + 1
+				else
+					table.insert(nonempty,{tostring(x)..","..tostring(y)..","..tostring(z),materialConv[m[x][y][z]],o[x][y][z]})
+				end
+			end
+		end
+	end
+	
+	if airCount == chunkSize^3/64 then return end
+	
+	createMarker(start,nonempty)
+	pendingTerrain[start + Vector3.new(chunkSize,0,0)] = true
+	pendingTerrain[start + Vector3.new(-chunkSize,0,0)] = true
+	pendingTerrain[start + Vector3.new(0,chunkSize,0)] = true
+	pendingTerrain[start + Vector3.new(0,-chunkSize,0)] = true
+	pendingTerrain[start + Vector3.new(0,0,chunkSize)] = true
+	pendingTerrain[start + Vector3.new(0,0,-chunkSize)] = true
+end
+
+local function makeRegion(str)
+	local t = {}
+	for w in string.gmatch(str,"[^,]+") do
+		table.insert(t,tonumber(w))
+	end
+	local regionPos = Vector3.new(t[1],t[2],t[3])
+	local newRegion = Region3.new(regionPos + Vector3.new(-chunkSize/2,-chunkSize/2,-chunkSize/2), regionPos + Vector3.new(chunkSize/2,chunkSize/2,chunkSize/2))
+	return newRegion
+end
+
+mouse.Button1Down:connect(function()
+	if selectingTerrain then
+		local initPos = mouse.Hit.p
+	
+		local gridX = math.floor(initPos.X/chunkSize)*chunkSize
+		local gridY = math.floor(initPos.Y/chunkSize)*chunkSize
+		local gridZ = math.floor(initPos.Z/chunkSize)*chunkSize
+	
+		fillTerrain(Vector3.new(gridX,gridY,gridZ))
+	end
+end)
+
+terrainGui.Done.MouseButton1Click:connect(function()
+	if savePlaceTerrainShowChunks then
+		for i,v in pairs(workspace.CurrentCamera:GetChildren()) do
+			if v.Name == "TerTop" then v:Destroy() end
+		end
+	end
+	selectingTerrain = false
+	terrainGui.Visible = false
+	table.insert(terrainChunks,game:GetService("HttpService"):JSONEncode(terrainChunksTemp))
+	terrainChunksTemp = {}
+	terrainBeen = {}
+	chunks = 0
+end)
+
+game:GetService("RunService").RenderStepped:Connect(function()
+	if selectingTerrain then
+		for i,v in pairs(pendingTerrain) do
+			fillTerrain(i)
+			pendingTerrain[i] = nil
+		end
+	end
+end)
